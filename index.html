@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0B1C3D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>HSE ESQUIVENSA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── ESQUIVENSA BRAND TOKENS ─────────────────────────────── */
+:root{
+  --esq-yellow:#F5C800;
+  --esq-yellow-dk:#D4A800;
+  --esq-blue:#1A3C8F;
+  --esq-blue-dk:#0B1C3D;
+  --esq-blue-lt:#E8EEFF;
+  --esq-orange:#E84E1B;
+  --esq-orange-lt:#FEF0EC;
+
+  --green:#16A34A; --green-lt:#DCFCE7;
+  --amber:#D97706; --amber-lt:#FEF3C7;
+  --red:#DC2626;   --red-lt:#FEE2E2;
+  --purple:#7C3AED;--purple-lt:#EDE9FE;
+
+  --dark:#0B1C3D;
+  --dark2:#132244;
+  --mid:#1A3C8F;
+  --surface:#F4F6FB;
+  --card:#FFFFFF;
+  --border:#E2E8F0;
+  --text:#1E293B;
+  --text-2:#64748B;
+  --text-3:#94A3B8;
+  --mono:'DM Mono',monospace;
+  --font:'Exo 2',sans-serif;
+  --r:14px; --r-sm:8px; --r-lg:20px;
+  --sh:0 1px 4px rgba(0,0,0,.07),0 6px 20px rgba(0,0,0,.06);
+  --sh-lg:0 8px 40px rgba(0,0,0,.14);
+  --sh-xl:0 20px 60px rgba(0,0,0,.22);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:var(--font);background:var(--surface);color:var(--text);font-size:14px;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ══════════════════════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════════════════════ */
+#login-screen{
+  position:fixed;inset:0;z-index:999;overflow:hidden;
+  background:var(--dark);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.login-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(26,60,143,.9) 0%, var(--dark) 70%);
+}
+.login-ring{
+  position:absolute;
+  border-radius:50%;border:1px solid rgba(245,200,0,.1);
+}
+.login-ring:nth-child(1){width:600px;height:600px;top:-200px;right:-200px;}
+.login-ring:nth-child(2){width:400px;height:400px;top:-100px;right:-100px;}
+.login-ring:nth-child(3){width:200px;height:200px;top:0;right:0;}
+
+.login-card{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:24px;
+  padding:44px 40px;
+  width:100%;max-width:400px;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+  animation:fadeUp .5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+.login-logo-wrap{text-align:center;margin-bottom:28px}
+.login-logo-wrap img{height:72px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(0,0,0,.4))}
+.login-tagline{font-size:12px;color:rgba(255,255,255,.4);text-align:center;margin-top:8px;letter-spacing:.5px;text-transform:uppercase}
+.login-divider{height:1px;background:rgba(255,255,255,.08);margin:24px 0}
+.login-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.5);margin-bottom:7px;display:block}
+.login-inp{
+  width:100%;padding:13px 16px;
+  background:rgba(255,255,255,.07);
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  font-family:var(--font);font-size:14px;color:white;outline:none;
+  transition:border-color .2s,background .2s;
+  margin-bottom:14px;
+}
+.login-inp::placeholder{color:rgba(255,255,255,.25)}
+.login-inp:focus{border-color:var(--esq-yellow);background:rgba(255,255,255,.1)}
+.login-btn{
+  width:100%;padding:14px;margin-top:4px;
+  background:linear-gradient(135deg,var(--esq-yellow),var(--esq-yellow-dk));
+  border:none;border-radius:10px;
+  font-family:var(--font);font-size:15px;font-weight:800;
+  color:var(--dark);cursor:pointer;letter-spacing:.3px;
+  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 4px 20px rgba(245,200,0,.4);
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(245,200,0,.5)}
+.login-btn:active{transform:translateY(0)}
+.login-err{
+  background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.3);
+  color:#FCA5A5;padding:10px 14px;border-radius:8px;
+  font-size:13px;margin-top:12px;text-align:center;display:none
+}
+.login-footer{font-size:11px;color:rgba(255,255,255,.2);text-align:center;margin-top:20px}
+
+/* ══════════════════════════════════════════════════════════
+   APP SHELL
+══════════════════════════════════════════════════════════ */
+#app{display:none;min-height:100vh;flex-direction:column}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 100%);
+  height:60px;padding:0 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+  border-bottom:1px solid rgba(245,200,0,.15);
+}
+.topbar-logo img{height:38px;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.tb-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:99px;border:none;
+  font-family:var(--font);font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.tb-chip-yellow{background:var(--esq-yellow);color:var(--dark)}
+.tb-chip-yellow:hover{background:var(--esq-yellow-dk)}
+.tb-chip-ghost{background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.15)}
+.tb-chip-ghost:hover{background:rgba(255,255,255,.18)}
+.tb-chip-alert{background:var(--esq-orange);color:white}
+.tb-chip-alert:hover{background:#c73d10}
+.admin-crown{font-size:14px;margin-right:2px}
+
+/* ── TABS ── */
+.tabs{
+  background:var(--dark2);
+  padding:0 12px;display:flex;gap:0;
+  overflow-x:auto;scrollbar-width:none;
+  border-bottom:2px solid rgba(245,200,0,.2);
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:13px 14px;font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.4);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:all .2s;user-select:none;
+  letter-spacing:.2px;
+}
+.tab:hover{color:rgba(255,255,255,.7)}
+.tab.active{color:var(--esq-yellow);border-bottom-color:var(--esq-yellow)}
+
+/* ── MAIN ── */
+.main{padding:16px;max-width:1100px;margin:0 auto;flex:1}
+.view{display:none}
+.view.active{display:block}
+
+/* ── SECTION HDR ── */
+.sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap}
+.sec-title{font-size:22px;font-weight:900;color:var(--dark);letter-spacing:-.3px}
+.sec-sub{font-size:13px;color:var(--text-2);margin-top:3px}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font);border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.1px}
+.btn-primary{background:var(--esq-blue);color:white}
+.btn-primary:hover{background:var(--mid)}
+.btn-yellow{background:var(--esq-yellow);color:var(--dark)}
+.btn-yellow:hover{background:var(--esq-yellow-dk)}
+.btn-orange{background:var(--esq-orange);color:white}
+.btn-danger{background:var(--red);color:white}
+.btn-ghost{background:var(--surface);color:var(--text);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--border)}
+.btn-sm{padding:6px 12px;font-size:11px}
+.btn-success{background:var(--green);color:white}
+
+/* ── KPI GRID ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:20px}
+.kpi{
+  background:var(--card);border-radius:var(--r);padding:18px;
+  box-shadow:var(--sh);position:relative;overflow:hidden;
+  border-bottom:3px solid var(--border);transition:transform .15s,box-shadow .15s;
+}
+.kpi:hover{transform:translateY(-3px);box-shadow:var(--sh-lg)}
+.kpi::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:0 0 0 60px;opacity:.06}
+.kpi.yellow{border-bottom-color:var(--esq-yellow)}.kpi.yellow::before{background:var(--esq-yellow)}
+.kpi.blue{border-bottom-color:var(--esq-blue)}.kpi.blue::before{background:var(--esq-blue)}
+.kpi.green{border-bottom-color:var(--green)}.kpi.green::before{background:var(--green)}
+.kpi.orange{border-bottom-color:var(--esq-orange)}.kpi.orange::before{background:var(--esq-orange)}
+.kpi.red{border-bottom-color:var(--red)}.kpi.red::before{background:var(--red)}
+.kpi-ico{font-size:22px;margin-bottom:8px}
+.kpi-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);margin-bottom:4px}
+.kpi-val{font-size:34px;font-weight:900;color:var(--dark);line-height:1;font-family:var(--mono)}
+.kpi-note{font-size:11px;color:var(--text-3);margin-top:4px}
+
+/* ── PROGRESS CARD ── */
+.progress-card{background:var(--card);border-radius:var(--r);padding:22px;box-shadow:var(--sh);margin-bottom:20px}
+.progress-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.progress-lbl{font-size:14px;font-weight:800;color:var(--dark)}
+.progress-pct{font-size:28px;font-weight:900;color:var(--esq-blue);font-family:var(--mono)}
+.bar-bg{height:10px;background:var(--surface);border-radius:99px;overflow:hidden;margin-bottom:20px;border:1px solid var(--border)}
+.bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--esq-blue),var(--esq-yellow));transition:width 1.3s cubic-bezier(.4,0,.2,1)}
+.cat-rows{display:flex;flex-direction:column;gap:9px}
+.cat-row{display:flex;align-items:center;gap:10px;font-size:12px}
+.cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cat-name{flex:1;color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.mini-bar-bg{width:90px;height:6px;background:var(--surface);border-radius:99px;overflow:hidden;flex-shrink:0;border:1px solid var(--border)}
+.mini-bar-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.cat-pct-lbl{font-size:11px;font-weight:700;color:var(--text-2);width:34px;text-align:right;flex-shrink:0;font-family:var(--mono)}
+
+/* ── MONTH GRID ── */
+.month-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:10px;margin-bottom:24px}
+.month-tile{
+  background:var(--card);border-radius:12px;padding:14px 10px;
+  box-shadow:var(--sh);text-align:center;border:2px solid transparent;
+  transition:transform .15s;cursor:default;
+}
+.month-tile:hover{transform:translateY(-2px)}
+.month-tile.cur{border-color:var(--esq-yellow);box-shadow:0 0 0 1px var(--esq-yellow), var(--sh)}
+.month-tile-name{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);margin-bottom:5px}
+.month-tile.cur .month-tile-name{color:var(--esq-orange)}
+.month-tile-pct{font-size:22px;font-weight:900;color:var(--dark);font-family:var(--mono)}
+.month-tile-note{font-size:10px;color:var(--text-3);margin-top:2px}
+
+/* ── TASK CARD ── */
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-card{
+  background:var(--card);border-radius:var(--r);padding:14px 16px;
+  box-shadow:var(--sh);display:grid;grid-template-columns:auto 1fr auto;gap:12px;
+  align-items:start;cursor:pointer;transition:box-shadow .15s,transform .1s;
+  border-left:4px solid var(--border);
+}
+.task-card:hover{box-shadow:var(--sh-lg);transform:translateX(3px)}
+.task-card.ejecutado{border-left-color:var(--green)}
+.task-card.pendiente{border-left-color:var(--esq-yellow)}
+.task-card.vencido{border-left-color:var(--esq-orange)}
+.task-card.sin-prog{border-left-color:var(--border)}
+.task-id{font-size:11px;font-weight:700;color:var(--text-3);font-family:var(--mono);min-width:36px;padding-top:2px}
+.task-body{min-width:0}
+.task-desc{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:6px}
+.task-tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;letter-spacing:.1px}
+.tag-cat{background:var(--esq-blue-lt);color:var(--esq-blue)}
+.tag-freq{background:var(--surface);color:var(--text-2);border:1px solid var(--border)}
+.tag-resp{background:#F0FDF4;color:var(--green)}
+.tag-year{background:var(--purple-lt);color:var(--purple)}
+.task-right{text-align:right;flex-shrink:0}
+.status-pill{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;letter-spacing:.1px}
+.status-pill.ejecutado{background:var(--green-lt);color:var(--green)}
+.status-pill.pendiente{background:var(--amber-lt);color:var(--amber)}
+.status-pill.vencido{background:var(--esq-orange-lt);color:var(--esq-orange)}
+.status-pill.sin-prog{background:var(--surface);color:var(--text-3);border:1px solid var(--border)}
+.month-dots{display:flex;gap:2px;margin-top:8px;flex-wrap:wrap}
+.mdot{width:19px;height:19px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:800;color:var(--text-3);background:var(--surface);border:1px solid var(--border);flex-shrink:0}
+.mdot.p{background:var(--esq-blue-lt);color:var(--esq-blue);border-color:rgba(26,60,143,.2)}
+.mdot.e{background:var(--green-lt);color:var(--green);border-color:rgba(22,163,74,.2)}
+.mdot.v{background:var(--esq-orange-lt);color:var(--esq-orange);border-color:rgba(232,78,27,.2)}
+.empty{text-align:center;padding:60px 20px;color:var(--text-3)}
+.empty .ei{font-size:52px;margin-bottom:12px}
+.empty p{font-size:15px;font-weight:500}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.f-search{flex:1;min-width:180px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s;background:var(--card)}
+.f-search:focus{border-color:var(--esq-blue)}
+.f-sel{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:12px;color:var(--text);background:var(--card);cursor:pointer;outline:none}
+.f-sel:focus{border-color:var(--esq-blue)}
+
+/* ── OVERLAY & MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(11,28,61,.6);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.overlay.open{display:flex}
+.modal{background:var(--card);border-radius:var(--r-lg);padding:0;max-width:620px;width:100%;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--sh-xl);animation:fadeUp .22s ease}
+.modal-hdr{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,var(--dark),var(--dark2));border-radius:var(--r-lg) var(--r-lg) 0 0}
+.modal-title{font-size:16px;font-weight:800;color:white;letter-spacing:-.1px}
+.modal-hdr-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+.modal-close{background:rgba(255,255,255,.1);border:none;width:30px;height:30px;border-radius:8px;cursor:pointer;color:white;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.modal-close:hover{background:rgba(255,255,255,.2)}
+.modal-body{padding:24px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:var(--surface);border-radius:0 0 var(--r-lg) var(--r-lg)}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-2)}
+.form-inp{padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;color:var(--text);background:var(--card)}
+.form-inp:focus{border-color:var(--esq-blue);box-shadow:0 0 0 3px rgba(26,60,143,.1)}
+.form-sel{padding:11px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;outline:none;background:var(--card);cursor:pointer;color:var(--text)}
+.form-sel:focus{border-color:var(--esq-blue)}
+.form-hint{font-size:11px;color:var(--text-3)}
+
+/* ── MONTH PLANNER ── */
+.mp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mp-cell{background:var(--surface);border-radius:10px;padding:8px 6px;text-align:center;border:1.5px solid var(--border)}
+.mp-cell-name{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;color:var(--text-3);margin-bottom:7px}
+.mp-toggles{display:flex;gap:4px;justify-content:center}
+.mp-toggle{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--border);background:var(--card);cursor:pointer;font-size:10px;font-weight:800;color:var(--text-3);display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:var(--font)}
+.mp-toggle.p-on{background:var(--esq-blue-lt);border-color:var(--esq-blue);color:var(--esq-blue)}
+.mp-toggle.e-on{background:var(--green-lt);border-color:var(--green);color:var(--green)}
+
+/* ── DETAIL MODAL ── */
+.detail-row{display:flex;flex-direction:column;gap:3px;margin-bottom:16px}
+.detail-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3)}
+.detail-val{font-size:14px;color:var(--text);font-weight:500}
+.detail-months{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:6px}
+.dm-cell{text-align:center;padding:8px 4px;border-radius:9px;background:var(--surface);border:1px solid var(--border)}
+.dm-cell.p{background:var(--esq-blue-lt);border-color:rgba(26,60,143,.2)}
+.dm-cell.e{background:var(--green-lt);border-color:rgba(22,163,74,.2)}
+.dm-cell.v{background:var(--esq-orange-lt);border-color:rgba(232,78,27,.2)}
+.dm-name{font-size:9px;font-weight:800;text-transform:uppercase;color:var(--text-3)}
+.dm-cell.p .dm-name{color:var(--esq-blue)}.dm-cell.e .dm-name{color:var(--green)}.dm-cell.v .dm-name{color:var(--esq-orange)}
+.dm-ico{font-size:16px;margin-top:3px}
+
+/* ── ADMIN TABLE ── */
+.admin-wrap{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
+.admin-table{width:100%;border-collapse:collapse}
+.admin-table th{background:linear-gradient(135deg,var(--dark),var(--dark2));color:white;padding:12px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;text-align:left;white-space:nowrap}
+.admin-table td{padding:12px 14px;border-bottom:1px solid var(--surface);font-size:13px;color:var(--text-2);vertical-align:middle}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:#FAFBFF}
+.tbl-id{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--text-3)}
+.tbl-desc{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-weight:500}
+.tbl-actions{display:flex;gap:5px}
+
+/* ── RESPONSABLES ── */
+.resp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.resp-card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-top:3px solid var(--esq-blue)}
+.resp-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--esq-blue),var(--mid));display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:900;margin-bottom:12px}
+.resp-name{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:2px}
+.resp-role{font-size:11px;color:var(--text-3);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.resp-item{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.resp-actions{display:flex;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* ── NOTIFY ── */
+.notify-box{background:var(--card);border-radius:var(--r);padding:24px;box-shadow:var(--sh);max-width:600px}
+.notify-preview{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;margin:14px 0;font-size:13px;color:var(--text-2);line-height:1.8;max-height:220px;overflow-y:auto}
+.alert-msg{padding:11px 15px;border-radius:var(--r-sm);font-size:13px;margin-top:12px;display:none;font-weight:500}
+.alert-msg.ok{background:var(--green-lt);color:var(--green)}
+.alert-msg.err{background:var(--red-lt);color:var(--red)}
+
+/* ── SUPABASE BANNER ── */
+.supabase-banner{
+  background:linear-gradient(135deg,#1C1C1C,#2D2D2D);
+  border-radius:var(--r);padding:20px;margin-bottom:20px;
+  border:1px solid rgba(62,207,142,.2);
+  display:flex;align-items:center;gap:16px;
+}
+.sb-icon{font-size:32px;flex-shrink:0}
+.sb-title{font-size:14px;font-weight:800;color:white;margin-bottom:3px}
+.sb-sub{font-size:12px;color:rgba(255,255,255,.5);line-height:1.5}
+.sb-btn{margin-left:auto;flex-shrink:0;background:linear-gradient(135deg,#3ECF8E,#1ea472);color:white;border:none;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--font);white-space:nowrap}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dark);color:white;padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;box-shadow:var(--sh-lg);z-index:999;transition:transform .3s cubic-bezier(.4,0,.2,1);white-space:nowrap;border:1px solid rgba(245,200,0,.3)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── MOBILE ── */
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .task-card{grid-template-columns:auto 1fr}
+  .task-right{display:none}
+  .month-grid{grid-template-columns:repeat(3,1fr)}
+  .mp-grid{grid-template-columns:repeat(3,1fr)}
+  .detail-months{grid-template-columns:repeat(4,1fr)}
+  .admin-table td:nth-child(4),.admin-table th:nth-child(4){display:none}
+  .tb-chip span{display:none}
+  .supabase-banner{flex-direction:column;text-align:center}
+  .sb-btn{margin:8px auto 0;width:100%}
+}
+
+/* ── ADMIN ONLY ELEMENTS ── */
+.admin-only{display:none}
+body.is-admin .admin-only{display:inline-flex}
+.admin-only-block{display:none}
+body.is-admin .admin-only-block:not(.view){display:block}
+</style>
+</head>
+<body>
+
+<!-- ════════ LOGIN ════════ -->
+<div id="login-screen">
+  <div class="login-bg"></div>
+  <div class="login-ring"></div>
+  <div class="login-ring"></div>
+  <div class="login-ring"></div>
+  <div class="login-card">
+    <div class="login-logo-wrap">
+      <img src="data:image/png;base64,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ctnl6jvdO0FxoKpzY6ho7Gu4NcfOG+laBulBXWu4TW650dRRVkDt2WCeMsew94PFd0wSywSiWGR8bxyc04KsteaY0vtKtYt+qqdtNcY27tHd4GASwnqDvlN7QeHmPFdv2R9s0VU9tNizdwnLeGnjy8fNVLE9ld0F9MfBcNL0EtcHNcWuByCDgg9oUl2laHvugNTSWO+RDexv01TH+SqYs8HsP2jmDwUZXeo5GSsD2G4KpT2OY7ddkQu9fBg2hS6+2ds+6U3SXm1PFLWuJ4yjGY5T85vP9prltZcV+BJeZKHaxVWje/E3S3PBbnm+Ih7T6i/1rtRc0xykbS1jmt0OY8f1VpoZjLCCddEREUQttERERERERERERERERERERERERERERERERFhtTWy7XaEUVFe5bPTPGJpqWNpqXDsY52Ws+duk9mOazKpVVTBSwmaolZFGObnHCGUQjpHEADidPXJN3eyCiOlNluhdNVLq2hsMFRcXu35LhXE1NTI7rcZJMnPmwpdVVNPSxGWomZEwdbjhRW7avPGO2xf+bIPsHv8AUovV1NRVymWpmfK/tcc49yoOO+0elhcW095n87+6PHU+GXapWlwZ7hd/uj1Uvuer4I8soITM75b/ACW+rmfYo1cLzcq7InqX7h+IzyW+oc/Ssei5bim1OJ4ncTSEN+FuQ/XxJU7BQwQ9VufMoiIq6ttERERERERERERERERERERERERERERERERWOuNKUW0fRk2la4sZXwh01nq3DjBMB8An5DuRHZ3gLiWvpKmgrqihrYHwVVNK6GaJ4wWPacOafMQV3XFI+KVksZ3XscHNPYQuePDA09Dbdo1LqOjjDKbUNG2pcAOAnZhsnrG4T3kr9N+xXamWrhfhVQ65Zm3u5eH2VC2sw5rCKlg11Vj4ILHv282dzQSGU1U53cOhcPtIXd6468Beyuqtf3q+uYTFb7eIGu6hJK8H/LG71rsVXjaaQOrrDgAPr9VHYW0iDvKIiKvKRRERERERERERERERERERERERERERERCQBk8ArW53Ckt0HTVUoaPitHFzj2AKC33UFXciYmEwU35tp4u+cf4KtY/tTRYM20h3pODRr48h+wCt2koZKk3GQ5qQ3vVNNS70NCG1Ew4F3xG+/wBChtfW1VdN0tVM6R3VnkPMOpW6LieN7TV+MO/nOszg0afqe0+FlZaaiipx7oz5oiIq8ttERERERERERERERERERERERERERERERERERERERERFrTwvqZs+yvSlxI8uluctOD+y9jj/AKAtlqlr3Qp13p/SVmrAWWeG5vuNzkzj8TGx43Ae15cB5t49S6j7IqgU2PmVxs1rHE91woHaOPpaPcGpIXz4IOlHac2RU9wqItysvkprn5HERkbsQ+iN799bkVhp+pgqbXG+lhbBTszHFG0YDWNOGjHVwA4K/XY317cRd+LYbh+Y7jp6KvNh6AdEeGSIiLyvSIiIiIiIiIiIiIiIiIiIiIiIiLBah1FBbg6Cn3Zqrlj4rPP7lY6mv8+XUdsZL2PnDD6m+9Q97XtcQ9rg7md4cVzLarbc029TYfm7Qv4DsbzPbpyvwm6DDN+z5dOX3VWtqqisqHT1MrpJD1nq7h2BUF6AScAZJ6gq7KKteMso6hw7one5ciInqXl+bnHU5kqf91gtoFboqstPURDMsEsY7XMIVJYnxuYbOFivQIOiIvtsUrgC2KQg8iGkrx7XMOHtc09hGEMbgLkZJcL5RFUEMxGRDKf3CvjWOd1RdCQFTRfYilJLRFISOY3TkL3oZvzMv0CvXRPP5Sm8FTRVOgn/ADEv0Cvggg4IwV8cxzesLICCvERfbI5HjLI3ux8lpK+NaXGwCaL4RVOhm/My/QKdBP8AmJfoFe+hk+E+Sbw5qmiqdBP+Yl+gU6Cf8xL9Ap0MnwnyTeHNU0VQQzGQRiGQvPJu4cn0LyaKWF+5NE+N3Y9pB9q+GJ4G8Wmybw0XwiKp0M/5mX6BXlrHO6ouhICpovSCCQQQRzBX02KVwy2KRw7Q0lAxzjYBLhfCKp0E/wCYl+gU6Cf8xL9Ar30MnwnyTeHNU1d/dGtFv8QFQ7xb5HDz4zzx3K2c1zDh7XNPYRhGNc97WMGXOOAO0r1FLNCSI3FpIsbXFweB7DyXxzWu1F1sHRTC3T0BPxnOcPpFZpULdTikoIKZv9WwN8561XX6cwqmNJQwwO1a1oPeAFSZ3iSVzhxJRERb6xIiIiIiIiIiIiLnabaPrNs8jW3jgHuAHi8fb81fP4Rtb/rV/wBVZ/KowJn09z8YjAL4qjpG5GRkOyOHoU2/Cnq79Ht/1R38y5hBWyvv0tQ9vdc/7guy1GHQs3ehpY3c72H+0q1pdfa+qqmKlprjLLPK8MjY2ljy5x5D4K2JqrVdy0TpihguE7LpfasFxc5obGzGMnDQMgZAHbzUPtG0TXN0uUFvoKS3vqZ37rB4q4AdpJ3uAA4kqQ7Y9K3u62623Gmb4/V0cZjqmQswX5wd5je4g8OeCpmlln/Cyy08j3uFrXBsM87C5ubeSr9ZBT/jYIaqKONhuSARc5ZXNhYX81CJdpetZpC5tyYwfJjpWYHrBK+Pwja3/Wr/AKqz+VVtKaz1BpS3OtcFlhkZ0hf+PppA8E884xn0rL/hY1L+oKH/ANGX3qOjqS5oMlU8HiLONvVS0tIGvIioo3N4G7Rfw3Vaaa1btDv95gtdFdHCSU+U91KzdjYObj5PIe3gFsK4iO73FlO6qzT2+A+M1r8AuA+E7hw6vNzULptr1xEpiudhpXQuG7I2Fz45MHszn+Cz2sDRxbK7nc7NK99JcWw7hPBzGF4Dmn1kJURfjYhD0pliF3SXuDZou0AHgXDMg300UFiFNKKiMGBsW8Q1u7Yi5NiSQBoNARzUZvW0w0kj6bSlBT0tOzgKudm/LJ+1g8h58+hYV2t9d1J6Rl0riD+apm7vsarzYlbKG5azd49FHM2npnTRxvGQX7zRnHXjJW9Ky62q3yNgrLjR0jy3LWSzNYSO0Ankt3DaGerp+l6bo2XsA3IDwBAWfEauiwqcU0VKJHWuScz6gk+gWgoNomtqGQCe4ukB+JVUzcH2AqYaW1HbdZPdQT0cVtve4XRGI/iqjA4jHUe72lbEnfp/UdJPQOqKC4xFn4xjJGyFoPXw5edc36bkfSattz6Z5L4q+MMI+MN8D2j7Vr4pRGEsiqX9NG/LPUaaHOxzyIK90f4XFoZSyDoZGC+WWt7XyFxlmCO5bE2pau1HYNTR26114padtHE7oxCx2HHIPEg9gWW8fqrroWwXOvkE1XM2TpJN0DPlEch5lDtu/wD38/8As4vtcpPaP+GWmvmy/wCcqO2hlkNPWxOcS1oFhfIWe3gsM1NCzDqSVjAHEi5AFz7rtSlvAdX07XAEGVoIPXxCwm0DXWqrXrC6UFDdOhpoJA2NnQsO6Nxp5kZ5krOW3/tGm/vmf5gtf7Vf+IF6/vh/7bVXdl55IcPldG4tO+3Q2/K5bGE00NRW7szA4bp1APFvNbJ2iahvNt0BYbpQ1zqesq+i6eVrG5fmIuPAjHNWuyDUl7vsl5iu94ke2KCPopCxg6Jzi4bwwMdnNWu1X/hZpf8A8j/2CsTsb/ompv8Ak4/8zle6uumgrw4OJAZe1zY2YT81rx0cDsFkfuDe3iL2Fx74Gqo6j1jtAsF6qLXW3cdLA7yXeLR7sjfiuHk8iP4hS4VlPqWww6komNZL+Tr4W/1cg6/MfsI71baqtH34ab/FN3r5bGF0J66iLrZ3ns7/ADlQHZ5qU6bvm9UAvt1UOhrYiPi/Kx2tyfRkKCqXx4nAGSvLopRdpJuWOH1acncxnyWyyliraTpKeMNmj1AAG95cxm3kcuan9DSzVtXHSwNzJIcDsHaT3LFa511V2a4NselatkMNFltTUdG1xml6xxB4D7fMsvrq70mj7M+C1VTZrnc2nxeVpz0NOfj57T1HrPHqUE2baYbqC6vqK7LLTQ4kq3n4/WI89p6+7zhamEYVLhQ6IG07+sQeq0Z2v29Zx5WHNeKCnhfE6uqh/KboCNTpex8gOfgto7Oa7U9Xp+ovN/uReaiF7qGAxMad1oz0hwOvhju861gzaTrUtb/vjJI/R4/5VtW317rhdK6UNEcLKGVkMYGAxgxgLQtmrZ7dcKS4UoYZ6d7ZIw5u8CR2jrUtJjLqiCN0Ejg0Fzb3N3W3fe17TYcBksmB0sNTJUPkhaT7pAsLDXLTuueeak/4Rtb/AK1f9VZ/Krm1632g3O4wW+iuL5Kid4Yxvi0YHnJ3eAHMlVvwp6u/R7f9Ud/MsjpvXmu77eYLZQ09uEsp4vdSODY29bj5XIf9FsRVAe8NFTIbnQA5/wCpbc1MY43PNHELDUkWH+hSnaZer1pXRtA2KuE9znkEMtaY2gjyS5xa3GByAHd3qHaT2gGr/wB06xl6enkP4mu3QHwO/awOLe/q68jlIvCCD26btLZHh7xVYc4DGT0Z446lrW16VuV00tU323NNQKWcxTQNHl7oaHb7e3nxHNZ8ZknNa6Fg3mhou05gi2dxx79Vo4NR0U2FiSoABc4+9oQb5WPDsGnYtqi2S0N6omybs1PLMwxSt4skaSFEdaa81Xb9YXOgo7p0dNBU7kbOgYcN4cMkZVhs613JYjFbbs11XZ98OaD5T6Z2chze7PV6uw4TXVRBV62ulVSysmglqt+ORhyHAgcQoOliiw+meaKQtD3A2vmMjlfiOR881s0GEOZWuZVsD2huRIuDmOB0PMfRbe2k3yi0qI7i2jirLpW8IGSj8XGGgbzyOvmFreXaXrSV5LLkyMfJipWYHrBKnu2rS9yvVBb7la4HVMlI1zJYWcXljsHLR14I5d6gmk9Y6g0nQSWyCywyMMhkPjFNIHgnmCRjPJTmI79NWuYHGKM53aNScyTa1ze/HJamCU9LJh7ZGRtll0IcRln2g2ytwzVL8I2t/wBav+qs/lWQ07q7aHfbxBa6G6O6WU8XupWbsbetx8nkP+ivfwsal/UFD/6MvvX3T7X7m2Yx3Gw0joXDEjYXPjfg9mc/wWJlRGHDerH27nD1ubeRW5LTTFh6OgjvwzafTdF/NSfVNY2ongpWzGpdSs6N9Q4AGV3WeHDGR1d6qaLovGbsKiQfiqYb7ieW91e/0KxraejnpaG52d0ktFXs3oWuHlNdyLD354etYvaTffvesI0rQSgXCrbv18jD+TYfiZ7SOHm86qNNRzz45LWYg0WjIcbaE29wA8bix7gSVX4aZ07W0sOTnXHd8RI4W+eQVhr7aZdam8y0una3xWggdutlY0F0xHN2SDhvZ281LNkeupr/ANJaLxIw3GNu/FIAG9Ozr4DhvDu5jj1FQXZVoduppZ624CRlshaY2lpwZJCOo9jefnwO1R260V00hql0BkMVbRSh8MoHB4+K4dxHMecK3x4hiED210pJY46cLdg4dncp+bCsLqWPw2AASMAN7Z37Tx/zd/l1CiweiNRU2p7BDcYMMl+BURZ4xyDmPN1juIWcV9ilZKwPYbgrmU8L4JHRyCzhkUREWRYkRERERERFya2c0108ZZul8NR0jQeRLX5GfUp7+GDUP6vtP0H/AMy28dMabJJNgtZJOSfFWe5PvX03+oLX9UZ7lUKfAa6mv0M4bfsV8qtp8Oq7dPTl1tLlaiZtf1G54ay22tznHDQ2N5JJ6h5SnWodZV+mdHwVl7ipPu7Vg9DSRZDWfOyScNHM9vAdqkYsWnKA+Oss1tgdB+MEjaZgLMdYOOBUSuV5o7hU9PWWC2VTwN1j54Q9wbngMla+IYkcEZasqffePdyJtzNh6cO9aJnoa2RphprMabuzzPIX5c+Pcof+GLUf6Davov8A5k/DFqP9AtX0X/zKT+N2f+ylj+qt9yeN2f8AspY/qrfcq7/xXD/jT/8ALvspTfw7/BeoWrNT365auvcdVUQROqiwQxxUsZyRk4GOJJyVt+2W6mpNDUOi704RvqqRwncDnoHudvN9RPsVGK9ClB+5lqttvcRjfgpwHLGTSyTSulme6R7jlznHJKi6nauClLn0zjI93WJFhu3uRzJNrcLDRKypdVsjiYzo2MNxY3Nxp2C3jdQGuoNSaEv7J3CSlnhcehqWNzFK3uPIgjmDxV5qHX9fqG2eJXi12mpA4smEbmyRntad7gfYtg0d7rqeDxZzo6in5dFOzfbjsXjq21PO8/S1jc7rPirfcs1PtFQGMtZM6MHVpbvDzFwe+wK2v4oHubJUU4c9ujgbH7juuVpi3VlRb6ptVRTuhmaCN5p+EDzaR1g9YW3NnN20leWxshsFoodQweXEwxhrJXD40Z6j3cx7VdeN2f8AspY/qrfcvWVtqjkbJHpeysewhzXNp2ggjkQccFsUWP4bSuynuOW47zFwbHt81jxPEG10Zb0Tmu5hw8jzHZ5LF7WtP3C+QU9/oqV8lXSxeL3CmY3L2YJIcB1jieXUR3qIaY15d7Bb/uWKeiraSNxLIaqMkxknJwQe3PArYU94rpLm+4sl6GZ+B5HLA5DHX6VUqLnSVp3rpYrVXP65JIBvH0rXZtLQyzOeZHMdpctuHDgSBmCciRYi/ksNLWGOmbTVMQkYNM7EdnhwNwbKHv2q3Frc01gs1PL8WTcJLT2jko3ZrVeta6heYw+eapl36qqLcMjB5uJ5DhyHmC2Yw6bidvxaPtIf2uYCPVhV6q9VctN4pA2GjpvzVMzcC+1GP4eGgyTGQDPda0tue8hoHfYlbEeIR0wP4On3HHiTf7k91wsftqkpfvJtlPRnMFLXCnYc8wyJwWC2NEeKam/5OP8AzOUppbhEygFDV2yir4GydIxtRGHbrsYyMr7Nyp46SenoLPbqDxhobK+nhDS5o6uCS7S0NS38TK+zywgtDTqWkWB0tmtKOofHQOogy9zfeuPiB71aUNTNR1cdTA7dkjOR39x7lG9rGn4WlmrLVHihrHYq42/1E3WT2B32+dZ1XttuM1CJIxHFPTzDEsErd5jx3hVfAcXZSb1PU36J2eWe674gPQjiO0Be4J5KWYTxZkZEcxy+o7VqS0UFffbtS22k356mXEce8SQxg6z2NaFt+qio7LaYNNWs5p6fjUS9c0vWT6fd1L2C40lBFKyy2ahtb5hiSSBg3yOzOOCxykMXxyBtOaejfvF/WdYjL4RfPPicuXNZq6ukrntu3dY3QczzNssuA8Vl9Lf0it/5KX+C0nY7hJa7lR3KBsb5aaRsrGv4tJHbjqW37VXSW+qM8bGSbzCxzHjIc08wqoqrOBj71LH9Vb7lkwbFaKKhjill3Hsc49UnW1tO5fKGtNG6UOj3g8DiBpe/zUX/AAwah/V9p+g/+ZVKba3qioqI6emtdslmlcGRsZG8lzjyA8pSTxuz/wBlLH9Vb7lUprnQ0kwqKLTtnpqhudyWOnAc0kYyCFYRtXADnWG3/gfssbn0Fju0Yv3rG7b3V50bZDdTT+OmpJmEAIY1247gMknhyyqOyWrnotA3Cppn7sjLmO8EbjOBWXbdmyUgprjbqK5MbIZG+NRh+HHmePnK+Km4xut5oaO20VBA6TpHtp4w3ed2nC1q3amhmD6mKQtkLLAWNw61utp23Wu2V34EUTmfmvfK1r30WH1ho+l1FBLetNwthuTRv1dAOAl7XM7+7r8/PV0cchqWQCN3SmQM3MYdvZxjHblbdpp5aadk8Ejo5GHLXBZE3SiNcLm6wW03Mf8Ai+jG9n5Xn78qNpMfoqtm9Vu6OQakAkO7QBo7mNDrkpOjxaoo2GIt328M8x2G+o9R2qQbQNWU+krE2ZwZLXSjcpoCfhO6yf2R1+gda1n+GLUf6DavoP8A5lLqu8QV7mSXKx2uumY3cEs0Ic7Hp5Kh43Z/7KWP6q33KzVm2dJPJvRVJY3lun1yUPh0FJTxbs9Pvu4m49FGPwxaj/QLV9F/8yimqdQXLV15iqqmCE1O4IY4qaM5IyTjGSSclbS8bs/9lLH9Vb7leWu4SOqmU1ls9soZpPJD4KcAgdZz2LQk2gpqy0Lqlz7kWaGG5PC17C/ipSGupaNxlgpQ11td4fqqMc8OgtmdtkukbXXOFrzT05d/XPJOPM0Hie7zLVGn7ZctY6o6AzOfPUvM1VUO49G3PlPP2AeYLo6os1trYYG3OjprhJCzdbJURNee88Rwyvqjs1oomTMo7XRU7Zm7soiga3fb2HA4jiVdp8CdUOjBO7GAMuJsAMzzsAL8tFCUW0cdIyV7WXleSd7gLm+Q5C97cTqtRXLaX9wKgWTSlFQvtVE0QxyTBxMjh8JwwRwJ6+vietRPWer6zVZp33ChoYZqfIZLAHBxafinJORniugBpfTQGBp+1/VGe5PvX03+oLX9UZ7l4qMGr52ljphunhbIcgO5bFLtBhlM4SMpzvj818yeJPfxWg9m+qn6Wv7Z5HE0FRiOrYPk9TwO1v2ZC6QgljnhZNC9skcjQ5jmnIcDxBCxf3r6b/UFr+qM9yydLTwUtOynpoY4YYxhkcbQ1rR2ADkpLB6CehYYpHhzeHYonHsUpsSkE0bC12h0z5eI+XcqiIimFAIiIiIiIiKG7Ytc0mz/AEVNe5gySpklZTUULjjpZnnA9AGXHuaVMm8hxz3riXwzdYvv+0oadpZc0Vgi6PAPB1S8Bzz6But9Dl19oC8Rag0PY71C8ObW0EMxI6iWDI9ByPQpasw401HDKdXXv6W9M1qQ1HSTPYOFv1Vpr6uMVHHQsOHTHef80e8/YoSspqmq8bvlQ8HLGO6Nvmbw+3Kxa/Le1mJnEcVlkv7rTujuGXqbnxV8oIehgaOJzKIiKtrcRERERERERERERERERERERERERERERERERERERERERF6xrnuDGNLnHgABklZqj01XTDEskNNK5pdHFI7y3AdeOoKQoMLrMQcW0sZfbWw08dFilnjhF3mywiL0ggkHmF4tBZURF9Ma57wxjS5zjgADJJQAk2CIxrnvDGNLnOOAAMklbA0rZRbKbppgDVSjyj8gfJH8VQ0rp8ULW1lY0GqI8lvMRj3qRLtOxWyJogK6sb/MPVHwjme0+g7dK3iWIdJ/KjOXHt/RERF0hQyIiIiIiIiIiIiIiIiKhcaqKht9TWznEVPE6V57GtBJ9gVdRja1JJFst1VJESHts9UQR1finL3EzfeG8yvLjZpK/Oe93Ke83qvvFU4unrqmSpkJ+U9xcftXV/gW68ZW6RrdD1Um9X2rfqKFhPGWBxyWjva8n0PHYuQ2/BHmWU0rfrrpfUNFf7LUmmr6KQSRP5g9Ra4dbSMgjrBXT8Uw8VtI6AGx4HkeCqtLUmCbfPiu3HFxcS/O8Txz2rxWez/WFk2p2M3ayFlLe4WA3K1Od5bHdb2fKaTyPrwVeua5ji1zS1wOCCMEL8N7R7OVuA1jqeradcjwP75fTNdeoq2KriEkZXiIir620RERERERERERERERERERERERERERERFWpqWpqnbtNBLKf2Gkr3HG+RwawXJ4BfCQBcqiirXsWzT1L41qm/Wuxw4yPGqhvSO+awHJ9C1pqfb9s/swfFpy1XDU1U3IE1R/s1NntwRvEfu+lXfBfZxtBi5BjgLW83ZD7+ii6rGqOm677nsWzKSkqauTo6aCSV37IzjznqWP1ZqDR2ioy/V+paWknAyKCmPTVLu7dbnd854d60fS6025bYal9s0uyS3Wze3ZBbWeK00Q7Hznyjw6gcnsWwtBbD9G6PlbcdV1DNWX0HfMGP8AZIn94PGQ97vohdFZ7N8A2bi/E4/U7xH5Rl4c/vyUL/G6yuduUcdhzKyumNX6118HO2fWCLR+mhwl1Hd4xLPI3rMMZ8knzktHb1KXUYorHRy0dpqKysqZ/wCm3WtlMlVVHvcfgt7GgADqAXtyuVVXbrJHNZCwYjhjG6xgHIAKyVL2j2+FREaHB4hBBplk4/b96KUosJ3HdLUu33+gREWTsllrLo8GNvRwA+VK4cPR2lc+o6OetlENO0uceA/fqpiSRsbd55sFY0tPNVTtgp43SSO5NCnmnNPw21onn3Zasj4XUzuHvV9aLXSWyDo6dnlH4cjvhO/+divl2vZfYqLDLVNVZ0vDk3u5nt8uarVdiTpvcjyb80REV9UUiIiIiIiIiIiIiIiIiIiIisdQ25l3sFxtMhAZW0stO4nsewt/ir5F9aS03C+EXyX5c1tJPQVs9BVMMdRTSuhlaebXtJaR6wVSXQHhjbN57Fqt2ubZTk2q7PHjm4OEFV2nsD8Zz8rPaFz+us0VWyrgbK3j6HiFUKiEwyFhV7Y7tc7HdYLrZ6+ooK6ndvRTwP3XN94PWDwPWujNB+EZabrFFQbSbY6CpADReLfHwPfJGOI87cjuC5mRamL4HQYxCYayMOHastJXT0jt6J1l31aILdqCh+6GlL3b75SEZzTzDfb3Obnge44PcqNTTVNM7dqIJYj+20hcJ22urrZWNrLbW1NFUs+DNTyujePS0grZ2mfCE2oWVjYZrzBeacf1dypxKSPnjDj6SVxfGfYZSyuL8PmLOw5j7+qtlLte4C07L9y6YRahtXhOUMwxqHZ7SvcectvqzH/hc3/UpLQ7etklY0eNUWpbY888wtkaPS1xPsXP6z2NbQwE9GGvHYc/kfmpqLaehk1JCnKKP0m1HY3Vglmt5qU9lRQSj/QshHrPZZNjotpVnGeXSZZ9pCgZfZrtNFrSk+I+pW63G6F2kgWQRUG6i2dOGRtK03jvqmD/AFIdRbOWjLtpWnAO6pYf9S1v+X20f+Ed5t+69/xii/7gVdFYSaz2Uw56XaVaCRz6PyvsyrGp2obGKVuX63lqe6Cild/oW1F7NNpZP+mI8R9LrG7HKFusgWdRQyr27bHaQHoI9R3Fw5blMGA/Sc1YKv8ACY0lTgi07PaqoPxXVlY1g9IAepqm9jm0U3Wa1veT9vqtSTaahZ+a62gOJwOJV1T26vqPyNFO8doYcetaBufhRave0ssum9PWodTjG+V49rR7FC79tx2qXnIn1fV0rD8SiYynA9LAHe1Wmh9hNU6xqagDsA+uaj5tsIR/TZddey2KqpoPGLjPR26Ac5KmdrGj0qJX3aDsq0/vC463gr5m84LXGZyT2bzct9ZC4zudxuN0mM90uFZXynjv1M7pT63Er2z2y5XiuZQWi31VwqnnDYaaF0jz6GhXbDvYvgNJ71QXSW5m3yy9FETbWVcmUYAXRt/8JLTlHvR6U0TNWPHwai7Tho8/Rtz9oWtdWbetpl+jdD93m2ekOfxFriEAA7N/i/8AxLP6N8G3WVyjjrNU1lFpahdgkTuEtQR3RtOAfO7Pctx6Q2ZbMdGFk1FZnahuTOIrbph7Qe1seN0erPepOrxTY7ZFlmhgdyABJ/fMLFHT4tiR94my5q0Rsw2hbRKrx232uqlhkOX3O4PcyI9p6R3F/wC7lb20VsF0JpjcqtV1r9VXJvHxWLMdIw9h63+k4/ZWzLhdq+ubuTTFsQGBFGN1gHZgKwXKto/bVW1QMWGM6NvM6+X77lYaHZWGI7053ir+e5y+JsoKKGC3UEY3Y6WlYI2NHZgf/wAVgi+o2PlkEcbHPe7k1oySuM1ldVYhN0lQ8veeefl9grRHEyFu6wWC+VVpoJqmYQ08T5ZDya0ZKkNo0nUz7sle/wAXj57jeLz/AACl1voKSgh6KlhbGOs9Z8561cME2Brq60lV/KZ29Y+HDx8io6pxWKLJnvH0Udsmk2M3ZrmQ93MQtPkjznrUqYxsbAxjQ1oGAAMAL1F2DCsFo8Ki6OlZbmeJ7z+xyVenqZJ3XeUREUqsCIiIiIiIiIiIiIiIiIiIiIiIiIiIitL1bLfebVU2q60kVZQ1UZjnglblr2nqP/zguLduPg/X7Rs9ReNMQ1F509kv3WDfqKQc8PaOL2j5Y9IHM9uopLDsUmoH3jzB1HA/qtappWVDbO15r8tAQRkHKLvraVsJ0BraSWslt7rRdJOJrLfiMuPa9mN13nIz3rn7WXgua5tTny6eraC/04yWt3vF58fNcd0+hyu1JtDR1As47p7fvp8lBTYbNHoLjsWhkWf1HorWGnHEXzTF2oAPjy0ruj9DwC0+tR8OaTgOHrU0x7Xi7Tcdi0HMc02IXqIi9r4iIiImB2JgdiLwuA5kDzlEXqK9tVou12kEVqtVfcHngG01M+U/4QVP9PbB9ql6w5mlpaCI85LhKyAD90ne9iwTVUMP9R4HeVkZDI/qtJWs0XRVk8GJ8W6/VeubfSDGXQW+EzP8287GPolT2wbItkVg3X/cOu1DUN/rLlOdzPzG4b62lVDFPaHs/hlxLUAkcBmfLVStPgNbPoyw7VyFabbcrvVtpLTb6u4VDjgRUsLpXepoK2tpPwdNot5YyoulPR6cozxMlxmAfj+7bk57jhdP0t1+51J4nZLfb7PSjlFR07WD2DHsVnUVE9S/fqJpJXdr3ErmWMe3SBt24fAT2uyH77wrBS7H8Z3+S1/pjYJs1sO7LfrhcNU1TeJjb/s9NnzNO8R+8fMtkW2ro7JQ+IaZs9usdIBjcpIGtJ85xxPfzVki5LjXtGx/F7iSYtbybl+vlZWWlwWjpeoy57VUnmlnkMk0r5Xnm57iSqa9aC5wa0Ek8gBxKy1v07davB6DoGH40vk+zmqnTUVXiEloWOe48gT5n7qQfJHELuIAWIValpqiql6OmhfK/saMqZ27SNFDh1ZI+pd8n4LfepBTwQ08YjgiZEwfFa3AV7wv2cVc1n1rwwchm77D17lFz4xG3KMX+Sh9r0hM/D7hMIm/m4+LvSeQ9qlNut1Fb2btLA2PtdzcfOVdoumYTs3h2FC9PH73xHN3nw8LKFqK2afrnLlwRERTq1UREREREREREREREREREREREREREREREREREREREREREREIBBBGQeYUZ1HofSt5YTW6UsFdIeJNTRMLj+9jIUmRLuA91xB5jIpYHUXWlb3sc2YneNbs4dTdslFVyhv+FwA9Sjc+xDY3O7LabUdJ3R1mQPpZXRytKu22+q41FHDIe0tGfXzUZPNtJFnSVxPY8X9W2+SytioXf1IfL9fuucX7AdkhcS266sYDyHTRHH/41Xj2FbHYiC52p6jHU6qaM+poW9J9J2mTJY2aH5knvyrOXRkB/JV8rfnMB9yhanG9v2ZMex3cfuQthlFg51aR3/otVUWyrY3RHLNHVVaR11VdKR6g/HsWftln0PaMG0bP9O0zhye+lbI8ekjPtUudoybPk18Z88ZH8V8/eZVfpsP0Cq1V4l7QKjJ7nW7Cz7lb0dPhDNAPVY06huTYhDTuhpYhyZBEGgeZWFTW1lT/AEiqml7nPJHqUiboyo+NXRDzMPvVWPRY/rLgf3Yv+qrc+z+1ddlOHO73i3lvLeZV0EXVsPD9FEEU4i0dQN/K1NQ/zED+CvINMWeLnTOkP7byUg9nWLydfdb3n7Ao7F6caXPgtdq6pbfXVP8AR6OeQdoYcevktlU9voaf8hSQR462sGfWrlT1L7MRrUVHg0fUn6LUkxv4GeagVJpO6TYMxip2/tO3j6gszRaPoY8GqmlnPYPJb7/apIitVDsPg9JYmPfPNxv6ZD0WjLidRJxt3K2o6Cioxilpoou9rePr5q5RFaooY4WhkbQAOAFgtBzi43JuiIiyL4iIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIv/2Q==" alt="ESQUIVENSA">
+      <div class="login-tagline">Sistema de Gestión HSE · 2025</div>
+    </div>
+    <div class="login-divider"></div>
+    <label class="login-lbl">Usuario</label>
+    <input class="login-inp" id="l-user" type="text" placeholder="usuario" autocomplete="username">
+    <label class="login-lbl">Contraseña</label>
+    <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">INGRESAR →</button>
+    <div class="login-err" id="login-err">⚠️ Usuario o contraseña incorrectos</div>
+    <div class="login-footer">ESQUIVENSA · Acceso solo para personal autorizado</div>
+  </div>
+</div>
+
+<!-- ════════ APP ════════ -->
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo"><img src="data:image/png;base64,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ctnl6jvdO0FxoKpzY6ho7Gu4NcfOG+laBulBXWu4TW650dRRVkDt2WCeMsew94PFd0wSywSiWGR8bxyc04KsteaY0vtKtYt+qqdtNcY27tHd4GASwnqDvlN7QeHmPFdv2R9s0VU9tNizdwnLeGnjy8fNVLE9ld0F9MfBcNL0EtcHNcWuByCDgg9oUl2laHvugNTSWO+RDexv01TH+SqYs8HsP2jmDwUZXeo5GSsD2G4KpT2OY7ddkQu9fBg2hS6+2ds+6U3SXm1PFLWuJ4yjGY5T85vP9prltZcV+BJeZKHaxVWje/E3S3PBbnm+Ih7T6i/1rtRc0xykbS1jmt0OY8f1VpoZjLCCddEREUQttERERERERERERERERERERERERERERERERFhtTWy7XaEUVFe5bPTPGJpqWNpqXDsY52Ws+duk9mOazKpVVTBSwmaolZFGObnHCGUQjpHEADidPXJN3eyCiOlNluhdNVLq2hsMFRcXu35LhXE1NTI7rcZJMnPmwpdVVNPSxGWomZEwdbjhRW7avPGO2xf+bIPsHv8AUovV1NRVymWpmfK/tcc49yoOO+0elhcW095n87+6PHU+GXapWlwZ7hd/uj1Uvuer4I8soITM75b/ACW+rmfYo1cLzcq7InqX7h+IzyW+oc/Ssei5bim1OJ4ncTSEN+FuQ/XxJU7BQwQ9VufMoiIq6ttERERERERERERERERERERERERERERERERWOuNKUW0fRk2la4sZXwh01nq3DjBMB8An5DuRHZ3gLiWvpKmgrqihrYHwVVNK6GaJ4wWPacOafMQV3XFI+KVksZ3XscHNPYQuePDA09Dbdo1LqOjjDKbUNG2pcAOAnZhsnrG4T3kr9N+xXamWrhfhVQ65Zm3u5eH2VC2sw5rCKlg11Vj4ILHv282dzQSGU1U53cOhcPtIXd6468Beyuqtf3q+uYTFb7eIGu6hJK8H/LG71rsVXjaaQOrrDgAPr9VHYW0iDvKIiKvKRRERERERERERERERERERERERERERERCQBk8ArW53Ckt0HTVUoaPitHFzj2AKC33UFXciYmEwU35tp4u+cf4KtY/tTRYM20h3pODRr48h+wCt2koZKk3GQ5qQ3vVNNS70NCG1Ew4F3xG+/wBChtfW1VdN0tVM6R3VnkPMOpW6LieN7TV+MO/nOszg0afqe0+F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" alt="ESQUIVENSA"></div>
+    <div class="topbar-right">
+      <select id="year-sel" onchange="changeYear(this.value)" style="display:none;padding:6px 10px;background:rgba(255,255,255,.12);border:1px solid rgba(245,200,0,.4);border-radius:99px;font-family:var(--font);font-size:12px;font-weight:700;color:var(--esq-yellow);cursor:pointer;outline:none;margin-right:4px">
+      </select>
+      <button class="tb-chip tb-chip-yellow admin-only" onclick="openAddTask()">＋ <span>Nueva tarea</span></button>
+      <button class="tb-chip tb-chip-alert" id="alert-btn" onclick="showTab('notificar')">🔔 <span id="alert-count">Alertas</span></button>
+      <button class="tb-chip tb-chip-ghost" onclick="doLogout()">⎋ <span>Salir</span></button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active"  onclick="showTab('dashboard')">📊 Dashboard</div>
+    <div class="tab" onclick="showTab('hoy')">🔴 Hoy</div>
+    <div class="tab" onclick="showTab('semana')">📅 Semana</div>
+    <div class="tab" onclick="showTab('mes')">🗓️ Mes</div>
+    <div class="tab" onclick="showTab('todas')">📋 Actividades</div>
+    <div class="tab admin-only-block" style="display:none" onclick="showTab('admin')">⚙️ Admin</div>
+    <div class="tab" onclick="showTab('responsables')">👥 Equipo</div>
+    <div class="tab" onclick="showTab('notificar')">📧 Notificar</div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="progress-card">
+        <div class="progress-hdr">
+          <span class="progress-lbl">Cumplimiento General HSE <span id="dash-year" style="color:var(--esq-orange)"></span></span>
+          <span class="progress-pct" id="pct-gen">0%</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill" id="bar-gen" style="width:0"></div></div>
+        <div class="cat-rows" id="cat-rows"></div>
+      </div>
+      <div style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;letter-spacing:-.2px">📅 Progreso por mes</div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+
+    <!-- HOY -->
+    <div class="view" id="view-hoy">
+      <div class="sec-hdr"><div><div class="sec-title">Tareas de Hoy</div><div class="sec-sub" id="hoy-sub"></div></div><select class="f-sel" id="f-resp-hoy" onchange="renderHoy()" style="min-width:150px"><option value="">Todos</option></select></div>
+      <div class="task-list" id="list-hoy"></div>
+    </div>
+
+    <!-- SEMANA -->
+    <div class="view" id="view-semana">
+      <div class="sec-hdr"><div><div class="sec-title">Esta Semana</div><div class="sec-sub">Pendientes y vencidas que requieren atención</div></div><select class="f-sel" id="f-resp-semana" onchange="renderSemana()" style="min-width:150px"><option value="">Todos</option></select></div>
+      <div class="task-list" id="list-semana"></div>
+    </div>
+
+    <!-- MES -->
+    <div class="view" id="view-mes">
+      <div class="sec-hdr"><div><div class="sec-title" id="mes-title">Este Mes</div><div class="sec-sub" id="mes-sub"></div></div><select class="f-sel" id="f-resp-mes" onchange="renderMes()" style="min-width:150px"><option value="">Todos</option></select></div>
+      <div class="task-list" id="list-mes"></div>
+    </div>
+
+    <!-- TODAS -->
+    <div class="view" id="view-todas">
+      <div class="sec-hdr"><div><div class="sec-title">Todas las Actividades</div><div class="sec-sub" id="todas-count"></div></div></div>
+      <div class="filters">
+        <input class="f-search" type="text" placeholder="🔍 Buscar actividad..." id="f-q" oninput="renderTodas()">
+        <select class="f-sel" id="f-cat" onchange="renderTodas()"><option value="">Categoría</option></select>
+        <select class="f-sel" id="f-status" onchange="renderTodas()">
+          <option value="">Estado</option>
+          <option value="ejecutado">✅ Ejecutado</option>
+          <option value="pendiente">⏳ Pendiente</option>
+          <option value="vencido">🔴 Vencido</option>
+          <option value="sin-prog">— Sin programar</option>
+        </select>
+        <select class="f-sel" id="f-freq" onchange="renderTodas()">
+          <option value="">Frecuencia</option>
+          <option>Mensual</option><option>Trimestral</option>
+          <option>Semestral</option><option>Anual</option><option>Por requisito</option>
+        </select>
+      </div>
+      <div class="task-list" id="list-todas"></div>
+    </div>
+
+    <!-- ADMIN (solo admin) -->
+    <div class="view" id="view-admin">
+      <div id="readonly-banner" style="display:none;background:#FEF3C7;border:1px solid #D97706;border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:13px;font-weight:600;color:#92400E">🔒 Año histórico — solo lectura</div>
+      <div class="sec-hdr">
+        <div><div class="sec-title">⚙️ Administración</div><div class="sec-sub">Solo tú puedes editar, crear o eliminar actividades</div></div>
+        <button class="btn btn-yellow" onclick="openAddTask()">＋ Nueva actividad</button>
+      </div>
+      <div class="supabase-banner" id="sb-banner">
+        <div class="sb-icon">⚡</div>
+        <div>
+          <div class="sb-title">Conecta Supabase para sincronización en tiempo real</div>
+          <div class="sb-sub">Actualmente los datos se guardan solo en este navegador. Con Supabase, todos verán los cambios al instante y los datos estarán seguros en la nube.</div>
+        </div>
+        <button class="sb-btn" onclick="showSupabaseGuide()">Conectar →</button>
+      </div>
+      <div class="filters">
+        <input class="f-search" type="text" placeholder="🔍 Buscar..." id="a-q" oninput="renderAdmin()">
+        <select class="f-sel" id="a-cat" onchange="renderAdmin()"><option value="">Categoría</option></select>
+        <select class="f-sel" id="a-year" onchange="renderAdmin()"><option value="">Todos los años</option></select>
+      </div>
+      <div class="admin-wrap">
+        <table class="admin-table">
+          <thead><tr>
+            <th>ID</th><th>Descripción</th><th>Responsable</th>
+            <th>Frecuencia</th><th>Estado</th><th>Acciones</th>
+          </tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESPONSABLES -->
+    <div class="view" id="view-responsables">
+      <div class="sec-hdr">
+        <div><div class="sec-title">Equipo HSE</div><div class="sec-sub">Responsables y datos de contacto</div></div>
+        <button class="btn btn-primary admin-only" onclick="openAddResp()">＋ Agregar</button>
+      </div>
+      <div class="resp-grid" id="resp-grid"></div>
+    </div>
+
+    <!-- NOTIFICAR -->
+    <div class="view" id="view-notificar">
+      <div class="sec-hdr"><div><div class="sec-title">Enviar Notificaciones</div><div class="sec-sub">Alertas por correo y WhatsApp al equipo</div></div></div>
+      <div class="notify-box">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-lbl">👤 Responsable</label>
+            <select class="form-sel" id="n-resp" onchange="fillContactFromResp();buildNotifPreview()">
+              <option value="">Todos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">📋 Tipo de alerta</label>
+            <select class="form-sel" id="n-type" onchange="buildNotifPreview()">
+              <option value="all">Todas las pendientes</option>
+              <option value="vencido">Solo vencidas 🔴</option>
+              <option value="mes">Solo del mes actual</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">📧 Correo</label>
+            <input class="form-inp" type="email" id="n-email" placeholder="correo@esquivensa.com">
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">📱 WhatsApp</label>
+            <input class="form-inp" type="tel" id="n-phone" placeholder="+573001234567">
+          </div>
+          <div class="form-group form-full">
+            <label class="form-lbl">📝 Nota adicional</label>
+            <input class="form-inp" id="n-msg" placeholder="Mensaje extra para el responsable...">
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:7px">Vista previa</div>
+        <div class="notify-preview" id="n-preview">Selecciona opciones arriba para ver las tareas que se notificarán.</div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-primary" style="flex:1" onclick="sendEmail()">📧 Enviar Correo</button>
+          <button class="btn btn-success" style="flex:1" onclick="sendWA()">💬 WhatsApp</button>
+        </div>
+        <div class="alert-msg" id="n-alert"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ════════ MODALS ════════ -->
+
+<!-- Detail -->
+<div class="overlay" id="ov-detail">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr">
+      <div><div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:3px;font-weight:700;text-transform:uppercase;letter-spacing:.5px" id="d-id"></div><div class="modal-title" id="d-title"></div></div>
+      <button class="modal-close" onclick="closeOv('ov-detail')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="d-status-row" style="margin-bottom:18px"></div>
+      <div class="detail-row"><div class="detail-lbl">Entregable</div><div class="detail-val" id="d-entregable"></div></div>
+      <div class="detail-row"><div class="detail-lbl">Frecuencia</div><div class="detail-val" id="d-freq"></div></div>
+      <div class="detail-row"><div class="detail-lbl">Responsable</div><div class="detail-val" id="d-resp"></div></div>
+      <div class="detail-row"><div class="detail-lbl">Categoría</div><div class="detail-val" id="d-cat"></div></div>
+      <div class="detail-row">
+        <div class="detail-lbl">Calendario <span id="d-yr"></span></div>
+        <div class="detail-months" id="d-months"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm admin-only" onclick="editFromDetail()">✏️ Editar</button>
+      <button class="btn btn-primary btn-sm" onclick="notifyFromDetail()">📧 Notificar responsable</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Task -->
+<div class="overlay" id="ov-task">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><div class="modal-title" id="task-modal-title">Nueva Actividad</div><div class="modal-hdr-sub">Solo administradores pueden crear o editar</div></div>
+      <button class="modal-close" onclick="closeOv('ov-task')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">ID / Ítem *</label>
+          <input class="form-inp" id="t-id" placeholder="Ej: 1.21">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Año del plan *</label>
+          <input class="form-inp" id="t-year" type="number" min="2024" max="2035" value="2025">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Descripción *</label>
+          <input class="form-inp" id="t-desc" placeholder="Describe la actividad HSE...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Categoría</label>
+          <select class="form-sel" id="t-cat">
+            <option>Organización SG-HSE</option>
+            <option>Planeación SG-HSE</option>
+            <option>Aplicación SG-HSE</option>
+            <option>Auditoría y Revisión</option>
+            <option>Mejora SG-HSE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Frecuencia</label>
+          <select class="form-sel" id="t-freq">
+            <option>Mensual</option><option>Bimestral</option><option>Trimestral</option>
+            <option>Semestral</option><option>Anual</option><option>Por requisito</option><option>Única vez</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Entregable</label>
+          <input class="form-inp" id="t-entregable" placeholder="Registro, informe, acta...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Responsable</label>
+          <input class="form-inp" id="t-resp" placeholder="Nombre o cargo">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Programación mensual &nbsp;·&nbsp; <span style="color:var(--esq-blue);font-weight:700">P</span> = Planeado &nbsp;·&nbsp; <span style="color:var(--green);font-weight:700">E</span> = Ejecutado</label>
+          <div class="mp-grid" id="mp-grid"></div>
+          <div class="form-hint" style="margin-top:8px">Toca cada botón para activar o desactivar. E activa P automáticamente.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-task')">Cancelar</button>
+      <button class="btn btn-danger btn-sm" id="btn-del-task" onclick="deleteTask()" style="display:none">🗑 Eliminar</button>
+      <button class="btn btn-yellow" onclick="saveTask()">💾 Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- Responsable Modal -->
+<div class="overlay" id="ov-resp">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-hdr">
+      <div><div class="modal-title" id="resp-modal-title">Nuevo Responsable</div></div>
+      <button class="modal-close" onclick="closeOv('ov-resp')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Nombre completo *</label>
+          <input class="form-inp" id="r-name" placeholder="Nombre del responsable">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Cargo / Rol</label>
+          <input class="form-inp" id="r-role" placeholder="Coordinador HSE, Gerente...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">📧 Correo</label>
+          <input class="form-inp" type="email" id="r-email" placeholder="correo@empresa.com">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">📱 WhatsApp</label>
+          <input class="form-inp" type="tel" id="r-phone" placeholder="+573001234567">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-resp')">Cancelar</button>
+      <button class="btn btn-danger btn-sm" id="btn-del-resp" onclick="deleteResp()" style="display:none">🗑 Eliminar</button>
+      <button class="btn btn-yellow" onclick="saveResp()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase Guide -->
+<div class="overlay" id="ov-supabase">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr">
+      <div><div class="modal-title">⚡ Conectar Supabase</div><div class="modal-hdr-sub">Base de datos en la nube, gratis para tu equipo</div></div>
+      <button class="modal-close" onclick="closeOv('ov-supabase')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="background:var(--surface);border-radius:10px;padding:16px;border-left:4px solid #3ECF8E">
+          <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px">Paso 1 — Crear proyecto en Supabase</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.7">Ve a <strong>supabase.com</strong> → New Project → Copia tu <strong>Project URL</strong> y <strong>anon key</strong></div>
+          <a href="https://supabase.com" target="_blank" style="display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:#3ECF8E;text-decoration:none">Abrir Supabase →</a>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:16px;border-left:4px solid var(--esq-blue)">
+          <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:10px">Paso 2 — Pega tus credenciales aquí</div>
+          <div class="form-group" style="margin-bottom:10px">
+            <label class="form-lbl">Project URL</label>
+            <input class="form-inp" id="sb-url" placeholder="https://xxxx.supabase.co">
+          </div>
+          <div class="form-group">
+            <label class="form-lbl">Anon Key</label>
+            <input class="form-inp" id="sb-key" placeholder="eyJhbGci...">
+          </div>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:16px;border-left:4px solid var(--esq-yellow)">
+          <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px">Paso 3 — Guardar y conectar</div>
+          <div style="font-size:12px;color:var(--text-2)">Tus datos estarán en la nube. Todos en el equipo verán los cambios en tiempo real.</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-supabase')">Cancelar</button>
+      <button class="btn btn-yellow" onclick="saveSupabaseConfig()">⚡ Conectar Supabase</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ════════ SCRIPT ════════ -->
+<script>
+const INIT_DATA = [{"id": "1.1", "categoria": "Organización SG-HSE", "descripcion": "Elaborar/Actualizar la matriz de requisitos legales y otra índole de la empresa", "entregable": "Matriz de Requisitos legales", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.2", "categoria": "Organización SG-HSE", "descripcion": "Divulgar los requisitos legales y de otra índole de la empresa", "entregable": "Registro de Asistencia", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.3", "categoria": "Organización SG-HSE", "descripcion": "Actualizar las Políticas y Reglamentos de la Empresa", "entregable": "Políticas del SG-HSE", "frecuencia": "Anual", "responsable": "Gerencia/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.4", "categoria": "Organización SG-HSE", "descripcion": "Publicar las políticas del SG-HSE y Reglamentos", "entregable": "Publicaciones", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.5", "categoria": "Organización SG-HSE", "descripcion": "Divulgar las políticas del SG-HSE y Reglamentos", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.6", "categoria": "Organización SG-HSE", "descripcion": "Elaborar/Actualizar el Procedimiento de Acceso a las instalaciones", "entregable": "Procedimiento de Acceso", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.7", "categoria": "Organización SG-HSE", "descripcion": "Verificar seguridad social de empleados y contratistas anidados", "entregable": "Planilla de Aportes", "frecuencia": "Mensual", "responsable": "Coordinador HSEQ/ Asistente Finanzas", "meses": [{"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.8", "categoria": "Organización SG-HSE", "descripcion": "Verificar seguridad social de contratistas", "entregable": "Planilla de Aportes", "frecuencia": "Por requisito", "responsable": "Coordinador HSEQ/ Asistente Finanzas", "meses": [{"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.9", "categoria": "Organización SG-HSE", "descripcion": "Verificar los requisitos exigidos por Colpensiones para la transición a pensión de prima media de los trabajadores expuestos a actividades de alto rie", "entregable": "Formulario de Afiliación", "frecuencia": "Por requisito", "responsable": "Gerencia / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.10", "categoria": "Organización SG-HSE", "descripcion": "Verificar el pago de aportes de pensión prima media del personal expuesto a tareas de alto riesgo.", "entregable": "Planilla de Aportes", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.11", "categoria": "Organización SG-HSE", "descripcion": "Diseñar/Actualizar el Procedimiento de Control Documental", "entregable": "Procedimiento Control de Documentos", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.12", "categoria": "Organización SG-HSE", "descripcion": "Diseñar/Actualizar el listado maestro de Documentos", "entregable": "Listado de Maestro de Documentos", "frecuencia": "Por requisito", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.13", "categoria": "Organización SG-HSE", "descripcion": "Diseñar/Actualizar el listado maestro de Registros", "entregable": "Listado de Maestro de Registros", "frecuencia": "Por requisito", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.14", "categoria": "Organización SG-HSE", "descripcion": "Verificar la ejecución de las reuniones del COPASST", "entregable": "Actas de reunión / Cronograma", "frecuencia": "Mensual", "responsable": "Coordinador HSE/ COPASST", "meses": [{"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.15", "categoria": "Organización SG-HSE", "descripcion": "Realizar seguimiento al cronograma de gestión del COPASST", "entregable": "Plan de Trabajo", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.16", "categoria": "Organización SG-HSE", "descripcion": "Conformar el Comité de Convivencia Laboral (COCOLA)", "entregable": "Acta de Conformación", "frecuencia": "Por requisito", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.17", "categoria": "Organización SG-HSE", "descripcion": "Verificar reuniones del Comité de Convivencia Laboral (COCOLA)", "entregable": "Actas de reunión", "frecuencia": "Trimestral", "responsable": "Coordinador HSE/ COCOLA", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.18", "categoria": "Organización SG-HSE", "descripcion": "Verificar la eficacia de divulgación de la política del SG-HSE", "entregable": "Registro de evaluación", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "1.19", "categoria": "Organización SG-HSE", "descripcion": "Verificar el cumplimiento y efectividad de las recomendaciones del COPASST", "entregable": "Registro de Acta", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "1.20", "categoria": "Organización SG-HSE", "descripcion": "Verificar el nivel de cumplimiento de los requisitos legales y otra índole", "entregable": "Matriz de Requisitos legales", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.1", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar el SG-HSE de la empresa", "entregable": "SG-HSE", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.2", "categoria": "Planeación SG-HSE", "descripcion": "Realizar autoevaluación Inicial del SG-HSE", "entregable": "Reporte Autoevaluación", "frecuencia": "Semestral", "responsable": "ARL / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.3", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento con la metodología para la identificación de Peligros y Riesgos de la empresa.", "entregable": "Procedimiento IPVRC", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.4", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar la matriz de Peligros y Riesgos de la empresa", "entregable": "Matriz de riesgos", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.5", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento a la implementación de los controles definidos en la matriz de Peligros y Riesgos", "entregable": "Matriz de riesgos", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.6", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento con la metodología para la identificación de Aspectos e Impactos Ambientales de la empresa.", "entregable": "Procedimiento IAVI", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.7", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar la matriz de Aspectos e Impactos Ambientales", "entregable": "Matriz de aspectos e impactos", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.8", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento a la implementación de los controles definidos en la matriz de Aspectos e Impactos Ambientales.", "entregable": "Matriz de aspectos e impactos", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.9", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Actualizar el plan de trabajo anual del SG-HSE", "entregable": "Plan de Trabajo", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.10", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento al Cumplimento de las actividades definidas en el plan de trabajo anual.", "entregable": "Plan deTrabajo", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.11", "categoria": "Planeación SG-HSE", "descripcion": "Desarrollar informes del cumplimiento del plan de trabajo del SG-HSE", "entregable": "Formato de informe", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.12", "categoria": "Planeación SG-HSE", "descripcion": "Actualizar/Definir los indicadores del SG-HSE de acuerdo a los requisitos legales y corporativos", "entregable": "Ficha Técnica Indicadores", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.13", "categoria": "Planeación SG-HSE", "descripcion": "Divulgar los indicadores del SG-HSE", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.14", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento a los indicadores del SG-HSE", "entregable": "Informe mensual HSE", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.15", "categoria": "Planeación SG-HSE", "descripcion": "Actualizar/Definir el programa de entrenamiento", "entregable": "PG de Entrenamientos", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.16", "categoria": "Planeación SG-HSE", "descripcion": "Elaborara/Actualizar el procedimiento de Inducción/ Reinducción", "entregable": "Procedimiento de Inducción", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.17", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento al programa de entrenamiento", "entregable": "PG Entrenamiento", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.18", "categoria": "Planeación SG-HSE", "descripcion": "Desarrollar Inducción", "entregable": "Registro de asistencia", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.19", "categoria": "Planeación SG-HSE", "descripcion": "Desarrollar Reinducción", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.20", "categoria": "Planeación SG-HSE", "descripcion": "Elaborar/Definir el Procedimiento para las comunicaciones Internas y Externas", "entregable": "Procedimiento de Comunicaciones", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.21", "categoria": "Planeación SG-HSE", "descripcion": "Definir e Instalar buzones de sugerencias y notificaciones en HSE", "entregable": "Buzón", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.22", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento a las sugerencias y notificaciones en HSE consignados en el buzón", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.23", "categoria": "Planeación SG-HSE", "descripcion": "Actualizar/Definir el presupuesto del SG-HSE", "entregable": "Presupuesto SG-HSE", "frecuencia": "Anual", "responsable": "Coordinador HSE / Gerencia", "meses": [{"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.24", "categoria": "Planeación SG-HSE", "descripcion": "Realizar seguimiento a la ejecución del presupuesto del SG-HSE", "entregable": "Presupuesto SG-HSE", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "2.25", "categoria": "Planeación SG-HSE", "descripcion": "Establecer las funciones, responsabilidad y autoridad en el SG-HSE de cada uno de los cargos en todos los niveles de la empresa.", "entregable": "Roles y Responsabilidades", "frecuencia": "Anual", "responsable": "Coordinador HSE / Gerencia", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.26", "categoria": "Planeación SG-HSE", "descripcion": "Divulgar los roles y responsabilidades para el SG-HSE a los diferentes cargos de la empresa", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Coordinador HSE/ Recursos Humanos", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.27", "categoria": "Planeación SG-HSE", "descripcion": "Realizar evaluación del desempeño en HSE para cada uno de los cargos de la empresa.", "entregable": "Evaluación del desempeño", "frecuencia": "Anual", "responsable": "Recursos Humanos/  Jefe Inmediato", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "2.28", "categoria": "Planeación SG-HSE", "descripcion": "Implementar acciones derivadas del análisis de cumplimiento de cada uno de los indicadores establecidos para el  SG-HSE.", "entregable": "Ficha Técnica Indicadores/\nProgramas de Gestión", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.1", "categoria": "Aplicación SG-HSE", "descripcion": "Listar las actividades desarrolladas en la empresa y determinar su nivel de criticidad.", "entregable": "Listado de actividades", "frecuencia": "Anual", "responsable": "Líder Disciplina o Área/ Coordinador HSEQ", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.2", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/ Actualizar procedimientos seguros de trabajo a las actividades de la empresa definidas como críticas.", "entregable": "Procedimientos del SG-HSE", "frecuencia": "Por requisito", "responsable": "Líder Disciplina o Área/ Coordinador HSEQ", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.3", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el formato de Analisis Continuo de Seguridad de las Tareas", "entregable": "Formato ACST", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.4", "categoria": "Aplicación SG-HSE", "descripcion": "Divulgar prácticas y procedimientos seguros establecidos para las actividades críticas", "entregable": "Registro de asistencia", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.5", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar el inventario de equipos y herramientas", "entregable": "Listado de equipos", "frecuencia": "Anual", "responsable": "Líder Disciplina o Área/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.6", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar Programa de Gestión de mantenimiento de instalaciones, equipos y herramientas", "entregable": "PG de Mantenimiento", "frecuencia": "Anual", "responsable": "Líder Disciplina o Área/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.7", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar seguimiento de la ejecución del plan de mantenimiento", "entregable": "PG de Mantenimiento", "frecuencia": "Trimestral", "responsable": "Líder Disciplina o Área/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.8", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar los Programas de Gestión a los Riesgos e Impactos Prioritarios Identificados.", "entregable": "Programas de Gestión", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.9", "categoria": "Aplicación SG-HSE", "descripcion": "Seguimiento a cada uno de los Programas de Gestión definidos para la empresa", "entregable": "Informe mensual HSE", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.10", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el programa de Inspecciones.", "entregable": "Programa de Inspecciones", "frecuencia": "Anual", "responsable": "Coordinador HSE/ Gerencia", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.11", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento de observaciones de seguridad", "entregable": "Procedimiento Observaciones de Seguridad", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.12", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizarel formato de autoreporte de seguridad", "entregable": "Formato de ACS", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.13", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el Inventario de productos químicos de la empresa.", "entregable": "Inventario de Productos Químicos", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.14", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el programa de gestión de Productos Químicos", "entregable": "PG Productos Químicos", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.15", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento para la administración de los EPP", "entregable": "Procedimiento Administración de EPP", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.16", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar la matriz de especificaciones de EPP", "entregable": "Matriz de EPP", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.17", "categoria": "Aplicación SG-HSE", "descripcion": "Verificar el desempeño de los EPP (Uso y Vida útil)", "entregable": "Informe de desempeño", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.18", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el perfil Sociodemográfico de los trabajadores de la empresa", "entregable": "Perfil Sociodemográfico", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.19", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento de Evaluaciones Médicas Ocupacionales", "entregable": "Procedimiento Evaluaciones Médicas", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.20", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar los Programas de Vigilancia Epidemiológica del trabajo aplicables a la empresa.", "entregable": "PG Vigilancia Epidemiológica", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.21", "categoria": "Aplicación SG-HSE", "descripcion": "Identificar los Riesgos en Salud Publica (SIVIGILA)", "entregable": "PG Promoción y Prevención de la Salud", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.22", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el Programa P&P de la salud, con base a: resultados de las EMO, Perfil Sociodemográfico, Encuestas Psicosocial  y Riesgos de Salud", "entregable": "PG Promoción y Prevención de la Salud", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.23", "categoria": "Aplicación SG-HSE", "descripcion": "Diseñar/Actualizar el Programa de motivación y reconocimiento en HSE", "entregable": "Programa de motivación", "frecuencia": "Semestral", "responsable": "Coordinador HSE / Gerencia", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.24", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar seguimiento a las actividades del programa de motivación de HSE", "entregable": "Programa de motivación", "frecuencia": "Trimestral", "responsable": "Coordinador HSE / Gerencia", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.25", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Exámenes médicos ocupacionales periódicos", "entregable": "Certificado Aptitud", "frecuencia": "Anual", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.26", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Exámenes médicos ocupacionales post incapacidad", "entregable": "Certificado Aptitud", "frecuencia": "Por requisito", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.27", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Exámenes médicos ocupacionales de Ingreso", "entregable": "Certificado Aptitud", "frecuencia": "Por requisito", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.28", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Exámenes médicos ocupacionales de Retiro", "entregable": "Certificado Aptitud", "frecuencia": "Por requisito", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.29", "categoria": "Aplicación SG-HSE", "descripcion": "Socialización de los resultados de las EMO y entrega de recomendaciones.", "entregable": "Acta de compromiso", "frecuencia": "Por requisito", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.30", "categoria": "Aplicación SG-HSE", "descripcion": "Verificar el cierre de las recomendaciones de EMO entregadas", "entregable": "Acta de compromiso", "frecuencia": "Trimestral", "responsable": "Recursos Humanos/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.31", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Evaluaciones Higiénicas a los factores de riesgos identificados en la empresa", "entregable": "Informes de Estudios", "frecuencia": "Anual", "responsable": "ARL / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.32", "categoria": "Aplicación SG-HSE", "descripcion": "Presentación de los resultados de las Evaluaciones Higiénicas realizadas", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.33", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Seguimiento a la implementación de las recomendaciones de las Evaluaciones higénicas", "entregable": "PG Vigilancia Epidemiológica", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.34", "categoria": "Aplicación SG-HSE", "descripcion": "Diseñar e Implementar el procedimiento para el manejo del cambio.", "entregable": "Procedimiento Manejo del Cambio", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.35", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el procedimiento para la Evaluación y Selección de Proveedores", "entregable": "Procedimiento Evaluación y Selección de P & C", "frecuencia": "Anual", "responsable": "Compras /  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.36", "categoria": "Aplicación SG-HSE", "descripcion": "Incluir en el procedimiento de compras o adquisiciones de productos y servicios los requerimientos en HSE.", "entregable": "Procedimiento de procuras de Bienes o Servicios", "frecuencia": "Por requisito", "responsable": "Compras /  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.37", "categoria": "Aplicación SG-HSE", "descripcion": "Diseñar e implementar el manual de seguridad para contratistas", "entregable": "Manual de Seguridad para Contratistas", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.38", "categoria": "Aplicación SG-HSE", "descripcion": "Evaluar desempeño de proveedores y contratistas", "entregable": "Formato evaluación Proveedores y Contratistas", "frecuencia": "Anual", "responsable": "Compras /  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.39", "categoria": "Aplicación SG-HSE", "descripcion": "Plantear acciones para mejorar el desempeño de Proveedores y Contratistas", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Por requisito", "responsable": "Compras /  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.40", "categoria": "Aplicación SG-HSE", "descripcion": "Verificar efectividad de las acciones planteadas para mejorar desempeño de contratistas", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Semestral", "responsable": "Compras /  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.41", "categoria": "Aplicación SG-HSE", "descripcion": "Listar los escenarios de las potenciales emergencias.", "entregable": "Análisis de Vulnerabilidad", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.42", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar el plan de emergencias para el contrato y los PONs", "entregable": "Plan de respuesta a emergencias", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.43", "categoria": "Aplicación SG-HSE", "descripcion": "Desarrollo de prácticas para respuesta a emergencias", "entregable": "Registro de asistencia", "frecuencia": "Mensual", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.44", "categoria": "Aplicación SG-HSE", "descripcion": "Desarrollo de simulacros", "entregable": "Libreto de simulacro/\nRegistro Fotográfico", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.45", "categoria": "Aplicación SG-HSE", "descripcion": "Presentar Informe de resultados de los simulacros desarrollados en la empresa", "entregable": "Informe de simulacro", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.46", "categoria": "Aplicación SG-HSE", "descripcion": "Actualización de plan de manejo ambiental", "entregable": "Plan de Manejo Ambiental", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.47", "categoria": "Aplicación SG-HSE", "descripcion": "Elaborar/Actualizar las Fichas de Manejo Ambiental", "entregable": "Fichas de Manejo Ambiental", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.48", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Seguimiento a las Fichas de Manejo Ambiental", "entregable": "Fichas de Manejo Ambiental", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.49", "categoria": "Aplicación SG-HSE", "descripcion": "Siembra de especies de acuerdo al plan de manejo ambiental", "entregable": "Registro Fotorgráfico", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.50", "categoria": "Aplicación SG-HSE", "descripcion": "Actualización del plan de contingencia y atención de derrames", "entregable": "Plan de Contingencia", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.51", "categoria": "Aplicación SG-HSE", "descripcion": "Actualización del plan de gestión de riesgo y manejo de vertimientos", "entregable": "PG Riesgo Vertimientos", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.52", "categoria": "Aplicación SG-HSE", "descripcion": "Actualización del Plan de Gestión Integral de Residuos (PGIR)", "entregable": "PG Integral de Residuos", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.53", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar estudio de calidad de aire (NOX; COX; Materíal Partículado)", "entregable": "Informe del Estudio", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.54", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar estudio de calidad para Conpuestos Orgánicos Volátiles (VOCs)", "entregable": "Informe del Estudio", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.55", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar estudio de Ruido Ambiental", "entregable": "Informe del Estudio", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.56", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar estudio de efluentes en la PTARD", "entregable": "Informe del Estudio", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.57", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar estudio de efluentes del CPI", "entregable": "Informe del Estudio", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.58", "categoria": "Aplicación SG-HSE", "descripcion": "Enviar Informes de los estudios realizados a las corporaciones", "entregable": "Radicado Autoridad Ambiental", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.59", "categoria": "Aplicación SG-HSE", "descripcion": "Gestionar los residuos solidos según su grado de peligrosidad.", "entregable": "Certificado de Disposición", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "3.60", "categoria": "Aplicación SG-HSE", "descripcion": "Gestionar el Informe anual de residuos en la web del IDEAM", "entregable": "Registro IDEAM", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.61", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar Informe de Cumplimiento Ambiental (ICA)", "entregable": "Radicado Autoridad Ambiental", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.62", "categoria": "Aplicación SG-HSE", "descripcion": "Realizar inscripcción al  Inventario Nacional de Sustancias Químicas de Uso Industrial (INSQUI) Años 2021/22/23 - Dec 1630 de 2021", "entregable": "Registro Aplicativo Web", "frecuencia": "Única vez", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.63", "categoria": "Aplicación SG-HSE", "descripcion": "Actualización del departamento de gestión ambiental ante la Autoridad Ambiental Competente", "entregable": "Radicado Autoridad Ambiental", "frecuencia": "Por requisito", "responsable": "Gerencia / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "3.63", "categoria": "Aplicación SG-HSE", "descripcion": "Semana de la Seguridad y Salud en el Trabajo", "entregable": "Registro de asistencia", "frecuencia": "Anual", "responsable": "Gerencia / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.1", "categoria": "Auditoría y Revisión", "descripcion": "Elaborar/Actualizar el Procedimiento de Auditorias al SG HSEQ", "entregable": "Procedimiento de Auditorias", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.2", "categoria": "Auditoría y Revisión", "descripcion": "Elaborar/Actualizar el Procedimiento de Investigación de Eventos no deseados (END)", "entregable": "Procedimiento de Investigación", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.3", "categoria": "Auditoría y Revisión", "descripcion": "Programar la agenda de Reuniones Gerenciales de HSE", "entregable": "Plan de Trabajo", "frecuencia": "Anual", "responsable": "Gerencia / Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.4", "categoria": "Auditoría y Revisión", "descripcion": "Planear auditoría al SG-HSE", "entregable": "Plan de auditoría", "frecuencia": "Anual", "responsable": "Gerencia/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.5", "categoria": "Auditoría y Revisión", "descripcion": "Planear auditorías a proveedores y contratistas críticos", "entregable": "Plan de auditoría", "frecuencia": "Por requisito", "responsable": "Gerencia/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.6", "categoria": "Auditoría y Revisión", "descripcion": "Reunión Gerencial de HSE", "entregable": "Registro de Acta", "frecuencia": "Trimestral", "responsable": "Gerencia/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "4.7", "categoria": "Auditoría y Revisión", "descripcion": "Desarrollar auditoría interna al SG-HSE", "entregable": "Informe de auditoría", "frecuencia": "Anual", "responsable": "Líder Disciplina o Área/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.8", "categoria": "Auditoría y Revisión", "descripcion": "Desarrollar auditoría externa al SG-HSE", "entregable": "Informe de auditoría", "frecuencia": "Anual", "responsable": "Líder Disciplina o Área/ Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "4.9", "categoria": "Auditoría y Revisión", "descripcion": "Desarrollo de auditoría de clientes", "entregable": "Informe de auditoría", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.10", "categoria": "Auditoría y Revisión", "descripcion": "Desarrollar investigación de incidentes y casi accidentes", "entregable": "Informe de investigación", "frecuencia": "Por requisito", "responsable": "Coordinador HSE/ COPASST", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.11", "categoria": "Auditoría y Revisión", "descripcion": "Divulgar lecciones aprendidas", "entregable": "Registro de asistencia", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.12", "categoria": "Auditoría y Revisión", "descripcion": "Realizar seguimiento a las Acciones generadas por las observaciones, Inspecciones y reuniones de la gerencia.", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Semestral", "responsable": "Gerencia/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.13", "categoria": "Auditoría y Revisión", "descripcion": "Realizar seguimiento a los hallazgos de la auditoría del SG-HSE", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "4.14", "categoria": "Auditoría y Revisión", "descripcion": "Realizar seguimiento a las auditorías hechas por el cliente", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "4.15", "categoria": "Auditoría y Revisión", "descripcion": "Verificar la eficacia de las acciones generadas de la auditoría al SG-SST", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Anual", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "4.16", "categoria": "Auditoría y Revisión", "descripcion": "Verificar la eficacia de las acciones generadas de la auditoria del cliente", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Por requisito", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "4.17", "categoria": "Auditoría y Revisión", "descripcion": "Verificar la eficacia del cumplimiento de las acciones observaciones, inspecciones y reuniones definidas por la gerencia.", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "5.1", "categoria": "Mejora SG-HSE", "descripcion": "Elaborar/Actualizar el Procedimiento de Acciones de Mejora, Preventivas y Correctivas", "entregable": "Procedimiento de Auditorias", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "5.2", "categoria": "Mejora SG-HSE", "descripcion": "Elaborar/Actualizar el cuadro de seguimiento de las acciones de mejora, preventivas y correctivas del SG-HSE", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Anual", "responsable": "Coordinador Calidad/  Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 1}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}], "year": 2025}, {"id": "5.3", "categoria": "Mejora SG-HSE", "descripcion": "Verificar la eficacia del cumplimiento de las accionesde las acciones de mejora, preventivas y correctivas del SG-HSE.", "entregable": "Cuadro de seguimiento acciones", "frecuencia": "Trimestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}, {"id": "5.4", "categoria": "Mejora SG-HSE", "descripcion": "Desarrollar informe gerencial de desempeño del Sistema de Gestión HSE", "entregable": "Informe", "frecuencia": "Semestral", "responsable": "Coordinador HSE", "meses": [{"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 0, "e": 0}, {"p": 1, "e": 0}], "year": 2025}];
+
+const INIT_RESPS = [
+  {id:'r1',name:'Coordinador HSE',role:'Coordinador HSEQ',email:'',phone:''},
+  {id:'r2',name:'Gerencia',role:'Gerente General',email:'',phone:''},
+  {id:'r3',name:'Recursos Humanos',role:'RRHH',email:'',phone:''},
+  {id:'r4',name:'Coordinador Calidad',role:'Calidad',email:'',phone:''},
+];
+
+// ── USERS: admin es el único que puede editar ──────────────────
+const USERS = {
+  // 👑 TÚ — admin completo
+  'admin':        {pass:'Esq2025#HSE', role:'admin'},
+  // 👁 Equipo — solo lectura y notificar
+  'coordinador':  {pass:'hse123',      role:'viewer'},
+  'gerencia':     {pass:'ger2025',     role:'viewer'},
+  'calidad':      {pass:'cal2025',     role:'viewer'},
+};
+
+const MONTHS      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MONTHS_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const CAT_COLORS  = {'Organización SG-HSE':'var(--esq-blue)','Planeación SG-HSE':'var(--teal,#0D9488)','Aplicación SG-HSE':'var(--purple)','Auditoría y Revisión':'var(--amber)','Mejora SG-HSE':'var(--red)'};
+
+const KEY_ACTS  = 'hse_v3_acts';
+const KEY_RESPS = 'hse_v3_resps';
+
+let activities   = JSON.parse(localStorage.getItem(KEY_ACTS)||'null')  || INIT_DATA.map(a=>({...a,year:a.year||2025}));
+let responsables = JSON.parse(localStorage.getItem(KEY_RESPS)||'null') || INIT_RESPS;
+let currentUser  = null;
+let editingTaskIdx = null;
+let editingRespId  = null;
+let detailIdx      = null;
+let mpState        = [];
+const NOW       = new Date();
+const CUR_MONTH = NOW.getMonth();
+
+function save(){
+  localStorage.setItem(KEY_ACTS,  JSON.stringify(activities));
+  localStorage.setItem(KEY_RESPS, JSON.stringify(responsables));
+}
+
+// ── INPUT SANITIZATION ────────────────────────────────────────
+function sanitize(str){
+  if(!str) return '';
+  return String(str).replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#x27;').trim();
+}
+function sanitizeNum(val,min,max,def){
+  const n=parseInt(val);
+  if(isNaN(n)) return def;
+  return Math.max(min,Math.min(max,n));
+}
+
+// ── AUTH ──────────────────────────────────────────────────────
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim().toLowerCase();
+  const p=document.getElementById('l-pass').value;
+  if(!u||!p){showLoginErr();return;}
+  const user=USERS[u];
+  if(user && user.pass===p){
+    currentUser={name:u, role:user.role};
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    document.body.classList.toggle('is-admin', user.role==='admin');
+    // Show admin tab
+    document.querySelectorAll('.tab')[5].style.display = user.role==='admin'?'block':'none';
+    initApp();
+  } else {
+    showLoginErr();
+    // Rate limiting: add delay after failed attempt
+    setTimeout(()=>{}, 1500);
+  }
+}
+function showLoginErr(){
+  const el=document.getElementById('login-err');
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',4000);
+}
+function doLogout(){
+  currentUser=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.body.classList.remove('is-admin');
+  document.getElementById('l-pass').value='';
+  Object.keys(builtViews).forEach(k=>delete builtViews[k]);
+}
+
+// ── STATUS ────────────────────────────────────────────────────
+function getStatus(act){
+  const tP=act.meses.reduce((s,m)=>s+m.p,0);
+  const tE=act.meses.reduce((s,m)=>s+m.e,0);
+  if(tP===0) return 'sin-prog';
+  if(tE>=tP) return 'ejecutado';
+  for(let i=0;i<CUR_MONTH;i++) if(act.meses[i].p&&!act.meses[i].e) return 'vencido';
+  return 'pendiente';
+}
+function getPct(act){
+  const p=act.meses.reduce((s,m)=>s+m.p,0),e=act.meses.reduce((s,m)=>s+m.e,0);
+  return p===0?null:Math.round(e/p*100);
+}
+const SL={ejecutado:'✅ Ejecutado',pendiente:'⏳ Pendiente',vencido:'🔴 Vencido','sin-prog':'— Sin programar'};
+
+// ── CARD HTML ─────────────────────────────────────────────────
+function taskCard(act,idx,showDots=true){
+  const st=getStatus(act),pct=getPct(act);
+  const dots=MONTHS.map((m,i)=>{
+    const mo=act.meses[i];let cls='';
+    if(mo.e)cls='e'; else if(mo.p&&i<CUR_MONTH)cls='v'; else if(mo.p)cls='p';
+    return `<div class="mdot ${cls}" title="${MONTHS_FULL[i]}">${m[0]}</div>`;
+  }).join('');
+  const resp=sanitize(act.responsable||'').split('/')[0].trim().split('\n')[0].trim();
+  return `<div class="task-card ${st}" onclick="openDetail(${idx})">
+    <div class="task-id">${sanitize(act.id)}</div>
+    <div class="task-body">
+      <div class="task-desc">${sanitize(act.descripcion)}</div>
+      <div class="task-tags">
+        <span class="tag tag-cat">${sanitize(act.categoria)}</span>
+        <span class="tag tag-freq">${sanitize(act.frecuencia)}</span>
+        <span class="tag tag-resp">👤 ${resp}</span>
+        ${act.year&&act.year!==2025?`<span class="tag tag-year">${act.year}</span>`:''}
+      </div>
+      ${showDots?`<div class="month-dots">${dots}</div>`:''}
+    </div>
+    <div class="task-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+      <span class="status-pill ${st}">${SL[st]}</span>
+      ${pct!==null?`<div style="font-size:10px;color:var(--text-3);font-family:var(--mono)">${pct}%</div>`:''}
+      <button onclick="event.stopPropagation();quickNotifyTask(${idx})" style="background:var(--esq-blue-lt);color:var(--esq-blue);border:none;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font)">📧 Notificar</button>
+    </div>
+  </div>`;
+}
+function emptyState(msg){return `<div class="empty"><div class="ei">📭</div><p>${msg}</p></div>`;}
+
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDashboard(){
+  const yr=activities[0]?.year||2025;
+  document.getElementById('dash-year').textContent=yr;
+  const total=activities.length;
+  const exec=activities.filter(a=>getStatus(a)==='ejecutado').length;
+  const pend=activities.filter(a=>getStatus(a)==='pendiente').length;
+  const venc=activities.filter(a=>getStatus(a)==='vencido').length;
+  const tP=activities.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.p,0),0);
+  const tE=activities.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.e,0),0);
+  const gPct=tP>0?Math.round(tE/tP*100):0;
+  const urg=pend+venc;
+  document.getElementById('alert-count').textContent=urg>0?`🔔 ${urg} Alertas`:'🔔 Sin alertas';
+  document.getElementById('kpi-grid').innerHTML=`
+    <div class="kpi blue"><div class="kpi-ico">📋</div><div class="kpi-lbl">Total actividades</div><div class="kpi-val">${total}</div><div class="kpi-note">Plan HSE ${yr}</div></div>
+    <div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">Ejecutadas</div><div class="kpi-val">${exec}</div><div class="kpi-note">${total?Math.round(exec/total*100):0}% del total</div></div>
+    <div class="kpi yellow"><div class="kpi-ico">⏳</div><div class="kpi-lbl">Pendientes</div><div class="kpi-val">${pend}</div><div class="kpi-note">En progreso</div></div>
+    <div class="kpi orange"><div class="kpi-ico">🔴</div><div class="kpi-lbl">Vencidas</div><div class="kpi-val">${venc}</div><div class="kpi-note">Requieren atención</div></div>
+    <div class="kpi blue" style="border-bottom-color:var(--esq-yellow)"><div class="kpi-ico">📈</div><div class="kpi-lbl">Cumplimiento</div><div class="kpi-val">${gPct}%</div><div class="kpi-note">${tE}/${tP} tareas</div></div>
+  `;
+  document.getElementById('pct-gen').textContent=gPct+'%';
+  setTimeout(()=>document.getElementById('bar-gen').style.width=gPct+'%',120);
+  const cats=[...new Set(activities.map(a=>a.categoria))];
+  const catColors=['var(--esq-blue)','#0D9488','var(--purple)','var(--amber)','var(--red)'];
+  document.getElementById('cat-rows').innerHTML=cats.map((cat,ci)=>{
+    const acts=activities.filter(a=>a.categoria===cat);
+    const cP=acts.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.p,0),0);
+    const cE=acts.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.e,0),0);
+    const p=cP>0?Math.round(cE/cP*100):0;
+    const col=catColors[ci%catColors.length];
+    return `<div class="cat-row">
+      <div class="cat-dot" style="background:${col}"></div>
+      <span class="cat-name">${sanitize(cat)}</span>
+      <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:${p}%;background:${col}"></div></div>
+      <span class="cat-pct-lbl">${p}%</span></div>`;
+  }).join('');
+  document.getElementById('month-grid').innerHTML=MONTHS_FULL.map((mn,i)=>{
+    const mP=activities.reduce((s,a)=>s+a.meses[i].p,0);
+    const mE=activities.reduce((s,a)=>s+a.meses[i].e,0);
+    const p=mP>0?Math.round(mE/mP*100):0;
+    return `<div class="month-tile ${i===CUR_MONTH?'cur':''}">
+      <div class="month-tile-name">${mn}</div>
+      <div class="month-tile-pct">${mP>0?p+'%':'—'}</div>
+      <div class="month-tile-note">${mE}/${mP}</div></div>`;
+  }).join('');
+}
+
+// ── HOY / SEMANA / MES ────────────────────────────────────────
+function renderHoy(){
+  const d=NOW.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('hoy-sub').textContent=d.charAt(0).toUpperCase()+d.slice(1);
+  const rf=getRespF('f-resp-hoy');
+  const base=getYearActs();
+  const tasks=base.map((a,i)=>({a,i:activities.indexOf(a)}))
+    .filter(({a})=>a.meses[CUR_MONTH].p&&!a.meses[CUR_MONTH].e)
+    .filter(({a})=>!rf||(a.responsable||'').includes(rf));
+  document.getElementById('list-hoy').innerHTML=tasks.length?tasks.map(({a,i})=>taskCard(a,i,false)).join(''):emptyState('No hay tareas pendientes para hoy 🎉');
+}
+function renderSemana(){
+  const rf=getRespF('f-resp-semana');
+  const base=getYearActs();
+  const tasks=base.map((a,i)=>({a,i:activities.indexOf(a)}))
+    .filter(({a})=>['pendiente','vencido'].includes(getStatus(a)))
+    .filter(({a})=>!rf||(a.responsable||'').includes(rf));
+  document.getElementById('list-semana').innerHTML=tasks.length?tasks.map(({a,i})=>taskCard(a,i)).join(''):emptyState('¡Sin tareas urgentes esta semana! 🎉');
+}
+function renderMes(){
+  document.getElementById('mes-title').textContent=`${MONTHS_FULL[CUR_MONTH]} ${ACTIVE_YEAR}`;
+  document.getElementById('mes-sub').textContent=`Actividades programadas para ${MONTHS_FULL[CUR_MONTH]} ${ACTIVE_YEAR}`;
+  const rf=getRespF('f-resp-mes');
+  const base=getYearActs();
+  const tasks=base.map((a,i)=>({a,i:activities.indexOf(a)}))
+    .filter(({a})=>a.meses[CUR_MONTH].p||a.meses[CUR_MONTH].e)
+    .filter(({a})=>!rf||(a.responsable||'').includes(rf));
+  document.getElementById('list-mes').innerHTML=tasks.length?tasks.map(({a,i})=>taskCard(a,i,false)).join(''):emptyState('No hay actividades para este mes');
+}
+
+// ── TODAS ─────────────────────────────────────────────────────
+function initTodas(){
+  const cats=[...new Set(activities.map(a=>a.categoria))];
+  document.getElementById('f-cat').innerHTML='<option value="">Categoría</option>'+cats.map(c=>`<option>${sanitize(c)}</option>`).join('');
+}
+function renderTodas(){
+  const q=sanitize(document.getElementById('f-q').value).toLowerCase();
+  const cat=document.getElementById('f-cat').value;
+  const st=document.getElementById('f-status').value;
+  const fr=document.getElementById('f-freq').value;
+  const filtered=activities.map((a,i)=>({a,i})).filter(({a})=>{
+    if(q&&!a.descripcion.toLowerCase().includes(q)&&!a.id.toLowerCase().includes(q)) return false;
+    if(cat&&a.categoria!==cat) return false;
+    if(st&&getStatus(a)!==st) return false;
+    if(fr&&a.frecuencia!==fr) return false;
+    return true;
+  });
+  document.getElementById('todas-count').textContent=`${filtered.length} de ${activities.length} actividades`;
+  document.getElementById('list-todas').innerHTML=filtered.length?filtered.map(({a,i})=>taskCard(a,i)).join(''):emptyState('No hay resultados');
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────
+function initAdmin(){
+  if(currentUser?.role!=='admin') return;
+  const cats=[...new Set(activities.map(a=>a.categoria))];
+  document.getElementById('a-cat').innerHTML='<option value="">Categoría</option>'+cats.map(c=>`<option>${sanitize(c)}</option>`).join('');
+  const years=[...new Set(activities.map(a=>a.year||2025))].sort();
+  document.getElementById('a-year').innerHTML='<option value="">Todos los años</option>'+years.map(y=>`<option>${y}</option>`).join('');
+}
+function renderAdmin(){
+  if(currentUser?.role!=='admin') return;
+  const q=sanitize(document.getElementById('a-q').value).toLowerCase();
+  const cat=document.getElementById('a-cat').value;
+  const yr=document.getElementById('a-year').value;
+  const filtered=activities.map((a,i)=>({a,i})).filter(({a})=>{
+    if(q&&!a.descripcion.toLowerCase().includes(q)&&!a.id.toLowerCase().includes(q)) return false;
+    if(cat&&a.categoria!==cat) return false;
+    if(yr&&String(a.year||2025)!==yr) return false;
+    return true;
+  });
+  const sc={ejecutado:'var(--green)',pendiente:'var(--amber)',vencido:'var(--esq-orange)','sin-prog':'var(--text-3)'};
+  document.getElementById('admin-tbody').innerHTML=filtered.map(({a,i})=>`
+    <tr>
+      <td class="tbl-id">${sanitize(a.id)}</td>
+      <td class="tbl-desc" title="${sanitize(a.descripcion)}">${sanitize(a.descripcion)}</td>
+      <td>${sanitize(a.responsable||'').split('/')[0].trim().split('\n')[0].trim().slice(0,30)}</td>
+      <td>${sanitize(a.frecuencia)}</td>
+      <td><span style="font-size:10px;font-weight:800;color:${sc[getStatus(a)]}">${SL[getStatus(a)]}</span></td>
+      <td><div class="tbl-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openEditTask(${i})">✏️</button>
+        <button class="btn btn-ghost btn-sm" onclick="openDetail(${i})">👁</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// ── MONTH PLANNER ─────────────────────────────────────────────
+function buildMP(meses){
+  mpState=meses?meses.map(m=>({p:m.p,e:m.e})):Array(12).fill(0).map(()=>({p:0,e:0}));
+  document.getElementById('mp-grid').innerHTML=MONTHS.map((m,i)=>`
+    <div class="mp-cell">
+      <div class="mp-cell-name">${m}</div>
+      <div class="mp-toggles">
+        <button class="mp-toggle ${mpState[i].p?'p-on':''}" id="mp-p-${i}" onclick="toggleMP(${i},'p')">P</button>
+        <button class="mp-toggle ${mpState[i].e?'e-on':''}" id="mp-e-${i}" onclick="toggleMP(${i},'e')">E</button>
+      </div>
+    </div>`).join('');
+}
+function toggleMP(i,type){
+  mpState[i][type]=mpState[i][type]?0:1;
+  if(type==='e'&&mpState[i].e) mpState[i].p=1;
+  document.getElementById(`mp-${type}-${i}`).classList.toggle(type==='p'?'p-on':'e-on',!!mpState[i][type]);
+  if(type==='e'&&mpState[i].e) document.getElementById(`mp-p-${i}`).classList.add('p-on');
+}
+
+// ── TASK MODAL ────────────────────────────────────────────────
+function openAddTask(){
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede agregar tareas');return;}
+  editingTaskIdx=null;
+  document.getElementById('task-modal-title').textContent='Nueva Actividad';
+  document.getElementById('btn-del-task').style.display='none';
+  ['t-id','t-desc','t-entregable'].forEach(id=>document.getElementById(id).value=''); populateRespSelect();
+  document.getElementById('t-freq').value='Mensual';
+  document.getElementById('t-cat').value='Organización SG-HSE';
+  document.getElementById('t-year').value=new Date().getFullYear();
+  buildMP(null);
+  openOv('ov-task');
+}
+function openEditTask(idx){
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede editar');return;}
+  editingTaskIdx=idx;
+  const a=activities[idx];
+  document.getElementById('task-modal-title').textContent='Editar Actividad';
+  document.getElementById('btn-del-task').style.display='inline-flex';
+  document.getElementById('t-id').value=a.id;
+  document.getElementById('t-desc').value=a.descripcion;
+  document.getElementById('t-entregable').value=a.entregable||'';
+  document.getElementById('t-freq').value=a.frecuencia;
+  document.getElementById('t-cat').value=a.categoria;
+  populateRespSelect(a.responsable);
+  document.getElementById('t-year').value=a.year||2025;
+  buildMP(a.meses);
+  closeOv('ov-detail');
+  openOv('ov-task');
+}
+function saveTask(){
+  if(currentUser?.role!=='admin') return;
+  const id=sanitize(document.getElementById('t-id').value);
+  const desc=sanitize(document.getElementById('t-desc').value);
+  if(!id||!desc){showToast('⚠️ ID y descripción son obligatorios');return;}
+  if(id.length>20||desc.length>300){showToast('⚠️ Texto demasiado largo');return;}
+  const yr=sanitizeNum(document.getElementById('t-year').value,2020,2035,2025);
+  const newAct={
+    id, descripcion:desc,
+    entregable:sanitize(document.getElementById('t-entregable').value).slice(0,150),
+    frecuencia:document.getElementById('t-freq').value,
+    categoria:document.getElementById('t-cat').value,
+    responsable:sanitize(document.getElementById('t-resp').value).slice(0,100)||'Coordinador HSE',
+    year:yr, meses:mpState.map(m=>({p:m.p?1:0,e:m.e?1:0}))
+  };
+  if(editingTaskIdx!==null) activities[editingTaskIdx]=newAct;
+  else activities.push(newAct);
+  save();
+  fbSaveActivity(newAct).then(() => showToast('✅ Guardado en Firebase'));
+  closeOv('ov-task'); refreshAll();
+}
+function deleteTask(){
+  if(currentUser?.role!=='admin') return;
+  if(!confirm('¿Eliminar esta actividad? No se puede deshacer.')) return;
+  const deleted = activities[editingTaskIdx];
+  activities.splice(editingTaskIdx,1);
+  save(); fbDeleteActivity(deleted);
+  closeOv('ov-task'); showToast('🗑 Actividad eliminada'); refreshAll();
+}
+
+// ── DETAIL MODAL ──────────────────────────────────────────────
+function openDetail(idx){
+  detailIdx=idx;
+  const a=activities[idx],st=getStatus(a);
+  document.getElementById('d-id').textContent=`${a.id} · ${a.categoria}`;
+  document.getElementById('d-title').textContent=a.descripcion;
+  document.getElementById('d-yr').textContent=a.year||2025;
+  document.getElementById('d-entregable').textContent=a.entregable||'—';
+  document.getElementById('d-freq').textContent=a.frecuencia;
+  document.getElementById('d-resp').textContent=a.responsable;
+  document.getElementById('d-cat').textContent=a.categoria;
+  document.getElementById('d-status-row').innerHTML=`<span class="status-pill ${st}" style="font-size:13px;padding:7px 16px">${SL[st]}</span>`;
+  document.getElementById('d-months').innerHTML=MONTHS_FULL.map((mn,i)=>{
+    const mo=a.meses[i];let cls='',ico='—';
+    if(mo.e){cls='e';ico='✅';}else if(mo.p&&i<CUR_MONTH){cls='v';ico='🔴';}else if(mo.p){cls='p';ico='P';}
+    return `<div class="dm-cell ${cls}"><div class="dm-name">${MONTHS[i]}</div><div class="dm-ico">${ico}</div></div>`;
+  }).join('');
+  openOv('ov-detail');
+}
+function editFromDetail(){if(currentUser?.role==='admin'){closeOv('ov-detail');openEditTask(detailIdx);}}
+function notifyFromDetail(){
+  closeOv('ov-detail');showTab('notificar');
+  const resp=activities[detailIdx]?.responsable.split('/')[0].trim().split('\n')[0].trim()||'';
+  const r=responsables.find(x=>x.name.toLowerCase().includes(resp.toLowerCase().split(' ')[0]));
+  if(r) document.getElementById('n-resp').value=r.id;
+  fillContactFromResp();buildNotifPreview();
+}
+
+// ── RESPONSABLES ──────────────────────────────────────────────
+function renderResponsables(){
+  populateRespFilters();
+  const isAdmin=currentUser?.role==='admin';
+  document.getElementById('resp-grid').innerHTML=responsables.map(r=>`
+    <div class="resp-card">
+      <div class="resp-avatar">${sanitize(r.name).charAt(0).toUpperCase()}</div>
+      <div class="resp-name">${sanitize(r.name)}</div>
+      <div class="resp-role">${sanitize(r.role)}</div>
+      <div>
+        <div class="resp-item">📧 ${r.email?`<a href="mailto:${sanitize(r.email)}" style="color:var(--esq-blue)">${sanitize(r.email)}</a>`:'<em style="color:var(--text-3)">Sin correo</em>'}</div>
+        <div class="resp-item">📱 ${r.phone||'<em style="color:var(--text-3)">Sin WhatsApp</em>'}</div>
+      </div>
+      <div class="resp-actions">
+        ${isAdmin?`<button class="btn btn-ghost btn-sm" onclick="openEditResp('${r.id}')">✏️ Editar</button>`:''}
+        <button class="btn btn-primary btn-sm" onclick="quickNotify('${r.id}')">📧 Notificar</button>
+      </div>
+    </div>`).join('');
+  // populate notif select
+  document.getElementById('n-resp').innerHTML='<option value="">Todos</option>'+responsables.map(r=>`<option value="${r.id}">${sanitize(r.name)}</option>`).join('');
+}
+function openAddResp(){
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede agregar responsables');return;}
+  editingRespId=null;
+  document.getElementById('resp-modal-title').textContent='Nuevo Responsable';
+  document.getElementById('btn-del-resp').style.display='none';
+  ['r-name','r-role','r-email','r-phone'].forEach(id=>document.getElementById(id).value='');
+  openOv('ov-resp');
+}
+function openEditResp(id){
+  if(currentUser?.role!=='admin') return;
+  editingRespId=id;
+  const r=responsables.find(x=>x.id===id);
+  document.getElementById('resp-modal-title').textContent='Editar Responsable';
+  document.getElementById('btn-del-resp').style.display='inline-flex';
+  document.getElementById('r-name').value=r.name;
+  document.getElementById('r-role').value=r.role;
+  document.getElementById('r-email').value=r.email;
+  document.getElementById('r-phone').value=r.phone;
+  openOv('ov-resp');
+}
+function saveResp(){
+  if(currentUser?.role!=='admin') return;
+  const name=sanitize(document.getElementById('r-name').value);
+  if(!name){showToast('⚠️ Nombre obligatorio');return;}
+  const obj={name,role:sanitize(document.getElementById('r-role').value),email:sanitize(document.getElementById('r-email').value),phone:sanitize(document.getElementById('r-phone').value)};
+  if(editingRespId) responsables[responsables.findIndex(r=>r.id===editingRespId)]={...responsables.find(r=>r.id===editingRespId),...obj};
+  else responsables.push({id:'r'+Date.now(),...obj});
+  save(); fbSaveResponsable(editingRespId ? responsables.find(r=>r.id===editingRespId) : responsables[responsables.length-1]);
+  closeOv('ov-resp'); showToast('✅ Responsable guardado'); renderResponsables();
+}
+function deleteResp(){
+  if(currentUser?.role!=='admin') return;
+  if(!confirm('¿Eliminar este responsable?')) return;
+  const delId = editingRespId;
+  responsables=responsables.filter(r=>r.id!==editingRespId);
+  save(); fbDeleteResponsable(delId);
+  closeOv('ov-resp'); showToast('🗑 Eliminado'); renderResponsables();
+}
+function quickNotify(id){showTab('notificar');document.getElementById('n-resp').value=id;fillContactFromResp();buildNotifPreview();}
+function fillContactFromResp(){
+  const id=document.getElementById('n-resp').value;
+  const r=responsables.find(x=>x.id===id);
+  if(r){document.getElementById('n-email').value=r.email||'';document.getElementById('n-phone').value=r.phone||'';}
+}
+
+// ── NOTIFY ────────────────────────────────────────────────────
+function getNotifTasks(){
+  const type=document.getElementById('n-type').value;
+  const respId=document.getElementById('n-resp').value;
+  const r=responsables.find(x=>x.id===respId);
+  let acts=activities;
+  if(r) acts=acts.filter(a=>a.responsable.toLowerCase().includes(r.name.toLowerCase().split(' ')[0].toLowerCase()));
+  if(type==='vencido') return acts.filter(a=>getStatus(a)==='vencido');
+  if(type==='mes') return acts.filter(a=>a.meses[CUR_MONTH].p&&!a.meses[CUR_MONTH].e);
+  return acts.filter(a=>['pendiente','vencido'].includes(getStatus(a)));
+}
+function buildNotifPreview(){
+  const tasks=getNotifTasks();
+  if(!tasks.length){document.getElementById('n-preview').textContent='✅ No hay tareas pendientes.';return;}
+  document.getElementById('n-preview').innerHTML=tasks.slice(0,10).map(a=>
+    `<div style="padding:4px 0;border-bottom:1px solid var(--border)">
+      <strong>${sanitize(a.id)}</strong> — ${sanitize(a.descripcion).slice(0,70)}${a.descripcion.length>70?'...':''}
+      <span style="color:${getStatus(a)==='vencido'?'var(--esq-orange)':'var(--amber)'};font-weight:800;font-size:11px"> ${getStatus(a)==='vencido'?'🔴 VENCIDA':'⏳ Pendiente'}</span>
+    </div>`).join('')+(tasks.length>10?`<div style="margin-top:6px;color:var(--text-3);font-size:12px">...y ${tasks.length-10} actividades más</div>`:'');
+}
+function sendEmail(){
+  const email=document.getElementById('n-email').value.trim();
+  const name=responsables.find(r=>r.id===document.getElementById('n-resp').value)?.name||'Responsable HSE';
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showNotifAlert('err','⚠️ Ingresa un correo válido');return;}
+  const tasks=getNotifTasks();
+  const yr=activities[0]?.year||2025;
+  const lines=tasks.slice(0,12).map(a=>`• [${a.id}] ${a.descripcion} — ${getStatus(a)==='vencido'?'🔴 VENCIDA':'⏳ Pendiente'}`).join('\n');
+  const extra=sanitize(document.getElementById('n-msg').value);
+  const subj=`⚠️ Tareas HSE Pendientes — ESQUIVENSA ${new Date().toLocaleDateString('es-CO')}`;
+  const body=encodeURIComponent(`Estimado/a ${name},\n\nLe informamos que tiene las siguientes actividades HSE pendientes en el Plan de Trabajo ${yr}:\n\n${lines}${tasks.length>12?'\n...y más actividades':''}\n\n${extra?'Nota: '+extra+'\n\n':''}Por favor gestionar a la brevedad.\n\nAtentamente,\nSistema HSE — ESQUIVENSA ${yr}`);
+  window.location.href=`mailto:${email}?subject=${encodeURIComponent(subj)}&body=${body}`;
+  showNotifAlert('ok','✅ Se abrió tu correo con el mensaje listo para enviar');
+}
+function sendWA(){
+  const phone=document.getElementById('n-phone').value.replace(/\s|-/g,'');
+  const name=responsables.find(r=>r.id===document.getElementById('n-resp').value)?.name||'Equipo';
+  if(!phone||phone.length<7){showNotifAlert('err','⚠️ Ingresa un número de WhatsApp válido');return;}
+  const tasks=getNotifTasks();
+  const yr=activities[0]?.year||2025;
+  const lines=tasks.slice(0,8).map(a=>`• ${a.id}: ${a.descripcion.slice(0,55)} — ${getStatus(a)==='vencido'?'🔴 VENCIDA':'⏳ Pendiente'}`).join('\n');
+  const extra=sanitize(document.getElementById('n-msg').value);
+  const texto=encodeURIComponent(`⚠️ *ALERTA HSE — ESQUIVENSA ${yr}*\n\nHola *${name}*, tienes actividades HSE pendientes:\n\n${lines}\n\n${extra?'_'+extra+'_\n\n':''}Por favor gestionar. 🙏\n_Sistema HSE ${yr} — ESQUIVENSA_`);
+  window.open(`https://wa.me/${phone.replace('+','')}?text=${texto}`,'_blank');
+  showNotifAlert('ok','✅ Se abrió WhatsApp con el mensaje listo');
+}
+function showNotifAlert(type,msg){const el=document.getElementById('n-alert');el.className=`alert-msg ${type}`;el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',5000);}
+
+// ── SUPABASE CONFIG ───────────────────────────────────────────
+function showSupabaseGuide(){openOv('ov-supabase');}
+function saveSupabaseConfig(){
+  const url=sanitize(document.getElementById('sb-url').value).trim();
+  const key=sanitize(document.getElementById('sb-key').value).trim();
+  if(!url||!key){showToast('⚠️ Completa ambos campos');return;}
+  if(!url.includes('supabase.co')){showToast('⚠️ URL de Supabase inválida');return;}
+  localStorage.setItem('sb_url',url);
+  localStorage.setItem('sb_key',key);
+  closeOv('ov-supabase');
+  showToast('✅ Supabase configurado — próximamente sincronización en tiempo real');
+}
+
+// ── OVERLAYS / TABS / UTILS ───────────────────────────────────
+function openOv(id){document.getElementById(id).classList.add('open');}
+function closeOv(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));});
+document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');}));
+
+const VIEWS=['dashboard','hoy','semana','mes','todas','admin','responsables','notificar'];
+const builtViews={};
+function showTab(name){
+  if(name==='admin'&&currentUser?.role!=='admin'){showToast('⚠️ Acceso restringido al administrador');return;}
+  VIEWS.forEach(v=>document.getElementById('view-'+v)?.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',VIEWS[i]===name));
+  document.getElementById('view-'+name)?.classList.add('active');
+  const builders={
+    dashboard:renderDashboard,hoy:renderHoy,semana:renderSemana,mes:renderMes,
+    todas:()=>{if(!builtViews.todas_init){initTodas();builtViews.todas_init=true;}renderTodas();},
+    admin:()=>{if(!builtViews.admin_init){initAdmin();builtViews.admin_init=true;}renderAdmin();},
+    responsables:()=>{renderResponsables();if(!builtViews.notif_init){builtViews.notif_init=true;}},
+    notificar:()=>{renderResponsables();buildNotifPreview();},
+  };
+  builders[name]?.();
+}
+
+function refreshAll(){
+  const active=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(active) showTab(active);
+  renderDashboard();
+}
+
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+async function initApp() {
+  // Load Firebase in background
+  const fbOk = await loadFirebase();
+  if (fbOk) {
+    await fbLoadData();
+    showToast('☁️ Conectado a Firebase');
+  } else {
+    showToast('📱 Modo local — sin conexión a Firebase');
+  }
+  ACTIVE_YEAR = new Date().getFullYear();
+  initYearSelector();
+  populateRespFilters();
+  showTab('dashboard');
+}
+
+
+// ════════════════════════════════════════════════════════════
+// FIREBASE CONFIGURATION — HSE ESQUIVENSA
+// ════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDmEr5gPouaCYa4_8_-mFRt5zpU8sQrU6M",
+  authDomain: "hse-esquivensa.firebaseapp.com",
+  projectId: "hse-esquivensa",
+  storageBucket: "hse-esquivensa.firebasestorage.app",
+  messagingSenderId: "517588230083",
+  appId: "1:517588230083:web:0894768af91f21b2536776"
+};
+
+// Firebase SDKs loaded via CDN (injected dynamically)
+let db = null, auth = null, fbApp = null;
+let FB_READY = false;
+
+async function loadFirebase() {
+  if (FB_READY) return true;
+  try {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+
+    fbApp = initializeApp(FIREBASE_CONFIG);
+    db = getFirestore(fbApp);
+    auth = getAuth(fbApp);
+    window._fb = { collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy,
+                   signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword };
+    FB_READY = true;
+    console.log('✅ Firebase connected');
+    return true;
+  } catch(e) {
+    console.warn('Firebase offline, using localStorage:', e.message);
+    return false;
+  }
+}
+
+// ── FIREBASE DATA OPERATIONS ──────────────────────────────────
+async function fbSaveActivity(act) {
+  if (!db) return;
+  try {
+    const { doc, setDoc } = window._fb;
+    await setDoc(doc(db, 'activities', act.id + '_' + (act.year||2026)), {
+      ...act, updatedAt: new Date().toISOString(), updatedBy: currentUser?.name || 'admin'
+    });
+  } catch(e) { console.warn('FB save error:', e); }
+}
+
+async function fbDeleteActivity(act) {
+  if (!db) return;
+  try {
+    const { doc, deleteDoc } = window._fb;
+    await deleteDoc(doc(db, 'activities', act.id + '_' + (act.year||2026)));
+  } catch(e) { console.warn('FB delete error:', e); }
+}
+
+async function fbSaveResponsable(resp) {
+  if (!db) return;
+  try {
+    const { doc, setDoc } = window._fb;
+    await setDoc(doc(db, 'responsables', resp.id), resp);
+  } catch(e) { console.warn('FB save resp error:', e); }
+}
+
+async function fbDeleteResponsable(id) {
+  if (!db) return;
+  try {
+    const { doc, deleteDoc } = window._fb;
+    await deleteDoc(doc(db, 'responsables', id));
+  } catch(e) { console.warn('FB delete resp error:', e); }
+}
+
+async function fbLoadData() {
+  if (!db) return false;
+  try {
+    const { collection, getDocs } = window._fb;
+    const [actsSnap, respsSnap] = await Promise.all([
+      getDocs(collection(db, 'activities')),
+      getDocs(collection(db, 'responsables'))
+    ]);
+    if (!actsSnap.empty) {
+      activities = actsSnap.docs.map(d => d.data());
+      console.log(`✅ Loaded ${activities.length} activities from Firebase`);
+    } else {
+      // First time: upload local data to Firebase
+      console.log('Uploading initial data to Firebase...');
+      for (const act of activities) {
+        await fbSaveActivity(act);
+      }
+    }
+    if (!respsSnap.empty) {
+      responsables = respsSnap.docs.map(d => d.data());
+    } else {
+      for (const resp of responsables) {
+        await fbSaveResponsable(resp);
+      }
+    }
+    return true;
+  } catch(e) { console.warn('FB load error:', e); return false; }
+}
+
+// ── FIREBASE AUTH ─────────────────────────────────────────────
+async function fbLogin(email, pass) {
+  if (!auth) return null;
+  try {
+    const { signInWithEmailAndPassword } = window._fb;
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    return cred.user;
+  } catch(e) { return null; }
+}
+
+async function fbLogout() {
+  if (!auth) return;
+  try { await window._fb.signOut(auth); } catch(e) {}
+}
+
+// ── YEAR MANAGEMENT ───────────────────────────────────────────
+let ACTIVE_YEAR = new Date().getFullYear();
+
+function initYearSelector() {
+  const sel = document.getElementById('year-sel');
+  if (!sel) return;
+  const curYear = new Date().getFullYear();
+  const years = [...new Set([curYear, curYear-1, curYear-2, ...activities.map(a=>a.year||2026)])].sort((a,b)=>b-a);
+  sel.innerHTML = years.map(y =>
+    `<option value="${y}">${y}${y===curYear?' ▶':''}</option>`
+  ).join('');
+  sel.value = ACTIVE_YEAR;
+  if (currentUser?.role === 'admin') sel.style.display = 'block';
+}
+
+function changeYear(yr) {
+  ACTIVE_YEAR = parseInt(yr);
+  const isReadonly = ACTIVE_YEAR !== new Date().getFullYear();
+  const banner = document.getElementById('readonly-banner');
+  const btnNew = document.getElementById('btn-nueva-act-top');
+  if (banner) banner.style.display = isReadonly ? 'block' : 'none';
+  if (btnNew) btnNew.style.display = isReadonly ? 'none' : '';
+  refreshAll();
+}
+
+function getYearActs() {
+  const filtered = activities.filter(a => (a.year||2026) === ACTIVE_YEAR);
+  return filtered.length > 0 ? filtered : activities;
+}
+
+// ── RESPONSABLE HELPERS ───────────────────────────────────────
+function populateRespFilters() {
+  const names = [...new Set(activities.map(a => (a.responsable||'').split('/')[0].trim()))].filter(Boolean).sort();
+  const opts = '<option value="">Todos</option>' + names.map(n => `<option>${n}</option>`).join('');
+  ['f-resp-hoy','f-resp-semana','f-resp-mes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+function getRespF(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function populateRespSelect(current='') {
+  const sel = document.getElementById('t-resp');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Seleccionar responsable...</option>' +
+    responsables.map(r => `<option value="${r.name}" ${r.name===current?'selected':''}>${r.name} — ${r.role}</option>`).join('');
+  if (current && !responsables.find(r=>r.name===current)) {
+    const o = document.createElement('option');
+    o.value = current; o.text = current; o.selected = true;
+    sel.appendChild(o);
+  }
+}
+
+// ── QUICK NOTIFY FROM TASK CARD ───────────────────────────────
+function quickNotifyTask(idx) {
+  const act = activities[idx];
+  if (!act) return;
+  showTab('notificar');
+  const rName = (act.responsable||'').split('/')[0].trim();
+  const r = responsables.find(x => x.name === rName || rName.includes(x.name.split(' ')[0]));
+  if (r) {
+    const sel = document.getElementById('n-resp');
+    if (sel) { sel.value = r.id; fillContactFromResp(); }
+  }
+  const msgEl = document.getElementById('n-msg');
+  if (msgEl) msgEl.value = `Re: [${act.id}] ${act.descripcion.slice(0,60)}`;
+  buildNotifPreview();
+}
+// ── Keyboard enter on login ───────────────────────────────────
+document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
