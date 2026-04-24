@@ -336,13 +336,19 @@ body[data-theme="light"] .topbar-logo img{}
 .tbl-actions{display:flex;gap:5px}
 
 /* ── RESPONSABLES ── */
-.resp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.resp-card{background:var(--card);border-radius:var(--r);padding:20px;box-shadow:var(--sh);border-top:3px solid var(--esq-blue)}
-.resp-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--esq-blue),var(--mid));display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:900;margin-bottom:12px}
-.resp-name{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:2px}
-.resp-role{font-size:11px;color:var(--text-3);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
-.resp-item{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:7px;margin-bottom:5px}
-.resp-actions{display:flex;gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.resp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.resp-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.resp-grid{grid-template-columns:1fr}}
+.resp-card{background:var(--card);border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);border-top:3px solid var(--esq-blue);display:flex;flex-direction:column;gap:0}
+.resp-card-top{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.resp-avatar{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--esq-blue),var(--mid));display:flex;align-items:center;justify-content:center;color:white;font-size:19px;font-weight:900;flex-shrink:0}
+.resp-info{flex:1;min-width:0}
+.resp-name{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resp-role{font-size:10px;color:var(--text-3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resp-body{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;margin-bottom:12px}
+.resp-item{font-size:11px;color:var(--text-2);display:flex;align-items:center;gap:5px;min-width:0}
+.resp-item a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.resp-actions{display:flex;gap:6px;padding-top:12px;border-top:1px solid var(--border)}
 
 /* ── TEAM HORIZONTAL ROW (dashboard) ── */
 .team-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;margin-bottom:24px}
@@ -477,8 +483,8 @@ body.is-admin .admin-only-block:not(.view){display:block}
   <div class="login-card">
     <div class="login-logo-wrap"><img src="https://raw.githubusercontent.com/AlCal83/HSE-ESQ-APP/main/Logo%203D_2.png" alt="ESQUIVENSA" style="height:90px;object-fit:contain"></div>
     <div class="login-divider"></div>
-    <label class="login-lbl">Usuario</label>
-    <input class="login-inp" id="l-user" type="text" placeholder="usuario" autocomplete="username">
+    <label class="login-lbl">Usuario o Cédula</label>
+    <input class="login-inp" id="l-user" type="text" placeholder="cédula / usuario" autocomplete="username">
     <label class="login-lbl">Contraseña</label>
     <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">INGRESAR →</button>
@@ -502,6 +508,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <button class="tb-chip tb-chip-ghost admin-only" id="sync-btn" onclick="fbSync()" title="Sincronizar con Firebase">☁️</button>
       <button class="tb-chip tb-chip-ghost admin-only" onclick="openImportCSV()" title="Importar CSV">📥</button>
       <button class="tb-chip tb-chip-ghost admin-only" onclick="resetAllActivities()" title="Borrar todas las actividades" style="color:#e05">🗑️</button>
+      <button class="tb-chip tb-chip-ghost admin-only" onclick="openChangePass()" title="Cambiar contraseña">🔑</button>
       <button class="tb-chip tb-chip-ghost admin-only" onclick="openHistory(null)" title="Historial">📜</button>
       <button class="tb-chip tb-chip-ghost" onclick="doLogout()">⎋ <span>Salir</span></button>
     </div>
@@ -515,7 +522,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div class="tab" onclick="showTab('mes')">🗓️ Mes</div>
     <div class="tab" onclick="showTab('todas')">📋 Actividades</div>
     <div class="tab admin-only-block" style="display:none" onclick="showTab('admin')">⚙️ Admin</div>
-    <div class="tab" onclick="showTab('responsables')">👥 Equipo</div>
+    <div class="tab" onclick="showTab('responsables')">👥 Usuarios</div>
     <div class="tab" onclick="showTab('notificar')">📧 Notificar</div>
   </div>
 
@@ -629,7 +636,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <!-- RESPONSABLES -->
     <div class="view" id="view-responsables">
       <div class="sec-hdr">
-        <div><div class="sec-title">Equipo HSE</div><div class="sec-sub">Responsables y datos de contacto</div></div>
+        <div><div class="sec-title">Usuarios HSE</div><div class="sec-sub">Responsables y datos de contacto</div></div>
         <button class="btn btn-primary admin-only" onclick="openAddResp()">＋ Agregar</button>
       </div>
       <div class="resp-grid" id="resp-grid"></div>
@@ -691,6 +698,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     </div>
     <div class="modal-body">
       <div id="d-status-row" style="margin-bottom:18px"></div>
+      <div id="d-fecha-display" style="margin-bottom:14px;padding:10px 14px;background:var(--surface);border-radius:8px"></div>
       <div class="detail-row"><div class="detail-lbl">Entregable</div><div class="detail-val" id="d-entregable"></div></div>
       <div class="detail-row"><div class="detail-lbl">Frecuencia</div><div class="detail-val" id="d-freq"></div></div>
       <div class="detail-row"><div class="detail-lbl">Responsable</div><div class="detail-val" id="d-resp"></div></div>
@@ -776,6 +784,13 @@ body.is-admin .admin-only-block:not(.view){display:block}
             <input type="text" id="t-desc-ejec" class="form-inp" placeholder="Descripción de lo realizado / referencia del soporte...">
           </div>
           <div class="form-hint">Al registrar fecha de ejecución la actividad pasa a estado Ejecutada</div>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--esq-orange)">
+            <input type="checkbox" id="t-cerrar-act" style="width:16px;height:16px;accent-color:var(--esq-orange)">
+            🔒 Cerrar definitivamente esta actividad (no podrá ser modificada por usuarios)
+          </label>
+        </div>
+        <div id="locked-banner" style="display:none;background:#FEE2E2;border-radius:8px;padding:10px 14px;font-size:12px;font-weight:700;color:#991B1B;margin-top:8px">
+          🔒 Esta actividad está <strong>cerrada</strong>. Solo el administrador puede modificarla.
         </div>
 
       </div>
@@ -783,7 +798,8 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeOv('ov-task')">Cancelar</button>
       <button class="btn btn-danger btn-sm" id="btn-del-task" onclick="deleteTask()" style="display:none">🗑 Eliminar</button>
-      <button class="btn btn-yellow" onclick="saveTask()">💾 Guardar cambios</button>
+      <button class="btn btn-ghost btn-sm admin-only" id="btn-unlock-task" onclick="unlockTask()" style="display:none;color:var(--green)">🔓 Desbloquear</button>
+      <button class="btn btn-yellow" id="btn-save-task" onclick="saveTask()">💾 Guardar cambios</button>
     </div>
   </div>
 </div>
@@ -894,14 +910,9 @@ const INIT_RESPS = [
   {id:'r4',name:'Coordinador Calidad',role:'Calidad',email:'',phone:'',area:'Calidad',rol:'usuario'},
 ];
 
-// ── USERS: admin es el único que puede editar ──────────────────
+// ── USERS: solo admin local — todos los demás usan Firebase Auth ─
 const USERS = {
-  // 👑 TÚ — admin completo
-  'admin':        {pass:'Esq2025#HSE', role:'admin'},
-  // 👁 Equipo — solo lectura y notificar
-  'coordinador':  {pass:'hse123',      role:'viewer'},
-  'gerencia':     {pass:'ger2025',     role:'viewer'},
-  'calidad':      {pass:'cal2025',     role:'viewer'},
+  'admin': {pass:'Esq2025#HSE', role:'admin'},
 };
 
 const MONTHS      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -938,27 +949,65 @@ function sanitizeNum(val,min,max,def){
 }
 
 // ── AUTH ──────────────────────────────────────────────────────
-function doLogin(){
+async function doLogin(){
   const u=document.getElementById('l-user').value.trim().toLowerCase();
   const p=document.getElementById('l-pass').value;
-  if(!u||!p){showLoginErr();return;}
+  if(!u||!p){showLoginErr('⚠️ Ingresa usuario y contraseña');return;}
+
+  // 1. Intentar Firebase Auth (usuario por cédula: email = cedula@hse.esq)
+  if(auth){
+    try{
+      const emailCed = /^\d{6,15}$/.test(u) ? `${u}@hse.esq` : `${u}@hse.esq`;
+      const cred = await window._fb.signInWithEmailAndPassword(auth, emailCed, p);
+      if(cred && cred.user){
+        // Buscar en responsables para obtener nombre y rol
+        const resp = responsables.find(r=>r.id===u || r.email===cred.user.email);
+        const rolFb = resp?.rol || 'usuario';
+        let mappedRole;
+        if(rolFb==='admin') mappedRole='admin';
+        else if(rolFb==='supervisor') mappedRole='supervisor';
+        else mappedRole='usuario';
+        currentUser={name: resp?.name||u, role: mappedRole, cedula:u, email:cred.user.email};
+        enterApp();
+        return;
+      }
+    }catch(e){
+      // Firebase falló — intentar login local
+    }
+  }
+
+  // 2. Fallback: login local con USERS hardcoded
   const user=USERS[u];
   if(user && user.pass===p){
     currentUser={name:u, role:user.role};
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='flex';
-    document.body.classList.toggle('is-admin', user.role==='admin');
-    // Show admin tab
-    document.querySelectorAll('.tab')[5].style.display = user.role==='admin'?'block':'none';
-    initApp();
+    enterApp();
   } else {
-    showLoginErr();
-    // Rate limiting: add delay after failed attempt
-    setTimeout(()=>{}, 1500);
+    showLoginErr('⚠️ Usuario o contraseña incorrectos');
   }
 }
-function showLoginErr(){
+function enterApp(){
+  const isAdmin = currentUser?.role==='admin';
+  const isSupervisor = currentUser?.role==='supervisor';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.body.classList.toggle('is-admin', isAdmin);
+  // Tab Admin: solo visible para admin
+  document.querySelectorAll('.tab')[5].style.display = isAdmin?'block':'none';
+  // Botón "Nueva tarea" en topbar: visible para admin y supervisor
+  document.querySelectorAll('.tb-chip-yellow').forEach(btn=>{
+    if(btn.textContent.includes('Nueva')){
+      btn.style.display=(isAdmin||isSupervisor)?'inline-flex':'none';
+    }
+  });
+  // Botón "Eliminar" en modal de tarea: visible para admin y supervisor
+  // (se controla en openEditTask y deleteTask)
+  initApp();
+  // FEATURE 3: verificar primer login
+  if(currentUser?.cedula) checkFirstLogin(currentUser.cedula);
+}
+function showLoginErr(msg){
   const el=document.getElementById('login-err');
+  el.textContent = msg||'⚠️ Usuario o contraseña incorrectos';
   el.style.display='block';
   setTimeout(()=>el.style.display='none',4000);
 }
@@ -1012,6 +1061,8 @@ function taskCard(act,idx,showDots=true){
     return `<div class="mdot ${cls}" title="${MONTHS_FULL[i]}">${m[0]}</div>`;
   }).join('');
   const resp=sanitize(act.responsable||'').split('/')[0].trim().split('\n')[0].trim();
+  const isReprog=!!act.reprog_fecha;
+  const isLocked=!!act.locked;
   return `<div class="task-card ${st}" onclick="openDetail(${idx})">
     <div class="task-id">${sanitize(act.id)}</div>
     <div class="task-body">
@@ -1020,6 +1071,8 @@ function taskCard(act,idx,showDots=true){
         <span class="tag tag-cat">${sanitize(act.categoria)}</span>
         <span class="tag tag-freq">${sanitize(act.frecuencia)}</span>
         <span class="tag tag-resp">👤 ${resp}</span>
+        ${isReprog?'<span class="tag" style="background:var(--purple-lt,#EDE9FE);color:var(--purple,#7C3AED);font-weight:700">📅 Reprog.</span>':''}
+        ${isLocked?'<span class="tag" style="background:#FEE2E2;color:#991B1B;font-weight:700">🔒 Cerrada</span>':''}
         ${act.year&&act.year!==2025?`<span class="tag tag-year">${act.year}</span>`:''}
       </div>
       ${showDots?`<div class="month-dots">${dots}</div>`:''}
@@ -1043,6 +1096,7 @@ function renderDashboard(){
   const pend  = acts.filter(a=>getStatus(a)==='pendiente').length;
   const venc  = acts.filter(a=>getStatus(a)==='vencido').length;
   const sinP  = acts.filter(a=>getStatus(a)==='sin-prog').length;
+  const reprog= acts.filter(a=>!!a.reprog_fecha).length;
   const tP = acts.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.p,0),0);
   const tE = acts.reduce((s,a)=>s+a.meses.reduce((x,m)=>x+m.e,0),0);
   const gPct = tP>0 ? Math.round(tE/tP*100) : 0;
@@ -1055,6 +1109,7 @@ function renderDashboard(){
     <div class="kpi yellow"><div class="kpi-ico">⏳</div><div class="kpi-lbl">Pendientes</div><div class="kpi-val">${pend}</div><div class="kpi-note">En progreso</div></div>
     <div class="kpi orange"><div class="kpi-ico">🔴</div><div class="kpi-lbl">Vencidas</div><div class="kpi-val">${venc}</div><div class="kpi-note">Requieren atención</div></div>
     <div class="kpi blue" style="border-bottom-color:var(--esq-yellow)"><div class="kpi-ico">📈</div><div class="kpi-lbl">Cumplimiento</div><div class="kpi-val">${gPct}%</div><div class="kpi-note">${tE}/${tP} tareas</div></div>
+    ${reprog>0?`<div class="kpi" style="border-bottom-color:#7C3AED;cursor:pointer" onclick="filterReprog()"><div class="kpi-ico">📅</div><div class="kpi-lbl">Reprogramadas</div><div class="kpi-val" style="color:#7C3AED">${reprog}</div><div class="kpi-note">Clic para filtrar</div></div>`:''}
   `;
   // Donut chart
   renderDonut(exec, pend, venc, sinP, gPct);
@@ -1234,6 +1289,17 @@ function renderTodas(){
   if(total===0){document.getElementById('list-todas').innerHTML=emptyState(`No hay actividades para ${ACTIVE_YEAR}`);return;}
   document.getElementById('list-todas').innerHTML=filtered.length?filtered.map(({a,i})=>taskCard(a,i)).join(''):emptyState('No hay resultados para los filtros aplicados');
 }
+function filterReprog(){
+  showTab('todas');
+  // Limpiar otros filtros y buscar "reprog" no tiene sentido — filtramos en JS directamente
+  const yearActs=getYearActs();
+  const filtered=yearActs.map((a)=>({a,i:activities.indexOf(a)})).filter(({a})=>!!a.reprog_fecha);
+  document.getElementById('todas-count').textContent=`${filtered.length} actividades reprogramadas (${ACTIVE_YEAR})`;
+  document.getElementById('list-todas').innerHTML=filtered.length
+    ?filtered.map(({a,i})=>taskCard(a,i)).join('')
+    :emptyState('No hay actividades reprogramadas');
+  showToast(`📅 Mostrando ${filtered.length} actividades reprogramadas`);
+}
 
 // ── ADMIN ─────────────────────────────────────────────────────
 function initAdmin(){
@@ -1292,7 +1358,9 @@ function toggleMP(i,type){
 
 // ── TASK MODAL ────────────────────────────────────────────────
 function openAddTask(){
-  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede agregar tareas');return;}
+  const isAdmin=currentUser?.role==='admin';
+  const isSupervisor=currentUser?.role==='supervisor';
+  if(!isAdmin && !isSupervisor){showToast('⚠️ Solo administradores y supervisores pueden agregar tareas');return;}
   editingTaskIdx=null;
   document.getElementById('task-modal-title').textContent='Nueva Actividad';
   document.getElementById('btn-del-task').style.display='none';
@@ -1314,18 +1382,38 @@ function openAddTask(){
 }
 function openEditTask(idx){
   const isAdmin = currentUser?.role==='admin';
+  const isSupervisor = currentUser?.role==='supervisor';
   const act = activities[idx];
   const myFirst = (currentUser?.name||'').toLowerCase().split(' ')[0];
-  const isOwner = myFirst && (act?.responsable||'').toLowerCase().includes(myFirst);
-  if(!isAdmin && !isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
+  const isRespOwner = myFirst && (act?.responsable||'').toLowerCase().includes(myFirst);
+  const isCreator = act?.creado_por && act.creado_por===(currentUser?.cedula||currentUser?.name);
+  const canEdit = isAdmin || isRespOwner || isCreator || isSupervisor;
+  if(!canEdit){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
+  // FIX 3: bloqueo — no-admin no puede abrir actividades cerradas
+  if(act.locked && !isAdmin){
+    showToast('🔒 Esta actividad está cerrada. Contacta al administrador.');
+    return;
+  }
   editingTaskIdx=idx;
   const a=act;
   document.getElementById('task-modal-title').textContent=isAdmin?'Editar Actividad':'📝 Registrar Ejecución';
-  document.getElementById('btn-del-task').style.display=isAdmin?'inline-flex':'none';
-  // Bloquear campos para no-admin
+  // Botón eliminar: admin siempre, supervisor solo si la creó
+  const canDelete = isAdmin || (isSupervisor && isCreator);
+  document.getElementById('btn-del-task').style.display=canDelete?'inline-flex':'none';
+  // Botón desbloquear solo para admin en actividades cerradas
+  const btnUnlock = document.getElementById('btn-unlock-task');
+  if(btnUnlock) btnUnlock.style.display=(isAdmin && a.locked)?'inline-flex':'none';
+  // Banner de bloqueada
+  const lockedBanner = document.getElementById('locked-banner');
+  if(lockedBanner) lockedBanner.style.display=a.locked?'block':'none';
+  // Reset checkbox cerrar
+  const cerrarEl = document.getElementById('t-cerrar-act');
+  if(cerrarEl){ cerrarEl.checked=false; cerrarEl.style.display=isAdmin?'':'none'; }
+  // Bloquear campos para no-admin/no-supervisor
   ['t-desc','t-cat','t-freq','t-year','t-entregable','t-resp','t-fecha-inicio'].forEach(id=>{
     const el=document.getElementById(id); if(!el)return;
-    el.disabled=!isAdmin; el.style.opacity=isAdmin?'':'0.55'; el.style.cursor=isAdmin?'':'not-allowed';
+    const editable=isAdmin||(isSupervisor&&isCreator);
+    el.disabled=!editable; el.style.opacity=editable?'':'0.55'; el.style.cursor=editable?'':'not-allowed';
   });
   document.getElementById('t-id').value=a.id;
   document.getElementById('t-desc').value=a.descripcion;
@@ -1333,12 +1421,9 @@ function openEditTask(idx){
   document.getElementById('t-freq').value=a.frecuencia;
   document.getElementById('t-cat').value=a.categoria;
   document.getElementById('t-year').value=a.year||2025;
-  // Cargar fecha de inicio si existe
   const fi = document.getElementById('t-fecha-inicio');
   if(fi) fi.value = a.fecha_inicio || '';
-  // Responsable dropdown
   populateRespDropdown(a.responsable);
-  // Limpiar campo ejecución (no precargar — se usa para nueva ejecución)
   const feEl = document.getElementById('t-fecha-ejec');
   const deEl = document.getElementById('t-desc-ejec');
   if(feEl) feEl.value = '';
@@ -1347,12 +1432,37 @@ function openEditTask(idx){
   closeOv('ov-detail');
   openOv('ov-task');
 }
+function unlockTask(){
+  if(currentUser?.role!=='admin') return;
+  if(editingTaskIdx===null) return;
+  const act = activities[editingTaskIdx];
+  if(!act) return;
+  if(!confirm(`¿Desbloquear la actividad "${act.id}"?\nEl responsable podrá volver a registrar ejecuciones.`)) return;
+  act.locked=false; act.locked_by=null; act.locked_at=null;
+  save(); fbSaveActivity(act);
+  const btnUnlock = document.getElementById('btn-unlock-task');
+  if(btnUnlock) btnUnlock.style.display='none';
+  const lockedBanner = document.getElementById('locked-banner');
+  if(lockedBanner) lockedBanner.style.display='none';
+  showToast('🔓 Actividad desbloqueada');
+  refreshAll();
+}
 function saveTask(){
   const isAdmin=currentUser?.role==='admin';
+  const isSupervisor=currentUser?.role==='supervisor';
   const myFirst=(currentUser?.name||'').toLowerCase().split(' ')[0];
-  const isOwner=editingTaskIdx!==null&&myFirst&&(activities[editingTaskIdx]?.responsable||'').toLowerCase().includes(myFirst);
-  if(!isAdmin&&editingTaskIdx===null){showToast('⚠️ Solo admin puede crear actividades');return;}
-  if(!isAdmin&&!isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
+  const act = editingTaskIdx!==null ? activities[editingTaskIdx] : null;
+  // FIX 3: bloqueo de actividad cerrada
+  if(act && act.locked && !isAdmin){
+    showToast('🔒 Esta actividad fue cerrada. Solo el administrador puede modificarla.');
+    return;
+  }
+  const isOwner=editingTaskIdx!==null&&(
+    (act?.creado_por && act.creado_por===currentUser?.cedula) ||
+    (myFirst && (act?.responsable||'').toLowerCase().includes(myFirst))
+  );
+  if(!isAdmin && !isSupervisor && editingTaskIdx===null){showToast('⚠️ Solo admin o supervisores pueden crear actividades');return;}
+  if(!isAdmin && !isSupervisor && !isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
   const desc=sanitize(document.getElementById('t-desc').value);
   if(!desc){showToast('⚠️ Descripción obligatoria');return;}
   if(desc.length>300){showToast('⚠️ Descripción demasiado larga');return;}
@@ -1383,19 +1493,45 @@ function saveTask(){
     year: yr,
     meses: mpState.map(m=>({p:m.p?1:0,e:m.e?1:0}))
   };
+  // FEATURE 1: guardar creado_por al crear
+  if(editingTaskIdx === null){
+    newAct.creado_por = currentUser?.cedula || currentUser?.name || 'admin';
+  } else {
+    // Preservar creado_por existente
+    if(act?.creado_por) newAct.creado_por = act.creado_por;
+  }
   // Registrar ejecución si se ingresó
   const fechaEjec = document.getElementById('t-fecha-ejec')?.value;
   const descEjec = document.getElementById('t-desc-ejec')?.value?.trim();
+  const cerrarAct = document.getElementById('t-cerrar-act')?.checked;
   if(fechaEjec){
     newAct.ejecuciones = newAct.ejecuciones || [];
-    newAct.ejecuciones.push({fecha:fechaEjec, descripcion:descEjec||'Ejecutada', usuario:currentUser?.name||'admin'});
+    // Verificar que no exista ya una ejecución para esa fecha exacta
+    const yaExiste = newAct.ejecuciones.some(e=>e.fecha===fechaEjec);
+    if(!yaExiste){
+      newAct.ejecuciones.push({
+        fecha: fechaEjec,
+        descripcion: descEjec||'Ejecutada',
+        usuario: currentUser?.name||'admin',
+        cedula: currentUser?.cedula||'',
+        registrado_en: new Date().toISOString()  // timestamp exacto del registro
+      });
+    }
     const mes = new Date(fechaEjec+'T12:00:00').getMonth();
     if(newAct.meses[mes]) newAct.meses[mes].e=1;
+    // FIX 3: bloquear si el usuario marcó cierre definitivo
+    if(cerrarAct){
+      newAct.locked = true;
+      newAct.locked_by = currentUser?.name;
+      newAct.locked_at = new Date().toISOString();
+    }
   }
   const isEdit = editingTaskIdx !== null;
   if(isEdit){
     const old=activities[editingTaskIdx];
     if(!fechaEjec && old.ejecuciones) newAct.ejecuciones=old.ejecuciones;
+    // Conservar locked si ya estaba bloqueada y no es admin
+    if(old.locked && !isAdmin) newAct.locked=true;
     addHistory(newAct.id,'editada',`por ${currentUser?.name}`);
     activities[editingTaskIdx]=newAct;
   } else {
@@ -1403,7 +1539,7 @@ function saveTask(){
     activities.push(newAct);
   }
   save();
-  fbSaveActivity(newAct).then(()=>showToast('✅ Guardado en Firebase'));
+  fbSaveActivity(newAct).then(()=>showToast(cerrarAct?'🔒 Actividad cerrada y bloqueada':'✅ Guardado en Firebase'));
   closeOv('ov-task'); refreshAll();
 }
 
@@ -1419,7 +1555,17 @@ function autoGenIdValue(cat, yr) {
   return `${prefix}.${next}`;
 }
 function deleteTask(){
-  if(currentUser?.role!=='admin') return;
+  const isAdmin=currentUser?.role==='admin';
+  const isSupervisor=currentUser?.role==='supervisor';
+  if(!isAdmin && !isSupervisor){showToast('⚠️ Sin permisos para eliminar');return;}
+  if(editingTaskIdx===null) return;
+  const act=activities[editingTaskIdx];
+  // Supervisor solo puede eliminar las que él creó
+  if(!isAdmin && isSupervisor){
+    const createdBy=act?.creado_por;
+    const myId=currentUser?.cedula||currentUser?.name;
+    if(createdBy && createdBy!==myId){showToast('⚠️ Solo puedes eliminar actividades que tú creaste');return;}
+  }
   if(!confirm('¿Eliminar esta actividad? No se puede deshacer.')) return;
   const deleted = activities[editingTaskIdx];
   activities.splice(editingTaskIdx,1);
@@ -1438,7 +1584,23 @@ function openDetail(idx){
   document.getElementById('d-freq').textContent=a.frecuencia;
   document.getElementById('d-resp').textContent=a.responsable;
   document.getElementById('d-cat').textContent=a.categoria;
-  document.getElementById('d-status-row').innerHTML=`<span class="status-pill ${st}" style="font-size:13px;padding:7px 16px">${SL[st]}</span>`;
+  document.getElementById('d-status-row').innerHTML=`<span class="status-pill ${st}" style="font-size:13px;padding:7px 16px">${SL[st]}</span>${a.reprog_fecha?'<span class="tag" style="background:var(--purple-lt,#EDE9FE);color:var(--purple,#7C3AED);font-weight:700;margin-left:6px">📅 Reprogramada</span>':''}`;
+  // FIX G — Mostrar fecha completa en detalle
+  const fmtFecha=(iso)=>{
+    if(!iso) return null;
+    const d=new Date(iso+'T12:00:00');
+    return d.toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'});
+  };
+  const fechaEl=document.getElementById('d-fecha-display');
+  if(fechaEl){
+    if(a.reprog_fecha){
+      fechaEl.innerHTML=`<div style="font-size:11px;color:var(--text-3);margin-bottom:2px">Fecha original: <s>${fmtFecha(a.reprog_original||a.fecha_inicio)||'—'}</s></div><div style="font-size:12px;font-weight:700;color:#7C3AED">📅 Reprogramada al: ${fmtFecha(a.reprog_fecha)}</div>${a.reprog_reason?`<div style="font-size:11px;color:var(--text-3);margin-top:2px">Motivo: ${a.reprog_reason}</div>`:''}`;
+    } else if(a.fecha_inicio){
+      fechaEl.innerHTML=`<div style="font-size:12px;font-weight:700;color:var(--esq-blue)">📅 ${fmtFecha(a.fecha_inicio)}</div>`;
+    } else {
+      fechaEl.innerHTML='<span style="color:var(--text-3);font-size:12px">Sin fecha programada</span>';
+    }
+  }
   // Fechas programadas
   const mesesStr = MONTHS_FULL.map((mn,i)=>{
     const mo=a.meses[i];
@@ -1449,12 +1611,30 @@ function openDetail(idx){
     return `<span style="display:inline-block;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;margin:2px;background:${ejecutado?'rgba(40,200,100,.15)':vencido?'rgba(232,78,27,.15)':'rgba(11,28,61,.15)'}">${ico} ${MONTHS[i]}</span>`;
   }).filter(Boolean).join('');
   document.getElementById('d-months').innerHTML = mesesStr || '<span style="color:var(--text-3);font-size:12px">Sin fechas programadas</span>';
-  // Ejecuciones registradas
+  // Ejecuciones registradas — timeline completo
   const ejecEl = document.getElementById('d-ejecuciones');
   if(ejecEl){
-    ejecEl.innerHTML = a.ejecuciones && a.ejecuciones.length > 0
-      ? a.ejecuciones.map(e=>`<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><strong>${e.fecha}</strong> — ${e.descripcion} <span style="color:var(--text-3)">(${e.usuario})</span></div>`).join('')
-      : '<span style="color:var(--text-3);font-size:12px">Sin ejecuciones registradas</span>';
+    if(a.ejecuciones && a.ejecuciones.length > 0){
+      // Ordenar por fecha descendente (más reciente primero)
+      const sorted = [...a.ejecuciones].sort((x,y)=>y.fecha.localeCompare(x.fecha));
+      ejecEl.innerHTML = sorted.map((e,i)=>{
+        const fechaLeg = new Date(e.fecha+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'});
+        const registradoEn = e.registrado_en ? new Date(e.registrado_en).toLocaleString('es-CO',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+        return `<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);align-items:flex-start">
+          <div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--green-lt);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:13px">✅</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;color:var(--dark)">${fechaLeg}</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:2px">${sanitize(e.descripcion||'Ejecutada')}</div>
+            <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+              <span style="font-size:10px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px">👤 ${sanitize(e.usuario||'admin')}</span>
+              ${registradoEn?`<span style="font-size:10px;color:var(--text-3)">Registrado: ${registradoEn}</span>`:''}
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      ejecEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-3);font-size:13px">📭 Sin ejecuciones registradas</div>';
+    }
   }
   openOv('ov-detail');
 }
@@ -1473,17 +1653,25 @@ function renderResponsables(){
   const isAdmin=currentUser?.role==='admin';
   document.getElementById('resp-grid').innerHTML=responsables.map(r=>`
     <div class="resp-card">
-      <div class="resp-avatar">${sanitize(r.name).charAt(0).toUpperCase()}</div>
-      <div class="resp-name">${sanitize(r.name)}</div>
-      <div class="resp-role">${sanitize(r.role)}</div>
-      <div>
-        <div class="resp-item">📧 ${r.email?`<a href="mailto:${sanitize(r.email)}" style="color:var(--esq-blue)">${sanitize(r.email)}</a>`:'<em style="color:var(--text-3)">Sin correo</em>'}</div>
-        <div class="resp-item">📱 ${r.phone||'<em style="color:var(--text-3)">Sin WhatsApp</em>'}</div>
-        ${r.area?`<div class="resp-item">🏢 ${sanitize(r.area)}</div>`:''}
-        ${r.rol?`<div class="resp-item">🔐 <span class="tag" style="background:${r.rol==='admin'?'#FEF3C7':r.rol==='supervisor'?'#DBEAFE':'#F1F5F9'};color:${r.rol==='admin'?'#92400E':r.rol==='supervisor'?'#1E40AF':'#475569'};font-size:10px;padding:2px 8px;border-radius:99px;font-weight:700">${r.rol.toUpperCase()}</span></div>`:''}
+      <div class="resp-card-top">
+        <div class="resp-avatar">${sanitize(r.name).charAt(0).toUpperCase()}</div>
+        <div class="resp-info">
+          <div class="resp-name" title="${sanitize(r.name)}">${sanitize(r.name)}</div>
+          <div class="resp-role">${sanitize(r.role)}</div>
+        </div>
+        ${r.rol?`<span style="background:${r.rol==='admin'?'#FEF3C7':r.rol==='supervisor'?'#DBEAFE':'#F1F5F9'};color:${r.rol==='admin'?'#92400E':r.rol==='supervisor'?'#1E40AF':'#475569'};font-size:9px;padding:2px 8px;border-radius:99px;font-weight:800;flex-shrink:0">${r.rol.toUpperCase()}</span>`:''}
+      </div>
+      <div class="resp-body">
+        <div class="resp-item">🪪 <span style="font-family:var(--mono);font-weight:700;font-size:11px">${sanitize(r.id)}</span></div>
+        <div class="resp-item">🏢 ${sanitize(r.area||'—')}</div>
+        <div class="resp-item" style="grid-column:1/-1">📧 ${r.email?`<a href="mailto:${sanitize(r.email)}" style="color:var(--esq-blue)">${sanitize(r.email)}</a>`:'<em style="color:var(--text-3)">Sin correo</em>'}</div>
+        <div class="resp-item">📱 ${sanitize(r.phone||'—')}</div>
+        <div class="resp-item">🔐 <span style="font-size:10px;color:var(--text-2)">${sanitize(r.rol||'usuario').toUpperCase()}</span></div>
+        ${isAdmin?`<div class="resp-item" style="cursor:pointer;grid-column:1/-1" onclick="toggleShowPass('${r.id}')">🔑 <span id="pass-${r.id}" style="display:none;font-family:var(--mono);font-weight:700;color:var(--esq-blue);font-size:10px">Esq${r.id}#</span><span id="pass-eye-${r.id}" style="font-size:10px;color:var(--text-3)">👁 Ver contraseña</span></div>`:''}
       </div>
       <div class="resp-actions">
         ${isAdmin?`<button class="btn btn-ghost btn-sm" onclick="openEditResp('${r.id}')">✏️ Editar</button>`:''}
+        ${isAdmin?`<button class="btn btn-ghost btn-sm" style="color:var(--esq-orange)" onclick="openCorregirCedula('${r.id}')">🔑 Cédula</button>`:''}
         <button class="btn btn-primary btn-sm" onclick="quickNotify('${r.id}')">📧 Notificar</button>
       </div>
     </div>`).join('');
@@ -1540,12 +1728,26 @@ function saveResp(){
     const idx=responsables.findIndex(r=>r.id===editingRespId);
     responsables[idx]={...responsables[idx],...obj};
     save(); fbSaveResponsable(responsables[idx]);
+    closeOv('ov-resp'); showToast('✅ Responsable actualizado'); renderResponsables();
   } else {
     const newResp={id:cedula,...obj};
     responsables.push(newResp);
     save(); fbSaveResponsable(newResp);
+    // Crear cuenta Firebase Auth con cédula como usuario
+    const passInicial = `Esq${cedula}#`;
+    const emailAuth = `${cedula}@hse.esq`;
+    if(auth && window._fb?.createUserWithEmailAndPassword){
+      window._fb.createUserWithEmailAndPassword(auth, emailAuth, passInicial)
+        .then(()=>showToast(`✅ Usuario creado. Contraseña inicial: ${passInicial}`))
+        .catch(e=>{
+          if(e.code==='auth/email-already-in-use') showToast('ℹ️ El usuario ya tiene cuenta Firebase');
+          else showToast(`✅ Responsable guardado (cuenta Firebase: ${e.message})`);
+        });
+    } else {
+      showToast(`✅ Responsable guardado. Contraseña inicial: ${passInicial}`);
+    }
+    closeOv('ov-resp'); renderResponsables();
   }
-  closeOv('ov-resp'); showToast('✅ Responsable guardado'); renderResponsables();
 }
 function deleteResp(){
   if(currentUser?.role!=='admin') return;
@@ -1556,6 +1758,40 @@ function deleteResp(){
   closeOv('ov-resp'); showToast('🗑 Eliminado'); renderResponsables();
 }
 function quickNotify(id){showTab('notificar');document.getElementById('n-resp').value=id;fillContactFromResp();buildNotifPreview();}
+function toggleShowPass(id){
+  const sp=document.getElementById('pass-'+id);const eye=document.getElementById('pass-eye-'+id);
+  if(!sp||!eye)return;
+  const visible=sp.style.display!=='none';
+  sp.style.display=visible?'none':'inline';
+  eye.textContent=visible?'👁 Ver':'🙈 Ocultar';
+}
+function openCorregirCedula(id){
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo admin puede corregir la cédula');return;}
+  const r=responsables.find(x=>x.id===id);
+  if(!r)return;
+  if(!confirm(`⚠️ CORREGIR CÉDULA\n\nEsta acción cambia el ID de "${r.name}" en Firestore y actualiza todas sus actividades vinculadas.\n\nCédula actual: ${r.id}\n\n¿Continuar?`))return;
+  const nueva=prompt(`Ingresa la NUEVA cédula para ${r.name}:`,r.id);
+  if(!nueva||nueva.trim()===r.id){showToast('ℹ️ Sin cambios');return;}
+  const nv=nueva.trim().replace(/\s/g,'');
+  if(nv.length<6){showToast('⚠️ Cédula inválida (mínimo 6 dígitos)');return;}
+  if(responsables.find(x=>x.id===nv)){showToast('⚠️ Ya existe un usuario con esa cédula');return;}
+  if(!confirm(`¿Confirmas cambiar la cédula de ${r.id} → ${nv}?\n\nTodas las actividades asignadas a este usuario se actualizarán.`))return;
+  // Actualizar en array local
+  const oldId=r.id;
+  const idx=responsables.findIndex(x=>x.id===oldId);
+  responsables[idx]={...responsables[idx],id:nv};
+  // Actualizar responsable_id en actividades
+  let updated=0;
+  activities.forEach(a=>{if(a.responsable_id===oldId){a.responsable_id=nv;updated++;fbSaveActivity(a);}});
+  // Guardar en Firebase: borrar viejo, crear nuevo
+  if(db){
+    const {doc,setDoc,deleteDoc,collection}=window._fb;
+    setDoc(doc(db,'responsables',nv),responsables[idx]).then(()=>deleteDoc(doc(db,'responsables',oldId)));
+  }
+  save();
+  showToast(`✅ Cédula actualizada: ${oldId} → ${nv} (${updated} actividades actualizadas)`);
+  renderResponsables();
+}
 function fillContactFromResp(){
   const id=document.getElementById('n-resp').value;
   const r=responsables.find(x=>x.id===id);
@@ -1780,12 +2016,15 @@ function saveReschedule(idx) {
   if (!fechaVal) { showToast('⚠️ La fecha es obligatoria'); return; }
   if (!reason || reason.length < 20) { showToast('⚠️ Justificación mínimo 20 caracteres'); return; }
   const act = activities[idx];
-  const fechaAnterior = act.fecha_inicio || '—';
-  if(!act.reprog_original) act.reprog_original = fechaAnterior;
-  // Marcar nuevo mes como programado (mes original se conserva para vista visual)
+  const fechaAnterior = act.reprog_fecha || act.fecha_inicio || '—';
+  if(!act.reprog_original) act.reprog_original = act.fecha_inicio || fechaAnterior;
+  // Limpiar TODOS los meses programados no ejecutados y dejar solo el nuevo mes
   const fecha = new Date(fechaVal + 'T12:00:00');
   const mes = fecha.getMonth();
-  act.meses[mes].p = 1;
+  act.meses = act.meses.map((m, i) => ({
+    p: i === mes ? 1 : (m.e ? 1 : 0), // conservar p solo si ya está ejecutado o es el nuevo mes
+    e: m.e
+  }));
   act.fecha_inicio = fechaVal;
   act.estado_override = 'reprogramada';
   act.reprog_reason = reason;
@@ -1981,13 +2220,17 @@ function loadCSVFile(input) {
 
 // ── Descargar plantilla CSV ───────────────────────────────────
 function downloadCSVTemplate() {
-  const header = 'descripcion,categoria,frecuencia,responsable,entregable,fecha_inicio';
+  const header = 'descripcion,categoria,frecuencia,responsable_id,entregable,fecha_inicio';
+  // Build reference rows from actual responsables
+  const refRows = responsables.length > 0
+    ? responsables.map(r=>`# ${r.id} = ${r.name} (${r.role||r.area||''})`)
+    : ['# 1234567890 = Coordinador HSE'];
   const rows = [
-    'Inspección de equipos de protección,Aplicación SG-HSE,Mensual,Coordinador HSE,Registro de inspección,2026-01-15',
-    'Auditoría interna SG-HSE,Auditoría y Revisión,Trimestral,Coordinador HSE,Informe de auditoría,2026-03-01',
-    'Publicar RIT,Organización SG-HSE,Única vez,Coordinador RRHH,RIT publicado,2026-04-30',
+    'Inspección de equipos de protección,Aplicación SG-HSE,Mensual,' + (responsables[0]?.id||'1234567890') + ',Registro de inspección,2026-01-15',
+    'Auditoría interna SG-HSE,Auditoría y Revisión,Trimestral,' + (responsables[0]?.id||'1234567890') + ',Informe de auditoría,2026-03-01',
   ];
-  const csv = [header, ...rows].join('\n');
+  const refHeader = '# REFERENCIA DE CÉDULAS (usar en columna responsable_id):';
+  const csv = [refHeader, ...refRows, '', header, ...rows].join('\n');
   const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -2043,10 +2286,13 @@ function previewCSV() {
 function importCSV() {
   const text = document.getElementById('csv-input')?.value || '';
   const fallbackYear = parseInt(document.getElementById('csv-year')?.value) || new Date().getFullYear();
-  const rows = parseCSV(text);
+  // Strip comment lines starting with #
+  const cleanText = text.split('\n').filter(l=>!l.trim().startsWith('#')).join('\n');
+  const rows = parseCSV(cleanText);
   if (!rows.length) { showToast('⚠️ CSV vacío'); return; }
   const freqMap = { 'mensual':'Mensual','bimestral':'Bimestral','trimestral':'Trimestral','semestral':'Semestral','anual':'Anual','por requisito':'Por requisito','única vez':'Única vez','unica vez':'Única vez' };
   let added = 0, skipped = 0;
+  const omitidas = [];
   for (const row of rows) {
     const desc = (row.descripcion||'').trim();
     if (!desc) { skipped++; continue; }
@@ -2054,6 +2300,22 @@ function importCSV() {
     const freq = freqMap[(row.frecuencia||'').toLowerCase()] || 'Por requisito';
     const fi = (row.fecha_inicio||row['fecha_inicio']||'').trim();
     const year = fi ? new Date(fi+'T12:00:00').getFullYear() : fallbackYear;
+    // FIX E: resolve responsable by cédula (responsable_id column) or fallback to name text
+    const respIdRaw = (row.responsable_id||row.responsable||'').trim();
+    let respName = 'Coordinador HSE';
+    let respId = null;
+    if(respIdRaw){
+      const found = responsables.find(r=>r.id===respIdRaw);
+      if(found){ respName=found.name; respId=found.id; }
+      else if(/^\d{6,15}$/.test(respIdRaw)){
+        // Looks like a cédula but not found
+        omitidas.push(`ID ${respIdRaw}: cédula no existe`);
+        skipped++; continue;
+      } else {
+        // Treat as plain name
+        respName = respIdRaw;
+      }
+    }
     const autoId = autoGenIdValue(cat, year);
     if (activities.find(a=>a.descripcion.toLowerCase()===desc.toLowerCase()&&(a.year||2025)===year)) { skipped++; continue; }
     const meses = Array(12).fill(0).map(()=>({p:0,e:0}));
@@ -2063,7 +2325,7 @@ function importCSV() {
       if(!dias){ const m=new Date(fi+'T12:00:00').getMonth(); if(m>=0&&m<12) meses[m].p=1; }
       else{ let c=new Date(fi+'T12:00:00'); while(c.getFullYear()<=year){if(c.getFullYear()===year)meses[c.getMonth()].p=1;c.setDate(c.getDate()+dias);} }
     }
-    const newAct = { id:autoId, descripcion:desc, categoria:cat, frecuencia:freq, responsable:row.responsable||'Coordinador HSE', entregable:row.entregable||'', fecha_inicio:fi, year, meses };
+    const newAct = { id:autoId, descripcion:desc, categoria:cat, frecuencia:freq, responsable:respName, responsable_id:respId||undefined, entregable:row.entregable||'', fecha_inicio:fi, year, meses };
     activities.push(newAct);
     fbSaveActivity(newAct);
     addHistory(autoId, 'importada', `CSV ${year}`);
@@ -2071,7 +2333,10 @@ function importCSV() {
   }
   save();
   document.querySelector('.overlay[style*="z-index: 300"]')?.remove();
-  showToast(`✅ ${added} importadas, ${skipped} omitidas`);
+  let msg = `✅ ${added} importadas, ${skipped} omitidas`;
+  if(omitidas.length) msg += `\n⚠️ Cédulas no encontradas: ${omitidas.join('; ')}`;
+  showToast(msg);
+  if(omitidas.length) alert(`⚠️ Filas omitidas por cédula inválida:\n${omitidas.join('\n')}`);
   refreshAll();
 }
 
@@ -2159,16 +2424,24 @@ function checkAutoAlerts() {
 // Firebase config — carga desde variables de entorno Vercel con fallback local
 let FIREBASE_CONFIG = null;
 async function loadFirebaseConfig(){
-  // 1. Intenta cargar desde endpoint seguro de Vercel (api/config)
+  // 1. PRIORIDAD: cargar desde endpoint seguro de Vercel (variables de entorno)
+  //    Para activar: en Vercel → Settings → Environment Variables → agregar FIREBASE_API_KEY etc.
+  //    y crear /api/config.js en el repo
   try{
     const r = await fetch('/api/config', {cache:'no-store'});
     if(r.ok){
       const cfg = await r.json();
-      if(cfg && cfg.apiKey){ return cfg; }
+      if(cfg && cfg.apiKey){
+        console.log('✅ Config cargada desde endpoint seguro Vercel');
+        return cfg;
+      }
     }
-  }catch(e){ console.log('Config endpoint not available, using fallback'); }
-  // 2. Fallback: configuración del proyecto (apiKey es pública por diseño en Firebase Web SDK —
-  //    la seguridad real viene de las Firestore Rules + Auth, no de ocultar la key)
+  }catch(e){ console.log('⚠️ Endpoint /api/config no disponible — usando fallback'); }
+  // 2. Fallback: la apiKey de Firebase Web SDK es PÚBLICA POR DISEÑO de Google.
+  //    No es un secreto — la seguridad real viene de Firestore Rules + Auth.
+  //    Ver: https://firebase.google.com/docs/projects/api-keys
+  //    Protección real = aplicar las Firestore Security Rules del master context.
+  console.log('ℹ️ Usando config fallback — aplica Firestore Rules para seguridad completa');
   return {
     apiKey: atob("QUl6YVN5RG1FcjVnUG91YUNZYTRfOF8tbUZSdDV6cFU4c1FyVTZN"),
     authDomain: "hse-esquivensa.firebaseapp.com",
@@ -2192,13 +2465,22 @@ function openAlerts(){
   const yr = ACTIVE_YEAR || today.getFullYear();
   const acts = activities.filter(a => (a.year||2025) === yr);
   const getProxFecha = (act) => {
+    // FIX F: Use reprog_fecha first, then fecha_inicio, then fallback to first programmed month
     const fi = act.reprog_fecha || act.fecha_inicio;
-    if(!fi) return null;
-    const base = new Date(fi+'T12:00:00'); base.setHours(0,0,0,0);
+    let base;
+    if(fi){
+      base = new Date(fi+'T12:00:00'); base.setHours(0,0,0,0);
+    } else {
+      // Fallback: use first programmed month of the activity's year
+      const firstMonth = (act.meses||[]).findIndex(m=>m.p);
+      if(firstMonth<0) return null;
+      base = new Date(act.year||yr, firstMonth, 15);
+    }
     const iv = {'Mensual':30,'Bimestral':60,'Trimestral':90,'Semestral':180,'Anual':365};
     const dias = iv[act.frecuencia]||0;
-    if(!dias) return base;
+    if(!dias) return base; // Única vez / Por requisito — use base date as-is
     let c=new Date(base);
+    // Advance until we pass today
     while(c<=today) c.setDate(c.getDate()+dias);
     return c;
   };
@@ -2206,6 +2488,7 @@ function openAlerts(){
   acts.filter(a=>getStatus(a)!=='ejecutado').forEach(a=>{
     const f=getProxFecha(a); if(!f) return;
     const diff=Math.round((f-today)/86400000);
+    if(isNaN(diff)) return; // FIX F: guard against NaN
     if(diff<0) vencidas.push({a,dias:Math.abs(diff)});
     else if(diff<=7) proximas.push({a,dias:diff});
   });
@@ -2313,9 +2596,10 @@ async function loadFirebase() {
   if (FB_READY) return true;
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy } =
+    const { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy, getDoc } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } =
+    const { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword,
+            EmailAuthProvider, reauthenticateWithCredential, updatePassword } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
 
     if(!FIREBASE_CONFIG){ FIREBASE_CONFIG = await loadFirebaseConfig(); }
@@ -2323,7 +2607,8 @@ async function loadFirebase() {
     db = getFirestore(fbApp);
     auth = getAuth(fbApp);
     window._fb = { collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy,
-                   signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword };
+                   signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword,
+                   EmailAuthProvider, reauthenticateWithCredential, updatePassword, getDoc };
     FB_READY = true;
     console.log('✅ Firebase connected');
     return true;
@@ -2434,12 +2719,23 @@ function changeYear(yr) {
   const btnNew = document.getElementById('btn-nueva-act-top');
   if (banner) banner.style.display = isReadonly ? 'block' : 'none';
   if (btnNew) btnNew.style.display = isReadonly ? 'none' : '';
+  // FIX D — Sync admin year selector
+  const aYear = document.getElementById('a-year');
+  if(aYear){
+    // Ensure the year option exists in admin selector
+    let found=false;
+    for(let i=0;i<aYear.options.length;i++){if(aYear.options[i].value===String(yr)){found=true;break;}}
+    if(!found){const opt=document.createElement('option');opt.value=yr;opt.textContent=yr;aYear.appendChild(opt);}
+    aYear.value=yr;
+  }
   // Actualizar filtro de categorías según año
   const yearActs = getYearActs();
   const cats = [...new Set(yearActs.map(a=>a.categoria))].filter(Boolean).sort();
   const catEl = document.getElementById('f-cat');
   if(catEl) catEl.innerHTML = '<option value="">Categoría</option>' + cats.map(c=>`<option>${c}</option>`).join('');
   refreshAll();
+  // Render admin with new year if already initialized
+  if(builtViews.admin_init) renderAdmin();
 }
 
 function getYearActs() {
@@ -2495,6 +2791,131 @@ function quickNotifyTask(idx) {
 }
 // ── Keyboard enter on login ───────────────────────────────────
 document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ── BUG 5: CAMBIAR CONTRASEÑA (admin) ─────────────────────────
+function openChangePass(){
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede cambiar su contraseña');return;}
+  ['cp-current','cp-new','cp-confirm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const al=document.getElementById('cp-alert');if(al){al.textContent='';al.style.display='none';}
+  openOv('ov-change-pass');
+}
+async function doChangePass(){
+  const cur=document.getElementById('cp-current')?.value||'';
+  const nw=document.getElementById('cp-new')?.value||'';
+  const cf=document.getElementById('cp-confirm')?.value||'';
+  const al=document.getElementById('cp-alert');
+  const showErr=msg=>{if(al){al.textContent=msg;al.style.display='block';al.style.background='var(--red-lt)';al.style.color='var(--red)';al.style.padding='10px 14px';al.style.borderRadius='8px';}};
+  const showOk=msg=>{if(al){al.textContent=msg;al.style.display='block';al.style.background='var(--green-lt)';al.style.color='var(--green)';al.style.padding='10px 14px';al.style.borderRadius='8px';}};
+  if(!cur||!nw||!cf){showErr('⚠️ Completa todos los campos');return;}
+  if(nw!==cf){showErr('⚠️ Las contraseñas nuevas no coinciden');return;}
+  if(nw.length<8){showErr('⚠️ Mínimo 8 caracteres');return;}
+  const cedula=currentUser?.cedula;
+  // Caso 1: admin local (sin cédula Firebase)
+  if(!cedula){
+    if(cur!=='Esq2025#HSE'){showErr('⚠️ Contraseña actual incorrecta');return;}
+    // El admin local no puede cambiar contraseña aquí — debe hacerlo en el código
+    showErr('⚠️ El administrador local debe cambiar su contraseña directamente en el código fuente (objeto USERS). Contacta al desarrollador.');
+    return;
+  }
+  // Caso 2: usuario Firebase
+  if(!auth||!window._fb?.reauthenticateWithCredential){showErr('⚠️ Firebase no disponible. Intenta de nuevo en unos segundos.');return;}
+  try{
+    const {EmailAuthProvider,reauthenticateWithCredential,updatePassword}=window._fb;
+    const user=auth.currentUser;
+    if(!user){showErr('⚠️ Sesión expirada. Vuelve a ingresar.');return;}
+    const emailAuth=`${cedula}@hse.esq`;
+    const cred=EmailAuthProvider.credential(emailAuth,cur);
+    await reauthenticateWithCredential(user,cred);
+    await updatePassword(user,nw);
+    // Marcar passwordChanged en Firestore
+    if(db && window._fb?.doc && window._fb?.setDoc){
+      const {doc,setDoc}=window._fb;
+      await setDoc(doc(db,'responsables',cedula),{passwordChanged:true},{merge:true});
+    }
+    showOk('✅ Contraseña actualizada correctamente');
+    setTimeout(()=>closeOv('ov-change-pass'),2000);
+  }catch(e){
+    if(e.code==='auth/wrong-password'||e.code==='auth/invalid-credential'){showErr('⚠️ Contraseña actual incorrecta');}
+    else if(e.code==='auth/too-many-requests'){showErr('⚠️ Demasiados intentos. Espera unos minutos.');}
+    else{showErr(`⚠️ Error: ${e.message}`);}
+  }
+}
+
+// ── FEATURE 1: SUPERVISOR puede crear/eliminar sus actividades ──
+// Ya implementado parcialmente en openAddTask y saveTask via creado_por.
+// Este bloque refuerza el campo creado_por al crear actividades:
+const _origSaveTask = saveTask;
+// Parche: guardar creado_por en saveTask
+// (La función saveTask ya tiene la lógica de roles; solo se asegura el campo)
+function patchSaveTaskCreatedBy(){
+  // Se inyecta creado_por en el objeto newAct dentro de saveTask
+  // Esto ya está integrado en el saveTask actualizado abajo
+}
+
+// ── FEATURE 3: CAMBIO DE CONTRASEÑA EN PRIMER LOGIN ───────────
+async function checkFirstLogin(cedula){
+  if(!db||!cedula) return;
+  try{
+    const {doc,getDoc}=window._fb;
+    const snap=await getDoc(doc(db,'responsables',cedula));
+    if(snap.exists()){
+      const data=snap.data();
+      if(data.passwordChanged===false){
+        // Mostrar modal forzado de cambio de contraseña
+        openFirstLoginModal(cedula);
+      }
+    }
+  }catch(e){console.warn('checkFirstLogin error:',e);}
+}
+function openFirstLoginModal(cedula){
+  // Modal reutilizamos el de cambio de contraseña con mensaje especial
+  document.getElementById('cp-current').value=`Esq${cedula}#`;
+  const al=document.getElementById('cp-alert');
+  if(al){
+    al.textContent='🔐 Es tu primer ingreso. Por seguridad debes cambiar tu contraseña.';
+    al.style.display='block';al.style.background='var(--amber-lt)';al.style.color='var(--amber)';al.style.padding='10px';al.style.borderRadius='8px';
+  }
+  openOv('ov-change-pass');
+}
+
+// ── SUPERVISOR: mostrar botón Nueva Actividad ──────────────────
+// El tab Admin se muestra solo a admin. Supervisor puede crear desde el tab "Actividades".
+// Se agrega un botón visible para supervisor en la topbar:
+function updateSupervisorUI(){
+  if(currentUser?.role==='supervisor'){
+    // Mostrar botón "nueva tarea" en topbar también para supervisor
+    document.querySelectorAll('.tb-chip-yellow').forEach(btn=>{
+      if(btn.textContent.includes('Nueva')) btn.style.display='inline-flex';
+    });
+  }
+}
+
+// ── FEATURE 2: Firestore Security Rules (solo referencia en consola) ──
+// Estas reglas deben aplicarse en Firebase Console > Firestore > Rules:
+/*
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() { return request.auth != null && request.auth.token.email.matches('admin@hse.esq'); }
+    function isSupervisor(data) {
+      return request.auth != null && (data.responsable_id == request.auth.token.email.split('@')[0]);
+    }
+    match /activities/{id} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if isAdmin() || isSupervisor(resource.data);
+    }
+    match /responsables/{id} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+    match /history/{id} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+*/
+
 </script>
 
   <!-- ALERTS MODAL -->
@@ -2530,6 +2951,36 @@ document.getElementById('l-user').addEventListener('keydown',e=>{if(e.key==='Ent
       </div>
     </div>
   </div>
+<!-- Change Password Modal -->
+<div class="overlay" id="ov-change-pass">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hdr">
+      <div><div class="modal-title">🔑 Cambiar Contraseña</div><div class="modal-hdr-sub">Actualiza tu contraseña de acceso</div></div>
+      <button class="modal-close" onclick="closeOv('ov-change-pass')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Contraseña actual</label>
+          <input class="form-inp" type="password" id="cp-current" placeholder="Contraseña actual">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Nueva contraseña</label>
+          <input class="form-inp" type="password" id="cp-new" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Confirmar nueva contraseña</label>
+          <input class="form-inp" type="password" id="cp-confirm" placeholder="Repite la nueva contraseña">
+        </div>
+      </div>
+      <div class="alert-msg" id="cp-alert" style="margin-top:10px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-change-pass')">Cancelar</button>
+      <button class="btn btn-yellow" onclick="doChangePass()">💾 Cambiar contraseña</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
