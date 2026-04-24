@@ -588,8 +588,8 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </select>
         <select class="f-sel" id="f-freq" onchange="renderTodas()">
           <option value="">Frecuencia</option>
-          <option>Mensual</option><option>Trimestral</option>
-          <option>Semestral</option><option>Anual</option><option>Por requisito</option>
+          <option>Mensual</option><option>Bimestral</option><option>Trimestral</option>
+          <option>Semestral</option><option>Anual</option><option>Por requisito</option><option>Única vez</option>
         </select>
       </div>
       <div class="task-list" id="list-todas"></div>
@@ -1221,15 +1221,18 @@ function renderTodas(){
   const cat=document.getElementById('f-cat').value;
   const st=document.getElementById('f-status').value;
   const fr=document.getElementById('f-freq').value;
-  const filtered=activities.map((a,i)=>({a,i})).filter(({a})=>{
-    if(q&&!a.descripcion.toLowerCase().includes(q)&&!a.id.toLowerCase().includes(q)) return false;
+  const yearActs=getYearActs();
+  const filtered=yearActs.map((a)=>({a,i:activities.indexOf(a)})).filter(({a})=>{
+    if(q&&!a.descripcion.toLowerCase().includes(q)&&!String(a.id).toLowerCase().includes(q)) return false;
     if(cat&&a.categoria!==cat) return false;
     if(st&&getStatus(a)!==st) return false;
     if(fr&&a.frecuencia!==fr) return false;
     return true;
   });
-  document.getElementById('todas-count').textContent=`${filtered.length} de ${activities.length} actividades`;
-  document.getElementById('list-todas').innerHTML=filtered.length?filtered.map(({a,i})=>taskCard(a,i)).join(''):emptyState('No hay resultados');
+  const total=yearActs.length;
+  document.getElementById('todas-count').textContent=`${filtered.length} de ${total} actividades (${ACTIVE_YEAR})`;
+  if(total===0){document.getElementById('list-todas').innerHTML=emptyState(`No hay actividades para ${ACTIVE_YEAR}`);return;}
+  document.getElementById('list-todas').innerHTML=filtered.length?filtered.map(({a,i})=>taskCard(a,i)).join(''):emptyState('No hay resultados para los filtros aplicados');
 }
 
 // ── ADMIN ─────────────────────────────────────────────────────
@@ -1310,11 +1313,20 @@ function openAddTask(){
   openOv('ov-task');
 }
 function openEditTask(idx){
-  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el administrador puede editar');return;}
+  const isAdmin = currentUser?.role==='admin';
+  const act = activities[idx];
+  const myFirst = (currentUser?.name||'').toLowerCase().split(' ')[0];
+  const isOwner = myFirst && (act?.responsable||'').toLowerCase().includes(myFirst);
+  if(!isAdmin && !isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
   editingTaskIdx=idx;
-  const a=activities[idx];
-  document.getElementById('task-modal-title').textContent='Editar Actividad';
-  document.getElementById('btn-del-task').style.display='inline-flex';
+  const a=act;
+  document.getElementById('task-modal-title').textContent=isAdmin?'Editar Actividad':'📝 Registrar Ejecución';
+  document.getElementById('btn-del-task').style.display=isAdmin?'inline-flex':'none';
+  // Bloquear campos para no-admin
+  ['t-desc','t-cat','t-freq','t-year','t-entregable','t-resp','t-fecha-inicio'].forEach(id=>{
+    const el=document.getElementById(id); if(!el)return;
+    el.disabled=!isAdmin; el.style.opacity=isAdmin?'':'0.55'; el.style.cursor=isAdmin?'':'not-allowed';
+  });
   document.getElementById('t-id').value=a.id;
   document.getElementById('t-desc').value=a.descripcion;
   document.getElementById('t-entregable').value=a.entregable||'';
@@ -1336,7 +1348,11 @@ function openEditTask(idx){
   openOv('ov-task');
 }
 function saveTask(){
-  if(currentUser?.role!=='admin') return;
+  const isAdmin=currentUser?.role==='admin';
+  const myFirst=(currentUser?.name||'').toLowerCase().split(' ')[0];
+  const isOwner=editingTaskIdx!==null&&myFirst&&(activities[editingTaskIdx]?.responsable||'').toLowerCase().includes(myFirst);
+  if(!isAdmin&&editingTaskIdx===null){showToast('⚠️ Solo admin puede crear actividades');return;}
+  if(!isAdmin&&!isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
   const desc=sanitize(document.getElementById('t-desc').value);
   if(!desc){showToast('⚠️ Descripción obligatoria');return;}
   if(desc.length>300){showToast('⚠️ Descripción demasiado larga');return;}
@@ -1481,7 +1497,7 @@ function openAddResp(){
   document.getElementById('btn-del-resp').style.display='none';
   ['r-name','r-role','r-email','r-phone','r-area'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   const cedEl=document.getElementById('r-cedula');
-  if(cedEl){cedEl.value='';cedEl.readOnly=false;cedEl.style.background='';}
+  if(cedEl){cedEl.value='';cedEl.readOnly=false;cedEl.removeAttribute('readonly');cedEl.style.background='';cedEl.style.opacity='';cedEl.style.cursor='';}
   if(document.getElementById('r-rol'))document.getElementById('r-rol').value='usuario';
   openOv('ov-resp');
 }
@@ -1765,7 +1781,8 @@ function saveReschedule(idx) {
   if (!reason || reason.length < 20) { showToast('⚠️ Justificación mínimo 20 caracteres'); return; }
   const act = activities[idx];
   const fechaAnterior = act.fecha_inicio || '—';
-  // Actualizar mes en la programación
+  if(!act.reprog_original) act.reprog_original = fechaAnterior;
+  // Marcar nuevo mes como programado (mes original se conserva para vista visual)
   const fecha = new Date(fechaVal + 'T12:00:00');
   const mes = fecha.getMonth();
   act.meses[mes].p = 1;
@@ -1922,8 +1939,9 @@ function openImportCSV() {
     <div class="modal-body">
       <div style="background:var(--esq-blue-lt);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--esq-blue)">
         <strong>Formato CSV (con encabezados):</strong><br>
-        id,descripcion,categoria,frecuencia,responsable,entregable<br>
-        6.1,Mi actividad,Aplicación SG-HSE,Mensual,Coordinador HSE,Registro
+        descripcion,categoria,frecuencia,responsable,entregable,fecha_inicio<br>
+        Inspección de equipos,Aplicación SG-HSE,Mensual,Coordinador HSE,Registro,2026-01-15<br>
+        <span style="color:var(--text-3)">El ID se asigna automático. El año sale de fecha_inicio.</span>
       </div>
       <div style="margin-bottom:12px">
         <label class="form-lbl">📂 Cargar archivo CSV</label>
@@ -1963,13 +1981,14 @@ function loadCSVFile(input) {
 
 // ── Descargar plantilla CSV ───────────────────────────────────
 function downloadCSVTemplate() {
-  const header = 'id,descripcion,categoria,frecuencia,responsable,entregable';
+  const header = 'descripcion,categoria,frecuencia,responsable,entregable,fecha_inicio';
   const rows = [
-    '3.1,Inspección de equipos de protección,Aplicación SG-HSE,Mensual,Coordinador HSE,Registro de inspección',
-    '4.1,Auditoría interna SG-HSE,Auditoría y Revisión,Trimestral,Coordinador HSE,Informe de auditoría',
+    'Inspección de equipos de protección,Aplicación SG-HSE,Mensual,Coordinador HSE,Registro de inspección,2026-01-15',
+    'Auditoría interna SG-HSE,Auditoría y Revisión,Trimestral,Coordinador HSE,Informe de auditoría,2026-03-01',
+    'Publicar RIT,Organización SG-HSE,Única vez,Coordinador RRHH,RIT publicado,2026-04-30',
   ];
   const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], {type:'text/csv'});
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'plantilla_actividades_HSE.csv';
@@ -2023,28 +2042,31 @@ function previewCSV() {
 
 function importCSV() {
   const text = document.getElementById('csv-input')?.value || '';
-  const year = parseInt(document.getElementById('csv-year')?.value) || new Date().getFullYear();
+  const fallbackYear = parseInt(document.getElementById('csv-year')?.value) || new Date().getFullYear();
   const rows = parseCSV(text);
   if (!rows.length) { showToast('⚠️ CSV vacío'); return; }
   const freqMap = { 'mensual':'Mensual','bimestral':'Bimestral','trimestral':'Trimestral','semestral':'Semestral','anual':'Anual','por requisito':'Por requisito','única vez':'Única vez','unica vez':'Única vez' };
   let added = 0, skipped = 0;
   for (const row of rows) {
-    const id = (row.id || row['id']||'').trim();
-    const desc = (row.descripcion || row['descripcion']||'').trim();
-    if (!id || !desc) { skipped++; continue; }
-    if (activities.find(a => a.id === id && (a.year||2025) === year)) { skipped++; continue; }
+    const desc = (row.descripcion||'').trim();
+    if (!desc) { skipped++; continue; }
+    const cat = row.categoria || 'Aplicación SG-HSE';
     const freq = freqMap[(row.frecuencia||'').toLowerCase()] || 'Por requisito';
-    const newAct = {
-      id, descripcion: desc,
-      categoria: row.categoria || 'Aplicación SG-HSE',
-      frecuencia: freq,
-      responsable: row.responsable || 'Coordinador HSE',
-      entregable: row.entregable || '',
-      year, meses: Array(12).fill(0).map(()=>({p:0,e:0}))
-    };
+    const fi = (row.fecha_inicio||row['fecha_inicio']||'').trim();
+    const year = fi ? new Date(fi+'T12:00:00').getFullYear() : fallbackYear;
+    const autoId = autoGenIdValue(cat, year);
+    if (activities.find(a=>a.descripcion.toLowerCase()===desc.toLowerCase()&&(a.year||2025)===year)) { skipped++; continue; }
+    const meses = Array(12).fill(0).map(()=>({p:0,e:0}));
+    if(fi){
+      const iv={'Mensual':30,'Bimestral':60,'Trimestral':90,'Semestral':180,'Anual':365};
+      const dias=iv[freq]||0;
+      if(!dias){ const m=new Date(fi+'T12:00:00').getMonth(); if(m>=0&&m<12) meses[m].p=1; }
+      else{ let c=new Date(fi+'T12:00:00'); while(c.getFullYear()<=year){if(c.getFullYear()===year)meses[c.getMonth()].p=1;c.setDate(c.getDate()+dias);} }
+    }
+    const newAct = { id:autoId, descripcion:desc, categoria:cat, frecuencia:freq, responsable:row.responsable||'Coordinador HSE', entregable:row.entregable||'', fecha_inicio:fi, year, meses };
     activities.push(newAct);
     fbSaveActivity(newAct);
-    addHistory(id, 'importada', `CSV ${year}`);
+    addHistory(autoId, 'importada', `CSV ${year}`);
     added++;
   }
   save();
@@ -2166,86 +2188,75 @@ let FB_READY = false;
 // FIX #4 — Modal de Alertas
 // ══════════════════════════════════════════════════════════
 function openAlerts(){
-  const today = new Date();
-  const curMonth = today.getMonth();
+  const today = new Date(); today.setHours(0,0,0,0);
   const yr = ACTIVE_YEAR || today.getFullYear();
   const acts = activities.filter(a => (a.year||2025) === yr);
-
-  // Vencidas: cualquier mes pasado con P pero sin E
-  const vencidas = acts.filter(a =>
-    a.meses.some((m, i) => m.p && !m.e && i <= curMonth)
-  );
-
-  // Próximas: mes actual o siguiente con P pero sin E (no vencidas)
-  const proximas = acts.filter(a => {
-    const tieneVencida = a.meses.some((m, i) => m.p && !m.e && i < curMonth);
-    if (tieneVencida) return false; // ya está en vencidas
-    const next = curMonth + 1;
-    return (a.meses[curMonth]?.p && !a.meses[curMonth]?.e) ||
-           (next <= 11 && a.meses[next]?.p && !a.meses[next]?.e);
+  const getProxFecha = (act) => {
+    const fi = act.reprog_fecha || act.fecha_inicio;
+    if(!fi) return null;
+    const base = new Date(fi+'T12:00:00'); base.setHours(0,0,0,0);
+    const iv = {'Mensual':30,'Bimestral':60,'Trimestral':90,'Semestral':180,'Anual':365};
+    const dias = iv[act.frecuencia]||0;
+    if(!dias) return base;
+    let c=new Date(base);
+    while(c<=today) c.setDate(c.getDate()+dias);
+    return c;
+  };
+  const vencidas=[], proximas=[];
+  acts.filter(a=>getStatus(a)!=='ejecutado').forEach(a=>{
+    const f=getProxFecha(a); if(!f) return;
+    const diff=Math.round((f-today)/86400000);
+    if(diff<0) vencidas.push({a,dias:Math.abs(diff)});
+    else if(diff<=7) proximas.push({a,dias:diff});
   });
-
-  // Actualizar badge del botón
-  const total = vencidas.length + proximas.length;
-  const badge = document.getElementById('alert-count');
-  if(badge) badge.textContent = total > 0 ? `🔔 ${total} Alertas` : '🔔 Sin alertas';
-
-  // Poblar filtros
-  const resps = [...new Set(acts.map(a => (a.responsable||'').split('/')[0].trim()))].filter(Boolean).sort();
-  const respEl = document.getElementById('alert-resp-filter');
-  if(respEl) respEl.innerHTML = '<option value="">Todos los responsables</option>' +
-    resps.map(r => `<option value="${r}">${r}</option>`).join('');
-
-  const cats = [...new Set(acts.map(a => a.categoria))].filter(Boolean);
-  const catEl = document.getElementById('alert-cat-filter');
-  if(catEl) catEl.innerHTML = '<option value="">Todas las categorías</option>' +
-    cats.map(c => `<option value="${c}">${c}</option>`).join('');
-
-  window._alertData = { vencidas, proximas };
+  const total=vencidas.length+proximas.length;
+  const badge=document.getElementById('alert-count');
+  if(badge) badge.textContent=total>0?`🔔 ${total} Alertas`:'🔔 Sin alertas';
+  const resps=[...new Set(acts.map(a=>(a.responsable||'').split('/')[0].trim()))].filter(Boolean).sort();
+  const respEl=document.getElementById('alert-resp-filter');
+  if(respEl) respEl.innerHTML='<option value="">Todos los responsables</option>'+resps.map(r=>`<option value="${r}">${r}</option>`).join('');
+  const cats=[...new Set(acts.map(a=>a.categoria))].filter(Boolean);
+  const catEl=document.getElementById('alert-cat-filter');
+  if(catEl) catEl.innerHTML='<option value="">Todas las categorías</option>'+cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+  window._alertData={vencidas,proximas};
   renderAlertList();
   openOv('ov-alerts');
 }
 
 function renderAlertList(){
-  const { vencidas, proximas } = window._alertData || { vencidas:[], proximas:[] };
-  const respF = document.getElementById('alert-resp-filter')?.value || '';
-  const catF = document.getElementById('alert-cat-filter')?.value || '';
-
-  const filter = (arr) => arr.filter(a =>
-    (!respF || (a.responsable||'').includes(respF)) &&
-    (!catF || a.categoria === catF)
-  );
-
-  const vFiltered = filter(vencidas);
-  const pFiltered = filter(proximas);
-
-  document.getElementById('alert-count-vencidas').textContent = vFiltered.length;
-  document.getElementById('alert-count-proximas').textContent = pFiltered.length;
-
-  const renderSection = (tasks, type) => {
-    if(tasks.length === 0) return `<div style="padding:16px;text-align:center;color:var(--text-3);font-size:13px">— Sin registros —</div>`;
-    return tasks.map(a => {
-      const resp = (a.responsable||'').split('/')[0].trim().split('\n')[0].trim() || 'Sin asignar';
-      return `
-        <div class="task-card ${type==='vencida'?'vencido':'pendiente'}" style="cursor:default" onclick="openDetail(${activities.indexOf(a)});closeOv('ov-alerts')">
-          <div class="task-id">${a.id}</div>
-          <div class="task-body">
-            <div class="task-desc">${a.descripcion}</div>
-            <div class="task-tags">
-              <span class="tag tag-cat">${a.categoria}</span>
-              <span class="tag tag-resp">👤 ${resp}</span>
-              <span class="tag tag-freq">${a.frecuencia}</span>
-            </div>
+  const {vencidas,proximas}=window._alertData||{vencidas:[],proximas:[]};
+  const respF=document.getElementById('alert-resp-filter')?.value||'';
+  const catF=document.getElementById('alert-cat-filter')?.value||'';
+  const filt=(arr)=>arr.filter(({a})=>(!respF||(a.responsable||'').includes(respF))&&(!catF||a.categoria===catF));
+  const vF=filt(vencidas), pF=filt(proximas);
+  document.getElementById('alert-count-vencidas').textContent=vF.length;
+  document.getElementById('alert-count-proximas').textContent=pF.length;
+  const sec=(items,type)=>{
+    if(!items.length) return `<div style="padding:16px;text-align:center;color:var(--text-3);font-size:13px">— Sin registros —</div>`;
+    return items.map(({a,dias})=>{
+      const resp=(a.responsable||'').split('/')[0].trim().split('\n')[0].trim()||'Sin asignar';
+      const tStr=type==='vencida'?`hace ${dias} día${dias!==1?'s':''}`:(dias===0?'hoy':`en ${dias} día${dias!==1?'s':''}`);
+      const isRep=!!a.reprog_fecha;
+      return `<div class="task-card ${type==='vencida'?'vencido':'pendiente'}" style="cursor:pointer" onclick="openDetail(${activities.indexOf(a)});closeOv('ov-alerts')">
+        <div class="task-id">${a.id}</div>
+        <div class="task-body">
+          <div class="task-desc">${a.descripcion}</div>
+          <div class="task-tags">
+            <span class="tag tag-cat">${a.categoria}</span>
+            <span class="tag tag-resp">👤 ${resp}</span>
+            <span class="tag tag-freq">${a.frecuencia}</span>
+            ${isRep?'<span class="tag" style="background:var(--purple-lt);color:var(--purple)">📅 Reprog.</span>':''}
           </div>
-          <div class="task-right">
-            <span class="status-pill ${type==='vencida'?'vencido':'pendiente'}">${type==='vencida'?'🔴 VENCIDA':'⏳ PRÓXIMA'}</span>
-          </div>
-        </div>`;
+        </div>
+        <div class="task-right" style="text-align:right">
+          <span class="status-pill ${type==='vencida'?'vencido':'pendiente'}">${type==='vencida'?'🔴 VENCIDA':'⏳ PRÓXIMA'}</span>
+          <div style="font-size:10px;color:var(--text-3);margin-top:4px;font-weight:600">${tStr}</div>
+        </div>
+      </div>`;
     }).join('');
   };
-
-  document.getElementById('alert-list-vencidas').innerHTML = renderSection(vFiltered, 'vencida');
-  document.getElementById('alert-list-proximas').innerHTML = renderSection(pFiltered, 'proxima');
+  document.getElementById('alert-list-vencidas').innerHTML=sec(vF,'vencida');
+  document.getElementById('alert-list-proximas').innerHTML=sec(pF,'proxima');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2423,12 +2434,16 @@ function changeYear(yr) {
   const btnNew = document.getElementById('btn-nueva-act-top');
   if (banner) banner.style.display = isReadonly ? 'block' : 'none';
   if (btnNew) btnNew.style.display = isReadonly ? 'none' : '';
+  // Actualizar filtro de categorías según año
+  const yearActs = getYearActs();
+  const cats = [...new Set(yearActs.map(a=>a.categoria))].filter(Boolean).sort();
+  const catEl = document.getElementById('f-cat');
+  if(catEl) catEl.innerHTML = '<option value="">Categoría</option>' + cats.map(c=>`<option>${c}</option>`).join('');
   refreshAll();
 }
 
 function getYearActs() {
-  const filtered = activities.filter(a => (a.year||2026) === ACTIVE_YEAR);
-  return filtered.length > 0 ? filtered : activities;
+  return activities.filter(a => (a.year || new Date().getFullYear()) === ACTIVE_YEAR);
 }
 
 // ── RESPONSABLE HELPERS ───────────────────────────────────────
