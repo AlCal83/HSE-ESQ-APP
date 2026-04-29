@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#0B1C3D">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -682,6 +684,25 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </div>
         <div class="alert-msg" id="n-alert"></div>
       </div>
+      <!-- BLOQUE ALERTAS MASIVAS EMAILJS -->
+      <div class="notify-box admin-only-block" style="margin-top:16px;border-left:4px solid var(--esq-orange)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--dark)">🚨 Alertas automáticas por email</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:2px">Envía a cada responsable SOLO sus tareas urgentes según nivel de urgencia</div>
+          </div>
+          <button class="btn btn-orange" onclick="enviarAlertsEmail()">📨 Enviar Alertas Ahora</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;font-size:11px">
+          <div style="padding:8px;border-radius:8px;background:#EFF6FF;border-left:3px solid #1A3C8F;color:#1A3C8F;font-weight:700">📋 7 días → Azul (preventivo)</div>
+          <div style="padding:8px;border-radius:8px;background:#FEFCE8;border-left:3px solid #F5C800;color:#78350F;font-weight:700">⚠️ 3 días → Amarillo (urgente)</div>
+          <div style="padding:8px;border-radius:8px;background:#FFF7ED;border-left:3px solid #E84E1B;color:#C2410C;font-weight:700">🔴 Hoy → Naranja (crítico)</div>
+          <div style="padding:8px;border-radius:8px;background:#FEF2F2;border-left:3px solid #DC2626;color:#991B1B;font-weight:700">🚨 Vencida → Rojo (actúa ya)</div>
+        </div>
+        <div style="margin-top:10px;padding:10px;background:var(--amber-lt);border-radius:8px;font-size:11px;color:var(--amber)">
+          ⚙️ Para activar: configura <strong>EMAILJS_SERVICE_ID</strong>, <strong>EMAILJS_TEMPLATE_ID</strong> y <strong>EMAILJS_PUBLIC_KEY</strong> en el código (ver comentarios). Control de duplicados automático vía Firestore.
+        </div>
+      </div>
     </div>
 
   </div><!-- /main -->
@@ -1006,8 +1027,8 @@ async function enterApp(){
   });
   await initApp();
   if(currentUser?.cedula) checkFirstLogin(currentUser.cedula);
-  // FEATURE 3: verificar primer login
-  if(currentUser?.cedula) checkFirstLogin(currentUser.cedula);
+  // Auto email check (solo admin, una vez por sesión)
+  checkAutoEmail();
 }
 function showLoginErr(msg){
   const el=document.getElementById('login-err');
@@ -1737,19 +1758,17 @@ function saveResp(){
     const newResp={id:cedula,...obj};
     responsables.push(newResp);
     save(); fbSaveResponsable(newResp);
-    // Crear cuenta Firebase Auth con cédula como usuario
+    // Crear cuenta Firebase Auth via endpoint Vercel (Admin SDK — no afecta sesión del admin)
     const passInicial = `Esq${cedula}#`;
-    const emailAuth = `${cedula}@hse.esq`;
-    if(auth && window._fb?.createUserWithEmailAndPassword){
-      window._fb.createUserWithEmailAndPassword(auth, emailAuth, passInicial)
-        .then(()=>showToast(`✅ Usuario creado. Contraseña inicial: ${passInicial}`))
-        .catch(e=>{
-          if(e.code==='auth/email-already-in-use') showToast('ℹ️ El usuario ya tiene cuenta Firebase');
-          else showToast(`✅ Responsable guardado (cuenta Firebase: ${e.message})`);
-        });
-    } else {
-      showToast(`✅ Responsable guardado. Contraseña inicial: ${passInicial}`);
-    }
+    crearUsuarioFirebase(cedula).then(result=>{
+      if(result?.alreadyExists){
+        showToast('ℹ️ El usuario ya tiene cuenta Firebase. Responsable guardado.');
+      } else if(result?.ok){
+        showToast(`✅ Usuario creado en Firebase. Contraseña inicial: ${passInicial}`);
+      } else {
+        showToast(`✅ Responsable guardado. Contraseña inicial: ${passInicial}`);
+      }
+    });
     closeOv('ov-resp'); renderResponsables();
   }
 }
@@ -2936,6 +2955,269 @@ service cloud.firestore {
   }
 }
 */
+
+// ════════════════════════════════════════════════════════════
+// SESIÓN 17 — CREAR USUARIO VÍA ENDPOINT VERCEL (Admin SDK)
+// ════════════════════════════════════════════════════════════
+async function crearUsuarioFirebase(cedula) {
+  try {
+    const r = await fetch('/api/create-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cedula: String(cedula) })
+    });
+    if (!r.ok) {
+      const err = await r.json().catch(()=>({error:'Error de red'}));
+      console.warn('create-user endpoint error:', err);
+      return null;
+    }
+    return await r.json();
+  } catch(e) {
+    console.warn('crearUsuarioFirebase fetch error:', e);
+    return null;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// SESIÓN 17 — FILTRO ACTIVIDADES POR USUARIO (rol usuario normal)
+// Usuario normal (rol 'usuario') solo ve SUS actividades
+// Admin y supervisor ven todas
+// ════════════════════════════════════════════════════════════
+function getVisibleActivities() {
+  if (!currentUser) return activities;
+  const role = currentUser.role;
+  if (role === 'admin' || role === 'supervisor') return activities;
+  // Usuario normal: filtrar por cedula === responsable_id
+  const myCedula = currentUser.cedula;
+  if (!myCedula) return activities;
+  return activities.filter(a => a.responsable_id === myCedula);
+}
+
+// Parche: reemplazar getYearActs para respetar filtro de visibilidad
+const _origGetYearActs = getYearActs;
+function getYearActs() {
+  const visible = getVisibleActivities();
+  return visible.filter(a => (a.year || new Date().getFullYear()) === ACTIVE_YEAR);
+}
+
+// ════════════════════════════════════════════════════════════
+// SESIÓN 17 — SISTEMA DE ALERTAS POR EMAIL ESCALONADO (EmailJS)
+// ════════════════════════════════════════════════════════════
+// CONFIGURACIÓN — COMPLETAR ANTES DE USAR:
+const EMAILJS_SERVICE_ID  = 'service_HSE_ESQ';   // ← Tu Service ID de EmailJS
+const EMAILJS_TEMPLATE_ID = 'template_hse_alerta'; // ← Tu Template ID de EmailJS
+const EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY_AQUI';  // ← Tu Public Key de EmailJS
+const EMAIL_COORDINADOR   = 'acalderon@esquivensa.com'; // Copia resumen semanal
+
+// Cargar EmailJS SDK una sola vez
+let emailJsLoaded = false;
+async function loadEmailJS() {
+  if (emailJsLoaded) return true;
+  return new Promise(resolve => {
+    if (window.emailjs) { emailJsLoaded = true; resolve(true); return; }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+    s.onload = () => {
+      window.emailjs.init(EMAILJS_PUBLIC_KEY);
+      emailJsLoaded = true;
+      resolve(true);
+    };
+    s.onerror = () => resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
+// Verificar si ya se envió email hoy al mismo usuario
+async function emailYaEnviadoHoy(cedula, tipo) {
+  if (!db) return false;
+  try {
+    const { collection, getDocs } = window._fb;
+    const hoy = new Date().toISOString().split('T')[0];
+    const snap = await getDocs(collection(db, 'email_log'));
+    return snap.docs.some(d => {
+      const dat = d.data();
+      return dat.cedula === cedula && dat.tipo === tipo && dat.fecha === hoy;
+    });
+  } catch(e) { return false; }
+}
+
+// Registrar envío en Firestore
+async function registrarEmailLog(cedula, tipo, email) {
+  if (!db) return;
+  try {
+    const { collection, doc, setDoc } = window._fb;
+    const hoy = new Date().toISOString().split('T')[0];
+    const id = `${cedula}_${tipo}_${hoy}`;
+    await setDoc(doc(db, 'email_log', id), {
+      cedula, tipo, email, fecha: hoy,
+      enviado_en: new Date().toISOString()
+    });
+  } catch(e) { console.warn('registrarEmailLog error:', e); }
+}
+
+// Construir HTML del email según urgencia
+function buildEmailHTML(responsableNombre, tareas, nivel) {
+  const colores = {
+    'info':     { bg: '#1A3C8F', texto: '#FFFFFF', icono: '📋', titulo: 'Tienes tareas próximas (7 días)' },
+    'warning':  { bg: '#F5C800', texto: '#0B1C3D', icono: '⚠️', titulo: 'Atención requerida — 3 días' },
+    'critical': { bg: '#E84E1B', texto: '#FFFFFF', icono: '🔴', titulo: 'Vence HOY' },
+    'vencida':  { bg: '#DC2626', texto: '#FFFFFF', icono: '🚨', titulo: 'Tarea vencida — actúa ya' }
+  };
+  const c = colores[nivel] || colores['info'];
+  const filasHTML = tareas.map(t => `
+    <tr>
+      <td style="padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.08);font-size:13px">[${t.id}] ${t.descripcion}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.08);font-size:12px;white-space:nowrap">${t.frecuencia}</td>
+      <td style="padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.08);font-size:12px;white-space:nowrap">${t.diasStr}</td>
+    </tr>`).join('');
+
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#F4F6FB">
+  <div style="max-width:600px;margin:0 auto;padding:24px 16px">
+    <div style="background:${c.bg};color:${c.texto};padding:20px 24px;border-radius:12px 12px 0 0;text-align:center">
+      <div style="font-size:36px">${c.icono}</div>
+      <div style="font-size:20px;font-weight:900;margin-top:8px">${c.titulo}</div>
+      <div style="font-size:13px;opacity:.85;margin-top:4px">HSE ESQUIVENSA · Sistema de Gestión</div>
+    </div>
+    <div style="background:#fff;padding:20px 24px;border-radius:0 0 12px 12px;box-shadow:0 4px 16px rgba(0,0,0,.08)">
+      <p style="font-size:14px;color:#1E293B;margin-bottom:16px">Hola <strong>${responsableNombre}</strong>, tienes las siguientes tareas HSE que requieren tu atención:</p>
+      <table width="100%" style="border-collapse:collapse;background:#F8FAFC;border-radius:8px;overflow:hidden">
+        <thead>
+          <tr style="background:#0B1C3D;color:white">
+            <th style="padding:10px;font-size:12px;text-align:left">Actividad</th>
+            <th style="padding:10px;font-size:12px;text-align:left">Frecuencia</th>
+            <th style="padding:10px;font-size:12px;text-align:left">Estado</th>
+          </tr>
+        </thead>
+        <tbody>${filasHTML}</tbody>
+      </table>
+      <p style="font-size:12px;color:#64748B;margin-top:20px;text-align:center">
+        Accede al sistema: <a href="https://hse-esq-app.vercel.app" style="color:#1A3C8F;font-weight:700">hse-esq-app.vercel.app</a>
+      </p>
+    </div>
+    <p style="font-size:11px;color:#94A3B8;text-align:center;margin-top:16px">ESQUIVENSA · Sistema HSE · Correo automático</p>
+  </div></body></html>`;
+}
+
+// Función principal — envía emails a todos los responsables con tareas urgentes
+async function enviarAlertsEmail() {
+  const ejsOk = await loadEmailJS();
+  if (!ejsOk) { showToast('⚠️ EmailJS no disponible'); return; }
+  if (EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY_AQUI') {
+    showToast('⚠️ Configura EMAILJS_PUBLIC_KEY en el código'); return;
+  }
+
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const yr = ACTIVE_YEAR || hoy.getFullYear();
+  const acts = activities.filter(a => (a.year||2026) === yr);
+  const intervalos = {'Mensual':30,'Bimestral':60,'Trimestral':90,'Semestral':180,'Anual':365};
+
+  // Agrupar tareas urgentes por responsable
+  const porResponsable = {}; // { cedula: { resp, tareas7, tareas3, tareasHoy, vencidas } }
+
+  acts.forEach(act => {
+    if (getStatus(act) === 'ejecutado') return;
+    if (!act.responsable_id) return;
+    const cedula = act.responsable_id;
+    const resp = responsables.find(r => r.id === cedula);
+    if (!resp?.email) return;
+
+    const fi = act.reprog_fecha || act.fecha_inicio;
+    if (!fi) return;
+    let base = new Date(fi + 'T12:00:00'); base.setHours(0,0,0,0);
+    const dias = intervalos[act.frecuencia] || 0;
+    let proxima = new Date(base);
+    if (dias) { while(proxima <= hoy) proxima.setDate(proxima.getDate() + dias); }
+    const diff = Math.round((proxima - hoy) / 86400000);
+
+    if (!porResponsable[cedula]) {
+      porResponsable[cedula] = { resp, tareas7:[], tareas3:[], tareasHoy:[], vencidas:[] };
+    }
+    const tarea = { ...act, diasStr: diff < 0 ? `Vencida hace ${Math.abs(diff)}d` : diff === 0 ? 'Hoy' : `En ${diff} días` };
+
+    if (diff < 0) porResponsable[cedula].vencidas.push(tarea);
+    else if (diff === 0) porResponsable[cedula].tareasHoy.push(tarea);
+    else if (diff <= 3) porResponsable[cedula].tareas3.push(tarea);
+    else if (diff <= 7) porResponsable[cedula].tareas7.push(tarea);
+  });
+
+  let enviados = 0;
+  const resumenCoord = [];
+
+  for (const [cedula, data] of Object.entries(porResponsable)) {
+    const { resp, tareas7, tareas3, tareasHoy, vencidas } = data;
+
+    // Determinar nivel más urgente y lista de tareas a incluir
+    let nivel = null, tareasEnviar = [];
+    if (vencidas.length)      { nivel = 'vencida';  tareasEnviar = vencidas; }
+    else if (tareasHoy.length){ nivel = 'critical'; tareasEnviar = tareasHoy; }
+    else if (tareas3.length)  { nivel = 'warning';  tareasEnviar = tareas3; }
+    else if (tareas7.length)  { nivel = 'info';     tareasEnviar = tareas7; }
+    if (!nivel) continue;
+
+    // Control: no reenviar si ya se envió hoy
+    const yaEnviado = await emailYaEnviadoHoy(cedula, nivel);
+    if (yaEnviado) continue;
+
+    const asunto = `⚠️ Tareas HSE — ${resp.name}`;
+    const htmlContent = buildEmailHTML(resp.name, tareasEnviar, nivel);
+
+    try {
+      await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:    resp.email,
+        to_name:     resp.name,
+        subject:     asunto,
+        html_content: htmlContent,
+        reply_to:    EMAIL_COORDINADOR
+      });
+      await registrarEmailLog(cedula, nivel, resp.email);
+      enviados++;
+      resumenCoord.push({ nombre: resp.name, nivel, cantidad: tareasEnviar.length });
+    } catch(e) {
+      console.warn(`Email error para ${resp.name}:`, e);
+    }
+  }
+
+  // Resumen semanal al coordinador (solo si es lunes o si hubo envíos)
+  const esLunes = new Date().getDay() === 1;
+  if ((esLunes || enviados > 0) && resumenCoord.length > 0) {
+    const yaResumen = await emailYaEnviadoHoy('coordinador', 'resumen_semanal');
+    if (!yaResumen) {
+      const filas = resumenCoord.map(r =>
+        `<tr><td style="padding:6px 10px">${r.nombre}</td><td style="padding:6px 10px">${r.cantidad} tarea(s)</td><td style="padding:6px 10px">${r.nivel}</td></tr>`
+      ).join('');
+      const htmlResumen = `<div style="font-family:Arial;max-width:600px;margin:0 auto;padding:20px">
+        <h2 style="color:#0B1C3D">📊 Resumen Semanal HSE ESQUIVENSA</h2>
+        <table width="100%" style="border-collapse:collapse;border:1px solid #E2E8F0">
+          <thead><tr style="background:#0B1C3D;color:white"><th style="padding:8px">Responsable</th><th style="padding:8px">Tareas</th><th style="padding:8px">Nivel</th></tr></thead>
+          <tbody>${filas}</tbody>
+        </table>
+        <p style="color:#64748B;font-size:12px;margin-top:16px">Generado automáticamente · ${new Date().toLocaleDateString('es-CO')}</p>
+      </div>`;
+      try {
+        await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email: EMAIL_COORDINADOR,
+          to_name:  'Álvaro Calderón',
+          subject:  `📊 Resumen Semanal HSE — ${new Date().toLocaleDateString('es-CO')}`,
+          html_content: htmlResumen,
+          reply_to: EMAIL_COORDINADOR
+        });
+        await registrarEmailLog('coordinador', 'resumen_semanal', EMAIL_COORDINADOR);
+      } catch(e) { console.warn('Resumen email error:', e); }
+    }
+  }
+
+  showToast(enviados > 0 ? `✅ ${enviados} email(s) enviados correctamente` : 'ℹ️ No hay emails nuevos para enviar hoy');
+}
+
+// Auto-envío diario al cargar la app (solo una vez por sesión, solo si es admin)
+let autoEmailEnviado = false;
+function checkAutoEmail() {
+  if (autoEmailEnviado) return;
+  if (currentUser?.role !== 'admin') return;
+  if (EMAILJS_PUBLIC_KEY === 'TU_PUBLIC_KEY_AQUI') return; // No configurado aún
+  autoEmailEnviado = true;
+  setTimeout(() => enviarAlertsEmail(), 5000); // 5s después del login
+}
 
 </script>
 
