@@ -288,6 +288,12 @@ body[data-theme="light"] .topbar-logo img{}
 #ov-sociodem .btn-sm{padding:6px 13px;font-size:11.5px}
 #ov-sociodem .btn-xs{padding:4px 10px;font-size:11px}
 #ov-sociodem .worker-info-strip{background:var(--esq-blue-lt);border:1px solid rgba(26,60,143,.15);border-radius:var(--r-sm);padding:10px 14px;font-size:12.5px;color:var(--esq-blue);margin-top:10px;display:none}
+
+/* ── CAPACITACIONES — sub-tabs ─────────────────── */
+.ctab{background:none;border:none;border-bottom:3px solid transparent;padding:8px 16px;font-size:13px;font-weight:600;color:var(--text-2);cursor:pointer;border-radius:0;transition:all .15s;font-family:var(--font)}
+.ctab:hover{color:var(--dark);background:var(--surface)}
+.ctab.active{color:var(--esq-orange);border-bottom-color:var(--esq-orange)}
+.cview{display:block}
 .sd-enc-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:3px 9px;border-radius:99px;cursor:pointer}
 .sd-enc-tag.completa{background:var(--green-lt);color:var(--green)}
 .sd-enc-tag.pendiente{background:var(--amber-lt);color:var(--amber)}
@@ -657,6 +663,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     </div>
     <div class="tab" id="tab-trabajadores" onclick="showTab('trabajadores')">🧑‍🏭 Trabajadores</div>
     <div class="tab" id="tab-examenes"     onclick="showTab('examenes')">🏥 Exámenes</div>
+    <div class="tab" id="tab-capacitaciones" onclick="showTab('capacitaciones')">🎓 Capacitaciones</div>
     <div class="tab admin-only-block" style="display:none" id="tab-admin" onclick="showTab('admin')">⚙️ Admin</div>
     <div class="tab admin-only-block" style="display:none" id="tab-responsables" onclick="showTab('responsables')">👥 Usuarios</div>
   </div>
@@ -934,6 +941,221 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <div id="emo-empty" style="display:none;text-align:center;padding:40px;color:var(--text-3);font-size:13px">Sin registros.</div>
     </div>
 
+
+<div class="view" id="view-capacitaciones">
+  <!-- Sub-tabs internos -->
+  <div style="display:flex;gap:6px;margin-bottom:18px;border-bottom:2px solid var(--border);padding-bottom:0;flex-wrap:wrap">
+    <button id="ctab-alturas"        class="ctab active" onclick="showCTab('alturas')">🧗 Alturas</button>
+    <button id="ctab-confinados"     class="ctab"        onclick="showCTab('confinados')">⚠️ Confinados</button>
+    <button id="ctab-cap"            class="ctab"        onclick="showCTab('cap')">🎓 Capacitaciones</button>
+  </div>
+  <!-- ALTURAS -->
+  <div id="cview-alturas" class="cview">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">🧗 Trabajo en Alturas</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:2px">Res. 4272/2021 · Vigencia 18 meses · <span id="alt_total">0</span> registros · <span id="alt_venc" style="color:var(--red);font-weight:600">0 vencidos</span> · <span id="alt_prox30" style="color:var(--esq-orange);font-weight:600">0 próx. 30d</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="exportCertCSV('alt')">⬇ CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalCert('alt')">＋ Nueva certificación</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input class="form-inp" id="alt_search" style="width:220px;font-size:12px" placeholder="🔍 Nombre o cédula…" oninput="renderAlturas()">
+      <select class="form-sel" id="alt_estado" onchange="renderAlturas()" style="font-size:12px">
+        <option value="">Todos los estados</option><option value="vigente">✅ Vigente</option>
+        <option value="prox30">🟡 Próx. 30d</option><option value="prox90">🟠 Próx. 90d</option>
+        <option value="vencido">🔴 Vencido</option><option value="sin_fecha">⚫ Sin fecha</option>
+      </select>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr>
+      <th>Trabajador</th><th>Nivel</th><th>Tipo</th><th>Fecha</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody id="alt_tbody"></tbody></table></div>
+    <div id="alt_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Nueva certificación</strong>.</div>
+  </div>
+  <!-- CONFINADOS -->
+  <div id="cview-confinados" class="cview" style="display:none">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">⚠️ Espacios Confinados</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:2px">Res. 0491/2020 · Vigencia 36 meses · <span id="con_total">0</span> registros · <span id="con_venc" style="color:var(--red);font-weight:600">0 vencidos</span> · <span id="con_prox30" style="color:var(--esq-orange);font-weight:600">0 próx. 30d</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="exportCertCSV('con')">⬇ CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalCert('con')">＋ Nueva certificación</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input class="form-inp" id="con_search" style="width:220px;font-size:12px" placeholder="🔍 Nombre o cédula…" oninput="renderConfinados()">
+      <select class="form-sel" id="con_estado" onchange="renderConfinados()" style="font-size:12px">
+        <option value="">Todos los estados</option><option value="vigente">✅ Vigente</option>
+        <option value="prox30">🟡 Próx. 30d</option><option value="prox90">🟠 Próx. 90d</option>
+        <option value="vencido">🔴 Vencido</option><option value="sin_fecha">⚫ Sin fecha</option>
+      </select>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr>
+      <th>Trabajador</th><th>Nivel</th><th>Tipo</th><th>Fecha</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody id="con_tbody"></tbody></table></div>
+    <div id="con_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Nueva certificación</strong>.</div>
+  </div>
+  <!-- CAPACITACIONES GENERALES -->
+  <div id="cview-cap" class="cview" style="display:none">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">🎓 Capacitaciones SG-SST</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:2px"><span id="cap_total">0</span> registros · <span id="cap_venc" style="color:var(--red);font-weight:600">0 vencidos</span> · <span id="cap_prox90" style="color:var(--amber);font-weight:600">0 próx. 90d</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="exportCAPCSV()">⬇ CSV</button>
+        <button class="btn btn-primary btn-sm" onclick="abrirModalCAP()">＋ Registrar capacitación</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input class="form-inp" id="cap_search" style="width:220px;font-size:12px" placeholder="🔍 Nombre, cédula o tema…" oninput="renderCAP()">
+      <select class="form-sel" id="cap_tipo_f" onchange="renderCAP()" style="font-size:12px">
+        <option value="">Todos los tipos</option><option>Inducción</option><option>Reinducción</option>
+        <option>SST</option><option>Brigadas</option><option>Manejo de residuos</option>
+        <option>EPP</option><option>Emergencias</option><option>Otro</option>
+      </select>
+      <select class="form-sel" id="cap_estado_f" onchange="renderCAP()" style="font-size:12px">
+        <option value="">Todos los estados</option><option value="vencido">🔴 Vencido</option>
+        <option value="prox30">🟡 Próx. 30d</option><option value="prox90">🟠 Próx. 90d</option>
+        <option value="vigente">✅ Vigente</option><option value="sin_fecha">Sin venc.</option>
+      </select>
+      <select class="form-sel" id="cap_aprobado_f" onchange="renderCAP()" style="font-size:12px">
+        <option value="">Todos</option><option value="SI">✅ Aprobados</option><option value="NO">❌ No aprobados</option>
+      </select>
+    </div>
+    <div class="tbl-wrap"><table><thead><tr>
+      <th>Trabajador</th><th>Tema / Curso</th><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Aprobado</th><th>Acciones</th>
+    </tr></thead><tbody id="cap_tbody"></tbody></table></div>
+    <div id="cap_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Registrar capacitación</strong>.</div>
+  </div>
+</div>
+
+<!-- MODAL: CERT ALTURAS / CONFINADOS -->
+<div class="overlay" id="ov-cert">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modalCertTitle">Certificación</div>
+      <button class="modal-close" onclick="cerrarModalCert()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cert_modulo"><input type="hidden" id="cert_edit_id">
+      <div class="fgrid g2">
+        <div class="fld s2"><div class="flabel">Trabajador *</div>
+          <select id="cert_trabajador" style="width:100%"><option value="">— Seleccione —</option></select></div>
+        <div class="fld"><div class="flabel">Nivel *</div>
+          <select id="cert_nivel" style="width:100%" onchange="certToggleVigente(this.value);certToggleTipo(this.value)"><option value="">Seleccione…</option></select></div>
+        <div class="fld"><div class="flabel">Tipo *</div>
+          <select id="cert_tipo" style="width:100%"><option value="">Seleccione…</option></select></div>
+        <div class="fld"><div class="flabel">Fecha del curso *</div>
+          <input id="cert_fecha" type="date" onchange="certCalcVenc()"></div>
+        <div class="fld"><div class="flabel">Entidad certificadora</div>
+          <input id="cert_entidad" type="text" placeholder="SENA, SIGPE, ARL…"></div>
+        <div class="fld"><div class="flabel">Vencimiento (auto-calculado)</div>
+          <input id="cert_venc" type="date" readonly style="background:var(--surface)"></div>
+        <div class="fld s2" id="cert_vigente_wrap" style="display:none">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;padding:10px;background:var(--amber-lt);border-radius:var(--r-sm);border:1px solid var(--amber)">
+            <input type="checkbox" id="cert_vigente">
+            <span>✅ <strong>Marcar como Vigente manual</strong> — Coordinador actualización norma 1409→4272. El semáforo ignora la fecha de vencimiento.</span>
+          </label>
+        </div>
+        <div class="fld s2"><div class="flabel">Observaciones</div>
+          <textarea id="cert_obs" rows="2" style="width:100%"></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModalCert()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCert()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: HISTORIAL CERT -->
+<div class="overlay" id="ov-hist-cert">
+  <div class="modal" style="max-width:560px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="histCertTitle">Historial</div>
+      <button class="modal-close" onclick="closeOv('ov-hist-cert')">✕</button>
+    </div>
+    <div class="modal-body" id="histCertBody"></div>
+  </div>
+</div>
+
+<!-- MODAL: CAPACITACIÓN GENERAL -->
+<div class="overlay" id="ov-cap">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modalCAPTitle">Registrar capacitación</div>
+      <button class="modal-close" onclick="cerrarModalCAP()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cap_edit_id">
+      <div class="fgrid g2">
+        <div class="fld s2"><div class="flabel">Trabajador *</div>
+          <select id="cap_trabajador" style="width:100%"><option value="">— Seleccione —</option></select></div>
+        <div class="fld s2"><div class="flabel">Tema / Nombre del curso *</div>
+          <input id="cap_tema" type="text" placeholder="Ej: Uso y manejo de EPP…" style="width:100%"></div>
+        <div class="fld"><div class="flabel">Tipo *</div>
+          <select id="cap_tipo" style="width:100%"><option value="">Seleccione…</option>
+            <option>Inducción</option><option>Reinducción</option><option>SST</option>
+            <option>Brigadas</option><option>Manejo de residuos</option>
+            <option>EPP</option><option>Emergencias</option><option>Otro</option></select></div>
+        <div class="fld"><div class="flabel">Modalidad</div>
+          <select id="cap_modalidad" style="width:100%"><option value="">Seleccione…</option>
+            <option>Presencial</option><option>Virtual</option><option>Mixta</option></select></div>
+        <div class="fld"><div class="flabel">Fecha de realización *</div>
+          <input id="cap_fecha" type="date" onchange="capCalcVenc()"></div>
+        <div class="fld"><div class="flabel">Duración (horas)</div>
+          <input id="cap_horas" type="number" min="0.5" step="0.5" placeholder="Ej: 4"></div>
+        <div class="fld"><div class="flabel">Entidad / Facilitador externo</div>
+          <input id="cap_entidad" type="text" placeholder="SENA, ARL, Empresa…"></div>
+        <div class="fld"><div class="flabel">Facilitador interno</div>
+          <input id="cap_facilitador" type="text" placeholder="Nombre del instructor"></div>
+        <div class="fld s2">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;padding:8px;background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border)">
+            <input type="checkbox" id="cap_tiene_venc" onchange="capToggleVenc()">
+            <span>⏱ Esta capacitación tiene fecha de vencimiento / requiere renovación</span>
+          </label>
+        </div>
+        <div id="cap_venc_wrap" style="display:none;grid-column:1/-1">
+          <div class="fgrid g2">
+            <div class="fld"><div class="flabel">Vigencia (meses)</div>
+              <input id="cap_vig_meses" type="number" min="1" max="120" placeholder="Ej: 12" oninput="capCalcVenc()"></div>
+            <div class="fld"><div class="flabel">Fecha de vencimiento (auto)</div>
+              <input id="cap_vencimiento" type="date" readonly style="background:var(--surface)"></div>
+          </div>
+        </div>
+        <div class="fld"><div class="flabel">¿Aprobado?</div>
+          <select id="cap_aprobado" style="width:100%">
+            <option value="">—</option><option value="SI">✅ Sí</option><option value="NO">❌ No</option></select></div>
+        <div class="fld"><div class="flabel">Nota / Calificación</div>
+          <input id="cap_nota" type="text" placeholder="Ej: 4.5, Sobresaliente…"></div>
+        <div class="fld s2"><div class="flabel">Link soporte / certificado</div>
+          <input id="cap_soporte" type="text" placeholder="https://… o referencia del archivo físico"></div>
+        <div class="fld s2"><div class="flabel">Observaciones</div>
+          <textarea id="cap_obs" rows="2" style="width:100%" placeholder="Temas cubiertos, novedades, etc."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModalCAP()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarCAP()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: HISTORIAL CAPACITACIONES -->
+<div class="overlay" id="ov-hist-cap">
+  <div class="modal" style="max-width:580px">
+    <div class="modal-hdr">
+      <div class="modal-title" id="histCAPTitle">Historial capacitaciones</div>
+      <button class="modal-close" onclick="closeOv('ov-hist-cap')">✕</button>
+    </div>
+    <div class="modal-body" id="histCAPBody"></div>
+  </div>
+</div>
   </div><!-- /main -->
 </div><!-- /app -->
 
@@ -1252,6 +1474,7 @@ async function enterApp(){
   const showEl = (id, vis) => { const el=document.getElementById(id); if(el) el.style.display=vis?'block':'none'; };
   showEl('tab-trabajadores', isAdmin||isSupervisor);
   showEl('tab-examenes',     isAdmin||isSupervisor);
+  showEl('tab-capacitaciones', isAdmin||isSupervisor);
   showEl('tab-admin',        isAdmin);
   showEl('tab-responsables', isAdmin);
 
@@ -2149,7 +2372,7 @@ function closeOv(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));});
 document.querySelectorAll('.overlay').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');}));
 
-const VIEWS=['dashboard','hoy','semana','mes','todas','admin','responsables','notificar','trabajadores','examenes'];
+const VIEWS=['dashboard','hoy','semana','mes','todas','admin','responsables','notificar','trabajadores','examenes','capacitaciones'];
 const builtViews={};
 
 // Vistas agrupadas bajo "Plan de Trabajo"
@@ -2219,6 +2442,7 @@ function _doShowTab(name){
     notificar : ()=>{renderResponsables();buildNotifPreview();},
     trabajadores: ()=>renderTabTrabajadores(),
     examenes  : ()=>renderTabExamenes(),
+    capacitaciones: ()=>renderTabCapacitaciones(),
     sociodem  : ()=>renderTabSociodem(),
   };
   builders[name]?.();
@@ -5209,6 +5433,514 @@ function imprimirFormulario(){
   win.document.close();win.focus();
 }
 
+// ═══════════════════════════════════════════════
+// SESIÓN 22 — MÓDULO CAPACITACIONES
+// Firestore: colecciones alturas, confinados, capacitaciones
+// ═══════════════════════════════════════════════
+
+var CERT_CONFIG = {
+  alt: { meses:18, norma:'Res. 4272/2021', label:'🧗 Trabajo en Alturas',
+         niveles:['Autorizado','Coordinador','Administrativo'] },
+  con: { meses:36, norma:'Res. 0491/2020', label:'⚠️ Espacios Confinados',
+         niveles:['Entrante','Vigía','Supervisor','Administrador del PG'] }
+};
+var ALT_DATA=[], CON_DATA=[], CAP_DATA=[], _capLoaded=false;
+
+function showCTab(id){
+  document.querySelectorAll('.cview').forEach(function(v){v.style.display='none';});
+  document.querySelectorAll('.ctab').forEach(function(t){t.classList.remove('active');});
+  var cv=document.getElementById('cview-'+id);
+  var ct=document.getElementById('ctab-'+id);
+  if(cv) cv.style.display='block';
+  if(ct) ct.classList.add('active');
+  if(id==='alturas') renderAlturas();
+  if(id==='confinados') renderConfinados();
+  if(id==='cap') renderCAP();
+}
+
+async function renderTabCapacitaciones(){
+  if(!_capLoaded){await cargarTodosCap();_capLoaded=true;}
+  var activo=document.querySelector('.ctab.active');
+  var id=activo?activo.id.replace('ctab-',''):'alturas';
+  showCTab(id);
+}
+
+async function cargarTodosCap(){
+  try{
+    var fb=window._fb;
+    var col=fb.collection, gd=fb.getDocs, qry=fb.query, ob=fb.orderBy;
+    var res=await Promise.all([
+      gd(qry(col(db,'alturas'),ob('fecha','desc'))),
+      gd(qry(col(db,'confinados'),ob('fecha','desc'))),
+      gd(qry(col(db,'capacitaciones'),ob('fecha','desc')))
+    ]);
+    ALT_DATA=res[0].docs.map(function(d){return Object.assign({_fid:d.id},d.data());});
+    CON_DATA=res[1].docs.map(function(d){return Object.assign({_fid:d.id},d.data());});
+    CAP_DATA=res[2].docs.map(function(d){return Object.assign({_fid:d.id},d.data());});
+  }catch(e){
+    console.error('cargarTodosCap:',e);
+    _capLoaded=false; // permitir reintento
+    showToast('Error permisos Firestore — actualice reglas Firebase');
+  }
+}
+
+function _diasHasta(fecha){
+  if(!fecha) return null;
+  var h=new Date();h.setHours(0,0,0,0);
+  var f=new Date(fecha);f.setHours(0,0,0,0);
+  return Math.round((f-h)/86400000);
+}
+function _semaforo(dias){
+  if(dias===null) return {est:'sin_fecha',label:'Sin fecha',color:'var(--text-2)',bg:'var(--surface)'};
+  if(dias<0)      return {est:'vencido',  label:'Vencido',  color:'var(--red)',   bg:'var(--red-lt)'};
+  if(dias<=30)    return {est:'prox30',   label:'Próx. 30d',color:'#b45309',      bg:'var(--amber-lt)'};
+  if(dias<=90)    return {est:'prox90',   label:'Próx. 90d',color:'var(--amber)', bg:'#fef9ec'};
+  return              {est:'vigente',  label:'Vigente',  color:'var(--green)', bg:'var(--green-lt)'};
+}
+
+function certCalcVencDesde(fecha,modulo){
+  if(!fecha) return '';
+  var m=(CERT_CONFIG[modulo]||{}).meses||18;
+  var d=new Date(fecha);d.setMonth(d.getMonth()+m);
+  return d.toISOString().split('T')[0];
+}
+function certCalcVenc(){
+  var modulo=document.getElementById('cert_modulo').value;
+  var fecha=document.getElementById('cert_fecha').value;
+  document.getElementById('cert_venc').value=certCalcVencDesde(fecha,modulo);
+}
+function capCalcVenc(){
+  var chk=document.getElementById('cap_tiene_venc');
+  if(!chk||!chk.checked) return;
+  var fecha=document.getElementById('cap_fecha').value;
+  var meses=parseInt(document.getElementById('cap_vig_meses').value||'0');
+  if(!fecha||!meses){document.getElementById('cap_vencimiento').value='';return;}
+  var d=new Date(fecha);d.setMonth(d.getMonth()+meses);
+  document.getElementById('cap_vencimiento').value=d.toISOString().split('T')[0];
+}
+function capToggleVenc(){
+  var chk=document.getElementById('cap_tiene_venc');
+  var wrap=document.getElementById('cap_venc_wrap');
+  if(wrap) wrap.style.display=(chk&&chk.checked)?'block':'none';
+  if(chk&&!chk.checked){var el=document.getElementById('cap_vencimiento');if(el)el.value='';}
+}
+function certToggleVigente(nivel){
+  var modulo=document.getElementById('cert_modulo').value;
+  var wrap=document.getElementById('cert_vigente_wrap');if(!wrap)return;
+  var show=(modulo==='alt'&&nivel==='Coordinador');
+  wrap.style.display=show?'block':'none';
+  if(!show){var chk=document.getElementById('cert_vigente');if(chk)chk.checked=false;}
+}
+function certToggleTipo(nivel){
+  var modulo=document.getElementById('cert_modulo').value;
+  var selT=document.getElementById('cert_tipo');if(!selT)return;
+  selT.innerHTML='<option value="">Seleccione…</option>';
+  var tipos=[];
+  if(modulo==='alt'){
+    if(nivel==='Autorizado') tipos=['Formación inicial','Reentrenamiento'];
+    else if(nivel==='Coordinador') tipos=['Formación inicial','Reentrenamiento','Actualización norma'];
+    else tipos=['Formación inicial'];
+  } else { tipos=['Formación inicial','Actualización']; }
+  tipos.forEach(function(t){var o=document.createElement('option');o.value=t;o.textContent=t;selT.appendChild(o);});
+}
+
+function abrirModalCert(modulo,fid){
+  var cfg=CERT_CONFIG[modulo]||CERT_CONFIG.alt;
+  document.getElementById('cert_modulo').value=modulo;
+  document.getElementById('cert_edit_id').value='';
+  document.getElementById('modalCertTitle').textContent=cfg.label+' · '+cfg.meses+'m · '+cfg.norma;
+  var selN=document.getElementById('cert_nivel');
+  selN.innerHTML='<option value="">Seleccione…</option>';
+  cfg.niveles.forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;selN.appendChild(o);});
+  var selW=document.getElementById('cert_trabajador');
+  selW.innerHTML='<option value="">— Seleccione —</option>';
+  (_trabList||[]).filter(function(w){return w.estado!=='Inactivo';}).forEach(function(w){
+    var nom=[w.nombre1,w.nombre2,w.apellido1,w.apellido2].filter(Boolean).join(' ');
+    var opt=document.createElement('option');opt.value=w.cedula;
+    opt.textContent=nom+' · '+w.cedula;opt.dataset.nombre=nom;selW.appendChild(opt);
+  });
+  ['cert_nivel','cert_tipo','cert_fecha','cert_entidad','cert_venc','cert_obs'].forEach(function(id){
+    var el=document.getElementById(id);if(el)el.value='';
+  });
+  var chk=document.getElementById('cert_vigente');if(chk)chk.checked=false;
+  certToggleVigente('');certToggleTipo('');
+  if(fid){
+    var DATA=modulo==='alt'?ALT_DATA:CON_DATA;
+    var r=DATA.find(function(x){return x._fid===fid;});
+    if(r){
+      document.getElementById('cert_edit_id').value=fid;
+      document.getElementById('cert_nivel').value=r.nivel||'';
+      document.getElementById('cert_fecha').value=r.fecha||'';
+      document.getElementById('cert_entidad').value=r.entidad||'';
+      document.getElementById('cert_venc').value=r.vencimiento||'';
+      document.getElementById('cert_obs').value=r.obs||'';
+      if(chk)chk.checked=(r.vigente==='SI');
+      certToggleVigente(r.nivel||'');certToggleTipo(r.nivel||'');
+      setTimeout(function(){var s=document.getElementById('cert_tipo');if(s)s.value=r.tipo||'';},20);
+      Array.from(selW.options).forEach(function(o){if(o.value===String(r.cedula))o.selected=true;});
+    }
+  }
+  openOv('ov-cert');
+}
+function cerrarModalCert(){closeOv('ov-cert');}
+
+async function guardarCert(){
+  var modulo=document.getElementById('cert_modulo').value;
+  var selW=document.getElementById('cert_trabajador');
+  var cedula=selW.value;
+  var opt=selW.options[selW.selectedIndex];
+  var nombre=opt?opt.dataset.nombre||opt.textContent:'';
+  var nivel=document.getElementById('cert_nivel').value;
+  var tipo=document.getElementById('cert_tipo').value;
+  var fecha=document.getElementById('cert_fecha').value;
+  if(!cedula){showToast('Seleccione un trabajador');return;}
+  if(!nivel){showToast('Seleccione el nivel');return;}
+  if(!fecha){showToast('Ingrese la fecha');return;}
+  var chk=document.getElementById('cert_vigente');
+  var vigenteManual=(chk&&chk.checked&&modulo==='alt'&&nivel==='Coordinador')?'SI':'';
+  var reg={cedula:cedula,nombre:nombre,modulo:modulo,nivel:nivel,tipo:tipo,fecha:fecha,
+    entidad:document.getElementById('cert_entidad').value,
+    vencimiento:vigenteManual?'':certCalcVencDesde(fecha,modulo),
+    vigente:vigenteManual,obs:document.getElementById('cert_obs').value,
+    fechaRegistro:new Date().toISOString()};
+  try{
+    var fb=window._fb;
+    var fid=document.getElementById('cert_edit_id').value;
+    var colName=modulo==='alt'?'alturas':'confinados';
+    if(fid){await fb.setDoc(fb.doc(db,colName,fid),reg,{merge:true});}
+    else{var ref=await fb.addDoc(fb.collection(db,colName),reg);fid=ref.id;}
+    reg._fid=fid;
+    var DATA=modulo==='alt'?ALT_DATA:CON_DATA;
+    var idx=DATA.findIndex(function(x){return x._fid===fid;});
+    if(idx>=0)DATA[idx]=reg;else DATA.unshift(reg);
+    cerrarModalCert();
+    if(modulo==='alt')renderAlturas();else renderConfinados();
+    showToast('✅ Certificación guardada');
+  }catch(e){console.error(e);showToast('Error: '+e.message);}
+}
+
+async function eliminarCert(modulo,fid){
+  if(!confirm('¿Eliminar esta certificación?'))return;
+  try{
+    var fb=window._fb;
+    var colName=modulo==='alt'?'alturas':'confinados';
+    await fb.deleteDoc(fb.doc(db,colName,fid));
+    if(modulo==='alt')ALT_DATA=ALT_DATA.filter(function(x){return x._fid!==fid;});
+    else CON_DATA=CON_DATA.filter(function(x){return x._fid!==fid;});
+    if(modulo==='alt')renderAlturas();else renderConfinados();
+    showToast('Registro eliminado');
+  }catch(e){showToast('Error eliminando');}
+}
+
+// Delegación de eventos para los botones de la tabla cert (evita problemas de escape)
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('[data-cert-action]');
+  if(!btn)return;
+  var action=btn.dataset.certAction;
+  var mod=btn.dataset.mod;
+  var fid=btn.dataset.fid;
+  var ced=btn.dataset.ced;
+  var niv=btn.dataset.niv;
+  if(action==='edit')    abrirModalCert(mod,fid);
+  if(action==='del')     eliminarCert(mod,fid);
+  if(action==='hist')    mostrarHistorialCert(mod,ced,niv);
+  var bcap=e.target.closest('[data-cap-action]');
+  if(!bcap)return;
+  var ac=bcap.dataset.capAction;
+  var cfid=bcap.dataset.fid;
+  var cced=bcap.dataset.ced;
+  if(ac==='edit')  abrirModalCAP(cfid);
+  if(ac==='del')   eliminarCAP(cfid);
+  if(ac==='hist')  mostrarHistorialCAP(cced);
+});
+
+function renderCertModulo(modulo){
+  var DATA=modulo==='alt'?ALT_DATA:CON_DATA;
+  var search=((document.getElementById(modulo+'_search')||{}).value||'').toLowerCase();
+  var fEst=((document.getElementById(modulo+'_estado')||{}).value||'');
+  var byKey={};
+  DATA.forEach(function(r){
+    var k=String(r.cedula)+'__'+(r.nivel||'');
+    if(!byKey[k]||(r.fecha||'')>(byKey[k].fecha||''))byKey[k]=r;
+  });
+  var all=Object.values(byKey);
+  var tot=all.length,venc=0,p30=0;
+  all.forEach(function(r){
+    if(r.vigente==='SI')return;
+    var s=_semaforo(_diasHasta(r.vencimiento)).est;
+    if(s==='vencido')venc++;else if(s==='prox30')p30++;
+  });
+  var elT=document.getElementById(modulo+'_total'),elV=document.getElementById(modulo+'_venc'),elP=document.getElementById(modulo+'_prox30');
+  if(elT)elT.textContent=tot;
+  if(elV)elV.textContent=venc+' vencidos';
+  if(elP)elP.textContent=p30+' próx. 30d';
+  var fil=all.filter(function(r){
+    if(search&&!(String(r.cedula)||'').includes(search)&&!(r.nombre||'').toLowerCase().includes(search))return false;
+    if(fEst){var s=r.vigente==='SI'?'vigente':_semaforo(_diasHasta(r.vencimiento)).est;if(s!==fEst)return false;}
+    return true;
+  });
+  var orden={vencido:0,prox30:1,prox90:2,sin_fecha:3,vigente:4};
+  fil.sort(function(a,b){
+    var sa=a.vigente==='SI'?'vigente':_semaforo(_diasHasta(a.vencimiento)).est;
+    var sb=b.vigente==='SI'?'vigente':_semaforo(_diasHasta(b.vencimiento)).est;
+    return (orden[sa]||5)-(orden[sb]||5);
+  });
+  var histCount={};
+  DATA.forEach(function(r){var k=String(r.cedula)+'__'+(r.nivel||'');histCount[k]=(histCount[k]||0)+1;});
+  var tbody=document.getElementById(modulo+'_tbody');
+  var empty=document.getElementById(modulo+'_empty');
+  if(!tbody)return;
+  if(!fil.length){tbody.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  tbody.innerHTML=fil.map(function(r){
+    var sem=r.vigente==='SI'
+      ?{label:'Vigente (manual)',color:'var(--green)',bg:'var(--green-lt)'}
+      :_semaforo(_diasHasta(r.vencimiento));
+    var semTag='<span style="background:'+sem.bg+';color:'+sem.color+';padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600">'+sem.label+'</span>';
+    var k=String(r.cedula)+'__'+(r.nivel||'');
+    var total=histCount[k]||1;
+    return '<tr>'
+      +'<td><div style="font-weight:600;font-size:12.5px">'+(r.nombre||'-')+'</div><div style="font-size:10.5px;color:var(--text-2)">'+r.cedula+'</div></td>'
+      +'<td style="font-size:12px">'+(r.nivel||'-')+'</td>'
+      +'<td style="font-size:12px">'+(r.tipo||'-')+'</td>'
+      +'<td style="font-size:12px;font-weight:600">'+(r.fecha||'-')+'</td>'
+      +'<td style="font-size:12px">'+(r.entidad||'-')+'</td>'
+      +'<td style="font-size:12px">'+(r.vigente==='SI'?'—':r.vencimiento||'-')+'</td>'
+      +'<td>'+semTag+'</td>'
+      +'<td style="white-space:nowrap">'
+      +(total>1?'<button class="btn btn-ghost btn-xs" data-cert-action="hist" data-mod="'+modulo+'" data-ced="'+r.cedula+'" data-niv="'+(r.nivel||'')+'" title="'+total+' cursos" style="font-size:10px">('+total+')</button> ':'')
+      +'<button class="btn btn-ghost btn-xs" data-cert-action="edit" data-mod="'+modulo+'" data-fid="'+(r._fid||'')+'" title="Editar" style="font-size:11px">✏️</button> '
+      +'<button class="btn btn-danger btn-xs" data-cert-action="del" data-mod="'+modulo+'" data-fid="'+(r._fid||'')+'" style="font-size:11px">🗑</button>'
+      +'</td></tr>';
+  }).join('');
+}
+function renderAlturas(){renderCertModulo('alt');}
+function renderConfinados(){renderCertModulo('con');}
+
+function mostrarHistorialCert(modulo,cedula,nivel){
+  var DATA=modulo==='alt'?ALT_DATA:CON_DATA;
+  var regs=DATA.filter(function(r){return String(r.cedula)===String(cedula)&&(r.nivel||'')===(nivel||'');})
+    .sort(function(a,b){return(b.fecha||'').localeCompare(a.fecha||'');});
+  var nombre=regs.length?(regs[0].nombre||cedula):cedula;
+  document.getElementById('histCertTitle').textContent='Historial · '+nombre+' · '+nivel;
+  document.getElementById('histCertBody').innerHTML=regs.map(function(r){
+    var sem=r.vigente==='SI'?{label:'Vigente (manual)',color:'var(--green)',bg:'var(--green-lt)'}:_semaforo(_diasHasta(r.vencimiento));
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+      +'<div><div style="font-size:12.5px;font-weight:700">'+(r.tipo||'Formación inicial')+' — '+(r.fecha||'Sin fecha')+'</div>'
+      +'<div style="font-size:11.5px;color:var(--text-2)">Entidad: '+(r.entidad||'-')+' · Vence: '+(r.vigente==='SI'?'No vence':r.vencimiento||'-')+'</div>'
+      +'<span style="background:'+sem.bg+';color:'+sem.color+';padding:1px 7px;border-radius:4px;font-size:10px">'+sem.label+'</span>'
+      +(r.obs?'<div style="font-size:11px;color:var(--text-2);margin-top:3px">'+r.obs+'</div>':'')
+      +'</div><div style="display:flex;gap:4px;flex-shrink:0">'
+      +'<button class="btn btn-ghost btn-xs" data-cert-action="edit" data-mod="'+modulo+'" data-fid="'+(r._fid||'')+'" style="font-size:10px" onclick="closeOv(&quot;ov-hist-cert&quot;)">✏️</button>'
+      +'<button class="btn btn-danger btn-xs" data-cert-action="del" data-mod="'+modulo+'" data-fid="'+(r._fid||'')+'" style="font-size:10px">🗑</button>'
+      +'</div></div></div>';
+  }).join('')||'<div style="color:var(--text-2);padding:8px;font-size:12px">Sin registros.</div>';
+  openOv('ov-hist-cert');
+}
+
+function exportCertCSV(modulo){
+  var DATA=modulo==='alt'?ALT_DATA:CON_DATA;
+  var nom=modulo==='alt'?'Alturas':'Confinados';
+  if(!DATA.length){showToast('Sin datos para exportar');return;}
+  var hdr='Cedula;Nombre;Nivel;Tipo;Fecha;Entidad;Vencimiento;Vigente;Obs';
+  var rows=DATA.map(function(r){
+    return [r.cedula,r.nombre||'',r.nivel||'',r.tipo||'',r.fecha||'',r.entidad||'',r.vencimiento||'',r.vigente||'',r.obs||'']
+      .map(function(v){return '"'+(v||'').toString().replace(/"/g,'""')+'"';}).join(';');
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+hdr+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8;'}));
+  a.download=nom+'_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+  showToast('CSV descargado');
+}
+
+// ══ CAPACITACIONES GENERALES ══════════════════
+function semaforoCAP(r){
+  if(!r.tieneVenc||r.tieneVenc!=='SI')return{est:'sin_fecha',label:'Sin venc.',color:'var(--text-2)',bg:'var(--surface)'};
+  return _semaforo(_diasHasta(r.vencimiento));
+}
+
+function renderCAP(){
+  var tbody=document.getElementById('cap_tbody');
+  var empty=document.getElementById('cap_empty');
+  if(!tbody)return;
+  var busq=((document.getElementById('cap_search')||{}).value||'').toLowerCase();
+  var tipoF=((document.getElementById('cap_tipo_f')||{}).value||'');
+  var estF=((document.getElementById('cap_estado_f')||{}).value||'');
+  var aprobF=((document.getElementById('cap_aprobado_f')||{}).value||'');
+  var fil=CAP_DATA.filter(function(r){
+    var hb=!busq||(r.nombre||'').toLowerCase().includes(busq)||String(r.cedula||'').includes(busq)||(r.tema||'').toLowerCase().includes(busq);
+    var ht=!tipoF||r.tipo===tipoF;
+    var sem=semaforoCAP(r);
+    var he=!estF||sem.est===estF;
+    var ha=!aprobF||r.aprobado===aprobF;
+    return hb&&ht&&he&&ha;
+  });
+  var tot=CAP_DATA.length,venc=0,prox90=0;
+  CAP_DATA.forEach(function(r){var s=semaforoCAP(r);if(s.est==='vencido')venc++;if(s.est==='prox90'||s.est==='prox30')prox90++;});
+  var el=document.getElementById('cap_total');if(el)el.textContent=tot;
+  var ev=document.getElementById('cap_venc');if(ev)ev.textContent=venc+' vencidos';
+  var ep=document.getElementById('cap_prox90');if(ep)ep.textContent=prox90+' próx. 90d';
+  if(!fil.length){tbody.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  var order={vencido:0,prox30:1,prox90:2,vigente:3,sin_fecha:4};
+  fil.sort(function(a,b){
+    var oa=order[semaforoCAP(a).est]!==undefined?order[semaforoCAP(a).est]:4;
+    var ob=order[semaforoCAP(b).est]!==undefined?order[semaforoCAP(b).est]:4;
+    if(oa!==ob)return oa-ob;
+    return(b.fecha||'').localeCompare(a.fecha||'');
+  });
+  tbody.innerHTML=fil.map(function(r){
+    var sem=semaforoCAP(r);
+    var apBadge=r.aprobado==='SI'?'<span style="background:var(--green-lt);color:var(--green);padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:600">✅ Sí</span>'
+      :r.aprobado==='NO'?'<span style="background:var(--red-lt);color:var(--red);padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:600">❌ No</span>'
+      :'<span style="color:var(--text-2);font-size:11px">—</span>';
+    var vencTxt=r.tieneVenc==='SI'?(r.vencimiento||'—'):'<span style="color:var(--text-2);font-size:11px">Sin venc.</span>';
+    var semTag=r.tieneVenc==='SI'?'<span style="background:'+sem.bg+';color:'+sem.color+';padding:2px 7px;border-radius:4px;font-size:10.5px;font-weight:600">'+sem.label+'</span>':'<span style="color:var(--text-2);font-size:11px">—</span>';
+    return '<tr>'
+      +'<td><div style="font-weight:600;font-size:12.5px">'+(r.nombre||r.cedula||'—')+'</div><div style="font-size:10.5px;color:var(--text-2)">'+r.cedula+'</div></td>'
+      +'<td style="font-size:12.5px;font-weight:500">'+(r.tema||'—')+'</td>'
+      +'<td><span style="background:var(--esq-blue-lt);color:var(--esq-blue);padding:2px 7px;border-radius:4px;font-size:10.5px">'+(r.tipo||'—')+'</span></td>'
+      +'<td style="font-size:12px">'+(r.fecha||'—')+'</td>'
+      +'<td style="font-size:12px;text-align:center">'+(r.horas?r.horas+'h':'—')+'</td>'
+      +'<td style="font-size:12px">'+(r.entidad||'—')+'</td>'
+      +'<td style="font-size:12px">'+vencTxt+'</td>'
+      +'<td>'+semTag+'</td>'
+      +'<td>'+apBadge+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="btn btn-ghost btn-xs" data-cap-action="edit" data-fid="'+(r._fid||'')+'" title="Editar" style="font-size:11px">✏️</button> '
+      +'<button class="btn btn-ghost btn-xs" data-cap-action="hist" data-ced="'+r.cedula+'" title="Historial" style="font-size:11px">📋</button> '
+      +'<button class="btn btn-danger btn-xs" data-cap-action="del" data-fid="'+(r._fid||'')+'" style="font-size:11px">🗑</button>'
+      +'</td></tr>';
+  }).join('');
+}
+
+function abrirModalCAP(fid){
+  var sel=document.getElementById('cap_trabajador');
+  sel.innerHTML='<option value="">— Seleccione —</option>';
+  (_trabList||[]).filter(function(w){return w.estado!=='Inactivo';}).forEach(function(w){
+    var nom=[w.nombre1,w.nombre2,w.apellido1,w.apellido2].filter(Boolean).join(' ');
+    var opt=document.createElement('option');opt.value=w.cedula;
+    opt.textContent=nom+' · '+w.cedula;opt.dataset.nombre=nom;sel.appendChild(opt);
+  });
+  document.getElementById('cap_edit_id').value='';
+  ['cap_tema','cap_horas','cap_entidad','cap_facilitador','cap_nota','cap_soporte','cap_obs','cap_vig_meses','cap_vencimiento'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['cap_tipo','cap_modalidad','cap_aprobado'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var chkV=document.getElementById('cap_tiene_venc');if(chkV)chkV.checked=false;
+  capToggleVenc();
+  var fEl=document.getElementById('cap_fecha');if(fEl)fEl.value='';
+  document.getElementById('modalCAPTitle').textContent='Registrar capacitación';
+  if(fid){
+    var r=CAP_DATA.find(function(x){return x._fid===fid;});
+    if(r){
+      document.getElementById('cap_edit_id').value=fid;
+      document.getElementById('modalCAPTitle').textContent='Editar capacitación';
+      Array.from(sel.options).forEach(function(o){if(o.value===String(r.cedula))o.selected=true;});
+      ['tema','tipo','modalidad','fecha','horas','entidad','facilitador','aprobado','nota','soporte','obs'].forEach(function(k){
+        var el=document.getElementById('cap_'+k);if(el)el.value=r[k]||'';
+      });
+      if(r.tieneVenc==='SI'){
+        document.getElementById('cap_tiene_venc').checked=true;capToggleVenc();
+        document.getElementById('cap_vig_meses').value=r.vigMeses||'';
+        document.getElementById('cap_vencimiento').value=r.vencimiento||'';
+      }
+    }
+  }
+  openOv('ov-cap');
+}
+function cerrarModalCAP(){closeOv('ov-cap');}
+
+async function guardarCAP(){
+  var sel=document.getElementById('cap_trabajador');
+  var cedula=sel.value;
+  var opt=sel.options[sel.selectedIndex];
+  var nombre=opt?opt.dataset.nombre||opt.textContent:'';
+  var tema=document.getElementById('cap_tema').value.trim();
+  var tipo=document.getElementById('cap_tipo').value;
+  var fecha=document.getElementById('cap_fecha').value;
+  if(!cedula){showToast('Seleccione un trabajador');return;}
+  if(!tema){showToast('Ingrese el tema / nombre del curso');return;}
+  if(!tipo){showToast('Seleccione el tipo');return;}
+  if(!fecha){showToast('Ingrese la fecha de realización');return;}
+  var chkV=document.getElementById('cap_tiene_venc');
+  var tieneVenc=(chkV&&chkV.checked)?'SI':'NO';
+  var reg={cedula:cedula,nombre:nombre,tema:tema,tipo:tipo,
+    modalidad:document.getElementById('cap_modalidad').value,fecha:fecha,
+    horas:document.getElementById('cap_horas').value,
+    entidad:document.getElementById('cap_entidad').value,
+    facilitador:document.getElementById('cap_facilitador').value,
+    tieneVenc:tieneVenc,
+    vigMeses:tieneVenc==='SI'?document.getElementById('cap_vig_meses').value||'':'',
+    vencimiento:tieneVenc==='SI'?document.getElementById('cap_vencimiento').value||'':'',
+    aprobado:document.getElementById('cap_aprobado').value,
+    nota:document.getElementById('cap_nota').value,
+    soporte:document.getElementById('cap_soporte').value,
+    obs:document.getElementById('cap_obs').value,
+    fechaRegistro:new Date().toISOString()};
+  try{
+    var fb=window._fb;
+    var fid=document.getElementById('cap_edit_id').value;
+    if(fid){await fb.setDoc(fb.doc(db,'capacitaciones',fid),reg,{merge:true});}
+    else{var ref=await fb.addDoc(fb.collection(db,'capacitaciones'),reg);fid=ref.id;}
+    reg._fid=fid;
+    var idx=CAP_DATA.findIndex(function(x){return x._fid===fid;});
+    if(idx>=0)CAP_DATA[idx]=reg;else CAP_DATA.unshift(reg);
+    cerrarModalCAP();renderCAP();showToast('✅ Capacitación guardada');
+  }catch(e){console.error(e);showToast('Error: '+e.message);}
+}
+
+async function eliminarCAP(fid){
+  if(!confirm('¿Eliminar este registro de capacitación?'))return;
+  try{
+    var fb=window._fb;
+    await fb.deleteDoc(fb.doc(db,'capacitaciones',fid));
+    CAP_DATA=CAP_DATA.filter(function(x){return x._fid!==fid;});
+    renderCAP();showToast('Registro eliminado');
+  }catch(e){showToast('Error eliminando');}
+}
+
+function mostrarHistorialCAP(cedula){
+  var regs=CAP_DATA.filter(function(r){return String(r.cedula)===String(cedula);})
+    .sort(function(a,b){return(b.fecha||'').localeCompare(a.fecha||'');});
+  var nombre=regs.length?(regs[0].nombre||cedula):cedula;
+  document.getElementById('histCAPTitle').textContent='Historial · '+nombre;
+  document.getElementById('histCAPBody').innerHTML=regs.map(function(r){
+    var sem=semaforoCAP(r);
+    var apBadge=r.aprobado==='SI'?'<span style="background:var(--green-lt);color:var(--green);padding:1px 6px;border-radius:4px;font-size:10px">✅ Aprobado</span>'
+      :r.aprobado==='NO'?'<span style="background:var(--red-lt);color:var(--red);padding:1px 6px;border-radius:4px;font-size:10px">❌ No aprobado</span>':'';
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">'
+      +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:700">'+(r.tema||'—')+'</div>'
+        +'<div style="font-size:11.5px;color:var(--text-2);margin-top:2px">'+(r.tipo||'')+(r.modalidad?' · '+r.modalidad:'')+(r.fecha?' · '+r.fecha:'')+(r.horas?' · '+r.horas+'h':'')+'</div>'
+        +'<div style="font-size:11.5px;color:var(--text-2)">Entidad: '+(r.entidad||'-')+(r.facilitador?' · Instructor: '+r.facilitador:'')+'</div>'
+        +(r.tieneVenc==='SI'?'<div style="font-size:11.5px;margin-top:3px">Vence: '+(r.vencimiento||'—')+' · <span style="background:'+sem.bg+';color:'+sem.color+';padding:1px 6px;border-radius:4px;font-size:10px">'+sem.label+'</span></div>':'')
+        +(apBadge?'<div style="margin-top:4px">'+apBadge+(r.nota?' <span style="font-size:11px;color:var(--text-2)">Nota: '+r.nota+'</span>':'')+'</div>':'')
+        +(r.obs?'<div style="font-size:11px;color:var(--text-2);margin-top:3px">'+r.obs+'</div>':'')
+        +(r.soporte?'<div style="font-size:11px;margin-top:3px">📎 <a href="'+r.soporte+'" target="_blank" style="color:var(--esq-orange)">Ver soporte</a></div>':'')
+      +'</div>'
+      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+        +'<button class="btn btn-ghost btn-xs" data-cap-action="edit" data-fid="'+(r._fid||'')+'" style="font-size:10px" onclick="closeOv(&quot;ov-hist-cap&quot;)">✏️</button>'
+        +'<button class="btn btn-danger btn-xs" data-cap-action="del" data-fid="'+(r._fid||'')+'" style="font-size:10px">🗑</button>'
+      +'</div></div></div>';
+  }).join('')||'<div style="color:var(--text-2);padding:8px;font-size:12px">Sin registros para este trabajador.</div>';
+  openOv('ov-hist-cap');
+}
+
+function exportCAPCSV(){
+  if(!CAP_DATA.length){showToast('Sin datos para exportar');return;}
+  var hdr='Cedula;Nombre;Tema;Tipo;Modalidad;Fecha;Horas;Entidad;Facilitador;TieneVenc;VigMeses;Vencimiento;Aprobado;Nota;Soporte;Obs;FechaRegistro';
+  var rows=CAP_DATA.map(function(r){
+    return ['cedula','nombre','tema','tipo','modalidad','fecha','horas','entidad','facilitador','tieneVenc','vigMeses','vencimiento','aprobado','nota','soporte','obs','fechaRegistro']
+      .map(function(k){return '"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(';');
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+hdr+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));
+  a.download='HSE_Capacitaciones_'+new Date().toISOString().split('T')[0]+'.csv';a.click();
+  showToast('CSV descargado');
+}
+// ═══ FIN MÓDULO CAPACITACIONES ═══════════════
+
 </script>
 
 <!-- ═══════════════════════════════════════════════
@@ -6242,6 +6974,1049 @@ function imprimirFormulario(){
 <datalist id="dl_dptos"></datalist>
 <datalist id="dl_municipios"></datalist>
 
+
+
+<!-- ═══════════════════════════════════════════════
+     SESIÓN 22 — 🎓 CAPACITACIONES
+     Sub-módulos: Alturas · Confinados · Capacitaciones
+═══════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════
+     OVERLAY FM-H&S-004 — ENCUESTA SOCIODEMOGRÁFICA
+     Sesión 21 — Portado desde Base_HSE.html
+═══════════════════════════════════════════════ -->
+<div class="overlay" id="ov-sociodem">
+  <div class="modal" style="max-width:980px;max-height:96vh">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title">📋 FM-H&S-004 · Encuesta Sociodemográfica</div>
+        <div class="modal-hdr-sub" id="sd-modal-nombre">Trabajador</div>
+      </div>
+      <button class="modal-close" onclick="closeOv('ov-sociodem')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Encabezado del formulario -->
+      <div class="fhdr" style="margin-bottom:12px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+        <div>
+          <div class="ftitle" style="font-size:20px;font-weight:900;color:var(--dark)">Encuesta Sociodemográfica</div>
+          <div class="fsub" style="font-size:11px;color:var(--text-2);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap">
+            <span>* Campos obligatorios</span>
+            <span>Decreto 1072 de 2015 · Art. 2.2.4.6.16 Lit. 7</span>
+            <span>Ley 1581 de 2012</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start">
+          <div>
+            <div class="flabel" style="font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Foto</div>
+            <div class="phbox" id="phbox" onclick="document.getElementById('phInp').click()">
+              <div id="phIcon" style="font-size:28px;opacity:.35">📷</div>
+              <div id="phTxt" style="font-size:10px;color:var(--text-2)">Cargar foto</div>
+            </div>
+            <input type="file" id="phInp" accept="image/*" style="display:none" onchange="cargarFoto(this)">
+            <div style="margin-top:5px">
+              <div class="flabel" style="font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">Link foto (Drive)</div>
+              <input type="text" id="f_foto_link" placeholder="https://drive.google.com/..." style="font-size:10px;width:130px" oninput="actualizarFotoLink(this.value)">
+            </div>
+          </div>
+          <div>
+            <div class="flabel" style="font-size:10px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px">Código</div>
+            <div style="font-family:var(--mono);font-size:15px;font-weight:500;color:var(--esq-orange)">FM-H&amp;S-004</div>
+            <div style="font-size:10px;color:var(--text-2);margin-top:1px;font-family:var(--mono)">V1 · 20/Mar/2026</div>
+            <div style="font-size:10px;color:var(--text-2);margin-top:2px" id="fDateLbl"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strip informativo del trabajador -->
+      <div class="worker-info-strip" id="workerStrip"></div>
+
+      <!-- Barra de progreso -->
+      <div class="prog-info" style="margin-top:10px">
+        <span id="progTxt">0 de 11 secciones completadas</span>
+        <span id="progPct">0%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+
+      <!-- ─── SECCIÓN I: IDENTIFICACIÓN ─── -->
+      <div class="acc-sec" id="sec1">
+        <div class="acc-hdr open" onclick="toggleAcc('sec1','b1')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-orange-lt);color:var(--esq-orange)">I</div>
+            <div><div class="acc-title">Identificación del Trabajador</div><div class="acc-subtitle">Datos básicos · D.1072 §demográficos</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-orange-lt);color:var(--esq-orange)">⚡ Requerido</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body open" id="b1">
+          <div class="fgrid g3">
+            <div class="fld">
+              <div class="flabel">Tipo documento <span class="req">*</span></div>
+              <select id="f_tipoDoc" onchange="updateProg()">
+                <option value="">— —</option><option>C.C.</option><option>C.E.</option>
+                <option>T.I.</option><option>Pasaporte</option><option>P.E.P.</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="fld">
+              <div class="flabel">N° Identificación <span class="req">*</span></div>
+              <input type="text" id="f_cedula" placeholder="Número" oninput="updateProg()">
+            </div>
+            <div class="fld">
+              <div class="flabel">Expedida en</div>
+              <input type="text" id="f_expedida_en" list="dl_municipios" placeholder="Ciudad de expedición">
+            </div>
+            <div class="fld">
+              <div class="flabel">Primer nombre <span class="req">*</span></div>
+              <input type="text" id="f_nombre1" placeholder="Primer nombre" oninput="updateNombreCompleto();updateProg()">
+            </div>
+            <div class="fld">
+              <div class="flabel">Segundo nombre</div>
+              <input type="text" id="f_nombre2" placeholder="Opcional" oninput="updateNombreCompleto()">
+            </div>
+            <div class="fld"></div>
+            <div class="fld">
+              <div class="flabel">Primer apellido <span class="req">*</span></div>
+              <input type="text" id="f_apellido1" placeholder="Primer apellido" oninput="updateNombreCompleto();updateProg()">
+            </div>
+            <div class="fld">
+              <div class="flabel">Segundo apellido</div>
+              <input type="text" id="f_apellido2" placeholder="Opcional" oninput="updateNombreCompleto()">
+            </div>
+            <div class="fld"></div>
+            <div class="fld">
+              <div class="flabel">Fecha de nacimiento</div>
+              <input type="date" id="f_fnac" onchange="calcEdad()">
+            </div>
+            <div class="fld">
+              <div class="flabel">Dpto. de nacimiento</div>
+              <input type="text" id="f_dpto_nac" list="dl_dptos" placeholder="Departamento o país">
+            </div>
+            <div class="fld">
+              <div class="flabel">Ciudad de nacimiento</div>
+              <input type="text" id="f_ciudad_nac" list="dl_municipios" placeholder="Ciudad o municipio">
+            </div>
+            <div class="fld">
+              <div class="flabel">Raza / Etnia <span style="font-size:9px;font-weight:400">(Opcional)</span></div>
+              <select id="f_etnia">
+                <option value="">— —</option><option>Ninguna</option><option>Mestizo/a</option>
+                <option>Afrodescendiente</option><option>Indígena</option><option>Caucásico/a</option>
+                <option>Otro</option><option>Prefiero no responder</option>
+              </select>
+            </div>
+            <div class="fld">
+              <div class="flabel">Edad</div>
+              <input type="number" id="f_edad" placeholder="Calculada" readonly style="background:var(--card);cursor:default">
+              <div class="fhint">Calculada desde fecha de nac.</div>
+            </div>
+            <div class="fld">
+              <div class="flabel">Sexo biológico <span class="req">*</span></div>
+              <div class="radio-group" id="rg_sexo">
+                <label class="rpill"><input type="radio" name="sexo" value="Hombre" onchange="setRadio('sexo');updateProg()"><div class="rdot"></div>Hombre</label>
+                <label class="rpill"><input type="radio" name="sexo" value="Mujer" onchange="setRadio('sexo');updateProg()"><div class="rdot"></div>Mujer</label>
+                <label class="rpill"><input type="radio" name="sexo" value="Intersexual" onchange="setRadio('sexo');updateProg()"><div class="rdot"></div>Intersexual</label>
+              </div>
+            </div>
+            <div class="fld sa">
+              <div class="flabel">Género <span style="font-size:9px;font-weight:400">(Opcional · usado solo para estrategias de bienestar)</span></div>
+              <div class="radio-group" id="rg_genero">
+                <label class="rpill"><input type="radio" name="genero" value="Hombre" onchange="setRadio('genero')"><div class="rdot"></div>Hombre</label>
+                <label class="rpill"><input type="radio" name="genero" value="Mujer" onchange="setRadio('genero')"><div class="rdot"></div>Mujer</label>
+                <label class="rpill"><input type="radio" name="genero" value="No binario" onchange="setRadio('genero')"><div class="rdot"></div>No binario</label>
+                <label class="rpill"><input type="radio" name="genero" value="Prefiero no responder" onchange="setRadio('genero')"><div class="rdot"></div>Prefiero no responder</label>
+                <label class="rpill"><input type="radio" name="genero" value="Otro" onchange="setRadio('genero')"><div class="rdot"></div>Otro</label>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">Orientación sexual <span style="font-size:9px;font-weight:400">(Opcional)</span></div>
+              <select id="f_orientacion">
+                <option value="">— Prefiero no responder —</option><option>Heterosexual</option>
+                <option>Homosexual</option><option>Bisexual</option><option>Pansexual</option>
+                <option>Asexual</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="fld"><div class="flabel">Celular</div><input type="tel" id="f_celular" placeholder="300 000 0000"></div>
+            <div class="fld"><div class="flabel">Correo personal</div><input type="email" id="f_email" placeholder="correo@email.com"></div>
+            <div class="sa">
+              <div class="subsec">
+                <div class="subsec-title">Contacto de emergencia</div>
+                <div class="fgrid g3">
+                  <div class="fld"><div class="flabel">Nombre</div><input type="text" id="f_contacto" placeholder="Nombre completo"></div>
+                  <div class="fld"><div class="flabel">Parentesco</div><select id="f_parentesco"><option value="">— —</option><option>Esposo/a</option><option>Madre</option><option>Padre</option><option>Hermano/a</option><option>Hijo/a</option><option>Tío/a</option><option>Primo/a</option><option>Abuelo/a</option><option>Suegro/a</option><option>Cuñado/a</option><option>Amigo/a</option><option>Vecino/a</option><option>Otro</option></select></div>
+                  <div class="fld"><div class="flabel">Teléfono</div><input type="tel" id="f_telContacto" placeholder="Número"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN II: LABORAL ─── -->
+      <div class="acc-sec" id="sec2">
+        <div class="acc-hdr" onclick="toggleAcc('sec2','b2')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-blue-lt);color:var(--esq-blue)">II</div>
+            <div><div class="acc-title">Información Laboral</div><div class="acc-subtitle">Cargo, área, riesgo, contrato · D.1072 §condiciones de trabajo</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-blue-lt);color:var(--esq-blue)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b2">
+          <div class="fgrid g3">
+            <div class="fld">
+              <div class="flabel">Empresa <span class="req">*</span></div>
+              <select id="f_empresa" onchange="toggleOtra('f_empresa','f_empresa_otra','__otra__');updateProg()">
+                <option value="">— —</option>
+                <option>ESQUIVENSA</option>
+                <option value="__otra__">Otra...</option>
+              </select>
+              <input type="text" id="f_empresa_otra" placeholder="Nombre de la empresa" style="display:none;margin-top:6px">
+            </div>
+            <div class="fld">
+              <div class="flabel">Nivel de riesgo <span class="req">*</span></div>
+              <div class="radio-group" id="rg_riesgo">
+                <label class="rpill"><input type="radio" name="riesgo" value="I" onchange="setRadio('riesgo');updateProg()"><div class="rdot"></div>I</label>
+                <label class="rpill"><input type="radio" name="riesgo" value="II" onchange="setRadio('riesgo');updateProg()"><div class="rdot"></div>II</label>
+                <label class="rpill"><input type="radio" name="riesgo" value="III" onchange="setRadio('riesgo');updateProg()"><div class="rdot"></div>III</label>
+                <label class="rpill"><input type="radio" name="riesgo" value="IV" onchange="setRadio('riesgo');updateProg()"><div class="rdot"></div>IV</label>
+                <label class="rpill"><input type="radio" name="riesgo" value="V" onchange="setRadio('riesgo');updateProg()"><div class="rdot"></div>V</label>
+              </div>
+            </div>
+            <div class="fld s2">
+              <div class="flabel">Cargo <span class="req">*</span></div>
+              <select id="f_cargo" onchange="toggleOtra('f_cargo','f_cargo_otro','__otra__');updateProg()">
+                <option value="">— Seleccionar —</option>
+                <option>Coordinador HSE</option><option>Técnico HSE</option><option>Auxiliar de SST</option>
+                <option>Jefe de Área</option><option>Operario</option><option>Supervisor</option>
+                <option>Administrativo</option><option value="__otra__">Otro...</option>
+              </select>
+              <input type="text" id="f_cargo_otro" placeholder="Escribir el cargo" style="display:none;margin-top:6px">
+            </div>
+            <div class="fld sa">
+              <div class="flabel">Lugar de trabajo <span style="font-size:9px;font-weight:400">(puede seleccionar varios)</span></div>
+              <div class="ck-grid" id="ck_lugarTrabajo">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Oficinas"><div class="ck-box"></div>Oficinas</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Planta"><div class="ck-box"></div>Planta</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Campo"><div class="ck-box"></div>Campo</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Laboratorio"><div class="ck-box"></div>Laboratorio</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Bodega"><div class="ck-box"></div>Bodega</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Externo"><div class="ck-box"></div>Externo</div>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">Área de trabajo <span class="req">*</span></div>
+              <select id="f_area" onchange="toggleOtra('f_area','f_area_otra','__otra__');updateProg()">
+                <option value="">— Seleccionar —</option>
+                <option>HSE/SIG</option><option>Operaciones</option><option>Administración</option>
+                <option>Logística</option><option>Mantenimiento</option><option>Laboratorio</option>
+                <option value="__otra__">Otra...</option>
+              </select>
+              <input type="text" id="f_area_otra" placeholder="Escribir el área" style="display:none;margin-top:6px">
+            </div>
+            <div class="fld">
+              <div class="flabel">Especialidad</div>
+              <select id="f_especialidad" onchange="toggleOtra('f_especialidad','f_especialidad_otra','__otra__')">
+                <option value="">— —</option>
+                <option>HSEQ</option><option>Ambiental</option><option>Calidad</option>
+                <option>Eléctrica</option><option>Mecánica</option><option>Administrativa</option>
+                <option>Logística</option><option value="__otra__">Otra...</option>
+              </select>
+              <input type="text" id="f_especialidad_otra" placeholder="Escribir especialidad" style="display:none;margin-top:6px">
+            </div>
+            <div class="fld">
+              <div class="flabel">Tipo vinculación</div>
+              <select id="f_vinculacion">
+                <option value="">— —</option><option>Empleado</option><option>Contratista</option>
+                <option>Estudiante en práctica</option><option>Misión temporal</option>
+              </select>
+            </div>
+            <div class="fld">
+              <div class="flabel">Tipo contrato</div>
+              <select id="f_tipoContrato">
+                <option value="">— —</option><option>Término Indefinido</option><option>Término Fijo</option>
+                <option>Prestación de servicios</option><option>Obra Labor</option><option>Prácticas</option>
+              </select>
+            </div>
+            <div class="fld">
+              <div class="flabel">Horario / Turno</div>
+              <select id="f_horario">
+                <option value="">— —</option><option>Lunes a viernes</option><option>Lunes a sábado</option>
+                <option>Rotativos</option><option>Turnos (día / noche / mixto)</option>
+              </select>
+            </div>
+            <div class="fld">
+              <div class="flabel">Fecha de ingreso <span class="req">*</span></div>
+              <input type="date" id="f_fechaIngreso" oninput="calcAntig(this.value);updateProg()">
+            </div>
+            <div class="fld">
+              <div class="flabel">Antigüedad</div>
+              <input type="text" id="f_antiguedad" placeholder="Calculada" readonly style="background:var(--card);cursor:default">
+            </div>
+            <div class="fld">
+              <div class="flabel">ARL</div>
+              <select id="f_arl"><option value="">— —</option><option>Sura</option><option>Positiva</option><option>Colmena</option><option>Bolívar</option><option>Axa Colpatria</option><option>Liberty</option><option>Equidad</option><option>Alfa</option><option>Aurora</option><option>Otra</option></select>
+            </div>
+            <div class="fld">
+              <div class="flabel">EPS</div>
+              <select id="f_eps"><option value="">— —</option><option>Sura</option><option>Sanitas</option><option>Nueva EPS</option><option>Salud Total</option><option>Compensar</option><option>Coomeva</option><option>Famisanar</option><option>Mutual Ser</option><option>Coosalud</option><option>Aliansalud</option><option>Medimás</option><option>Savia Salud</option><option>Otra</option></select>
+            </div>
+            <div class="fld">
+              <div class="flabel">AFP / Pensión</div>
+              <select id="f_afp"><option value="">— —</option><option>Colpensiones</option><option>Porvenir</option><option>Protección</option><option>Colfondos</option><option>Old Mutual</option><option>Otra</option></select>
+            </div>
+            <div class="fld sa">
+              <div class="flabel">Rango salarial mensual</div>
+              <div class="radio-group" id="rg_salario">
+                <label class="rpill"><input type="radio" name="salario" value="1 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>1 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="1-2 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>1–2 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="2-3 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>2–3 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="3-5 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>3–5 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="5-8 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>5–8 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="8-12 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>8–12 SMMLV</label>
+                <label class="rpill"><input type="radio" name="salario" value="&gt; 12 SMMLV" onchange="setRadio('salario')"><div class="rdot"></div>&gt; 12 SMMLV</label>
+              </div>
+            </div>
+            <div class="fld sa">
+              <div class="flabel">Experiencia en el cargo</div>
+              <div class="radio-group" id="rg_experiencia">
+                <label class="rpill"><input type="radio" name="experiencia" value="&lt; 6 meses" onchange="setRadio('experiencia')"><div class="rdot"></div>&lt; 6 meses</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="6m - 1 año" onchange="setRadio('experiencia')"><div class="rdot"></div>6m–1 año</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="1-2 años" onchange="setRadio('experiencia')"><div class="rdot"></div>1–2 años</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="2-5 años" onchange="setRadio('experiencia')"><div class="rdot"></div>2–5 años</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="5-10 años" onchange="setRadio('experiencia')"><div class="rdot"></div>5–10 años</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="10-20 años" onchange="setRadio('experiencia')"><div class="rdot"></div>10–20 años</label>
+                <label class="rpill"><input type="radio" name="experiencia" value="&gt; 20 años" onchange="setRadio('experiencia')"><div class="rdot"></div>&gt; 20 años</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN III: PERFIL EDUCATIVO ─── -->
+      <div class="acc-sec" id="sec3">
+        <div class="acc-hdr" onclick="toggleAcc('sec3','b3')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--green-lt);color:var(--green)">III</div>
+            <div><div class="acc-title">Perfil Educativo</div><div class="acc-subtitle">Escolaridad, formación e idiomas · D.1072 §escolaridad</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--green-lt);color:var(--green)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b3">
+          <div class="fgrid g3">
+            <div class="fld sa">
+              <div class="flabel">Nivel de escolaridad más alto alcanzado <span class="req">*</span></div>
+              <div class="radio-group" id="rg_escolaridad">
+                <label class="rpill"><input type="radio" name="escolaridad" value="Primaria" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Primaria</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Bachiller" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Bachiller</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Técnico" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Técnico</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Tecnólogo" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Tecnólogo</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Profesional" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Profesional</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Especialización" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Especialización</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Maestría" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Maestría</label>
+                <label class="rpill"><input type="radio" name="escolaridad" value="Doctorado" onchange="setRadio('escolaridad');updateProg()"><div class="rdot"></div>Doctorado</label>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Profesión</div><input type="text" id="f_profesion" placeholder="Ej: Ingeniero Industrial"></div>
+            <div class="fld"><div class="flabel">Título obtenido</div><input type="text" id="f_titulo" placeholder="Ej: Ingeniero Industrial"></div>
+            <div class="fld"><div class="flabel">Institución</div><input type="text" id="f_institucion" placeholder="Nombre de la institución"></div>
+            <div class="fld"><div class="flabel">Año de graduación</div><input type="number" id="f_anioGrad" min="1960" max="2030" placeholder="Ej: 2010"></div>
+            <div class="fld">
+              <div class="flabel">¿Estudia actualmente?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_est_si" onclick="setSino('f_estudia','SI','sb_est_si','sb_est_no');toggleEl('estudia_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_est_no" onclick="setSino('f_estudia','NO','sb_est_si','sb_est_no');toggleEl('estudia_det',false)">No</button>
+              </div>
+              <input type="hidden" id="f_estudia">
+            </div>
+            <div class="sa" id="estudia_det" style="display:none">
+              <div class="subsec">
+                <div class="subsec-title">Estudios actuales</div>
+                <div class="fgrid g3">
+                  <div class="fld"><div class="flabel">Nivel</div>
+                    <select id="f_estudia_nivel"><option value="">— —</option><option>Técnico</option><option>Tecnólogo</option><option>Profesional</option><option>Especialización</option><option>Maestría</option><option>Doctorado</option><option>Diplomado</option><option>Curso</option></select>
+                  </div>
+                  <div class="fld"><div class="flabel">Programa</div><input type="text" id="f_estudia_prog" placeholder="Nombre del programa"></div>
+                  <div class="fld"><div class="flabel">Institución</div><input type="text" id="f_estudia_inst" placeholder="Nombre de la institución"></div>
+                </div>
+              </div>
+            </div>
+            <div class="sa">
+              <div class="subsec">
+                <div class="subsec-title">Postgrados / Formación adicional</div>
+                <div id="postgrados_lista"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addPostgrado()">＋ Agregar postgrado</button>
+              </div>
+            </div>
+            <div class="sa">
+              <div class="fld">
+                <div class="flabel">¿Tiene tarjeta profesional / licencia / habilitación?</div>
+                <div class="sino-group">
+                  <button class="sino-btn" id="sb_tp_si" onclick="setSino('f_tieneTarPro','SI','sb_tp_si','sb_tp_no');toggleEl('tarpro_det',true)">Sí</button>
+                  <button class="sino-btn" id="sb_tp_no" onclick="setSino('f_tieneTarPro','NO','sb_tp_si','sb_tp_no');toggleEl('tarpro_det',false)">No</button>
+                </div>
+                <input type="hidden" id="f_tieneTarPro">
+              </div>
+              <div id="tarpro_det" style="display:none;margin-top:10px">
+                <div class="subsec">
+                  <div class="subsec-title">Tarjetas profesionales / Licencias</div>
+                  <div id="tarpro_lista"></div>
+                  <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addTarPro()">＋ Agregar tarjeta / licencia</button>
+                </div>
+              </div>
+            </div>
+            <div class="sa">
+              <div class="subsec">
+                <div class="subsec-title">Cursos / Diplomados / Certificaciones</div>
+                <div id="cursos_lista"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addCurso()">＋ Agregar curso</button>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Idioma nativo</div><input type="text" id="f_idNativo" value="Español" placeholder="Español"></div>
+            <div class="fld sa">
+              <div class="subsec">
+                <div class="subsec-title">Otros idiomas</div>
+                <div id="idiomas_lista"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="addIdioma()">＋ Agregar idioma</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN IV: VIVIENDA ─── -->
+      <div class="acc-sec" id="sec4">
+        <div class="acc-hdr" onclick="toggleAcc('sec4','b4')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:#fdf5e0;color:#8a6a00">IV</div>
+            <div><div class="acc-title">Vivienda y Movilidad</div><div class="acc-subtitle">Residencia, servicios públicos, transporte · D.1072 §perfil socioeconómico</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:#fdf5e0;color:#8a6a00">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b4">
+          <div class="fgrid g3">
+            <div class="fld"><div class="flabel">Departamento <span class="req">*</span></div><input type="text" id="f_dpto" list="dl_dptos" placeholder="Ej: Atlántico" oninput="updateProg()"></div>
+            <div class="fld"><div class="flabel">Municipio <span class="req">*</span></div><input type="text" id="f_municipio" list="dl_municipios" placeholder="Ej: Barranquilla" oninput="updateProg()"></div>
+            <div class="fld"><div class="flabel">Zona</div>
+              <div class="radio-group" id="rg_zona">
+                <label class="rpill"><input type="radio" name="zona" value="Urbana" onchange="setRadio('zona')"><div class="rdot"></div>Urbana</label>
+                <label class="rpill"><input type="radio" name="zona" value="Rural" onchange="setRadio('zona')"><div class="rdot"></div>Rural</label>
+              </div>
+            </div>
+            <div class="fld s2"><div class="flabel">Dirección de residencia</div><input type="text" id="f_direccion" placeholder="Ej: Calle 26 # 25 - 06"></div>
+            <div class="fld"><div class="flabel">Barrio / Sector</div><input type="text" id="f_barrio" placeholder="Nombre del barrio"></div>
+            <div class="fld sa"><div class="flabel">Estrato socioeconómico <span class="req">*</span></div>
+              <div class="radio-group" id="rg_estrato">
+                <label class="rpill"><input type="radio" name="estrato" value="1" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>1</label>
+                <label class="rpill"><input type="radio" name="estrato" value="2" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>2</label>
+                <label class="rpill"><input type="radio" name="estrato" value="3" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>3</label>
+                <label class="rpill"><input type="radio" name="estrato" value="4" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>4</label>
+                <label class="rpill"><input type="radio" name="estrato" value="5" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>5</label>
+                <label class="rpill"><input type="radio" name="estrato" value="6" onchange="setRadio('estrato');updateProg()"><div class="rdot"></div>6</label>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Tipo de vivienda</div>
+              <select id="f_tipoVivienda"><option value="">— —</option><option>Casa</option><option>Apartamento</option><option>Habitación</option><option>Pensión</option><option>Finca</option><option>Otro</option></select>
+            </div>
+            <div class="fld"><div class="flabel">Tenencia</div>
+              <select id="f_propVivienda"><option value="">— —</option><option>Propia</option><option>Arriendo</option><option>Familiar</option><option>Subarriendo</option><option>Otro</option></select>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Paga cuota o arriendo?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_paga_si" onclick="setSino('f_pagaCuota','SI','sb_paga_si','sb_paga_no');toggleEl('paga_val',true)">Sí</button>
+                <button class="sino-btn" id="sb_paga_no" onclick="setSino('f_pagaCuota','NO','sb_paga_si','sb_paga_no');toggleEl('paga_val',false)">No</button>
+              </div>
+              <input type="hidden" id="f_pagaCuota">
+            </div>
+            <div id="paga_val" style="display:none">
+              <div class="fld"><div class="flabel">Valor mensual ($)</div><input type="number" id="f_valorCuota" placeholder="Valor en pesos"></div>
+            </div>
+            <div class="fld"><div class="flabel">Medio de transporte</div>
+              <select id="f_transporte"><option value="">— —</option><option>Bus / Transmilenio</option><option>Automóvil propio</option><option>Motocicleta</option><option>Bicicleta</option><option>A pie</option><option>Taxi / App</option><option>Transporte empresa</option><option>Otro</option></select>
+            </div>
+            <div class="fld"><div class="flabel">Tiempo desplazamiento (min)</div><input type="number" id="f_minutos" min="0" max="300" placeholder="Minutos"></div>
+            <div class="fld">
+              <div class="flabel">¿Requiere desplazamiento?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_desp_si" onclick="setSino('f_requiereDesp','SI','sb_desp_si','sb_desp_no')">Sí</button>
+                <button class="sino-btn" id="sb_desp_no" onclick="setSino('f_requiereDesp','NO','sb_desp_si','sb_desp_no')">No</button>
+              </div>
+              <input type="hidden" id="f_requiereDesp">
+            </div>
+            <div class="fld sa"><div class="flabel">Servicios públicos disponibles</div>
+              <div class="ck-grid" id="ck_servicios">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Energía"><div class="ck-box"></div>Energía</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Acueducto"><div class="ck-box"></div>Acueducto</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Alcantarillado"><div class="ck-box"></div>Alcantarillado</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Gas Natural"><div class="ck-box"></div>Gas Natural</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Internet"><div class="ck-box"></div>Internet</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Teléfono fijo"><div class="ck-box"></div>Teléfono fijo</div>
+              </div>
+            </div>
+            <div class="fld sa"><div class="flabel">Equipos tecnológicos disponibles</div>
+              <div class="ck-grid" id="ck_equipos">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Computador escritorio"><div class="ck-box"></div>Computador escritorio</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Portátil / Laptop"><div class="ck-box"></div>Portátil / Laptop</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Tablet"><div class="ck-box"></div>Tablet</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Smartphone con datos"><div class="ck-box"></div>Smartphone con datos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Impresora"><div class="ck-box"></div>Impresora</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN V: GRUPO FAMILIAR ─── -->
+      <div class="acc-sec" id="sec5">
+        <div class="acc-hdr" onclick="toggleAcc('sec5','b5')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:#ede8f5;color:#6b3ab5">V</div>
+            <div><div class="acc-title">Grupo Familiar</div><div class="acc-subtitle">Composición familiar, hijos, personas a cargo · D.1072 §grupo familiar</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:#ede8f5;color:#6b3ab5">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b5">
+          <div class="fgrid g3">
+            <div class="fld sa"><div class="flabel">Estado civil <span class="req">*</span></div>
+              <div class="radio-group" id="rg_estadoCivil">
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Soltero/a" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Soltero/a</label>
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Casado/a" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Casado/a</label>
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Unión libre" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Unión libre</label>
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Separado/a" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Separado/a</label>
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Divorciado/a" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Divorciado/a</label>
+                <label class="rpill"><input type="radio" name="estadoCivil" value="Viudo/a" onchange="setRadio('estadoCivil');updateProg()"><div class="rdot"></div>Viudo/a</label>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">¿Es cabeza de familia?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_cab_si" onclick="setSino('f_cabeFamily','SI','sb_cab_si','sb_cab_no');updateProg()">Sí</button>
+                <button class="sino-btn" id="sb_cab_no" onclick="setSino('f_cabeFamily','NO','sb_cab_si','sb_cab_no');updateProg()">No</button>
+              </div>
+              <input type="hidden" id="f_cabeFamily">
+            </div>
+            <div class="fld"><div class="flabel">N° personas en la vivienda</div><input type="number" id="f_nPersonasVivienda" min="1" max="20" placeholder="0"></div>
+            <div class="fld"><div class="flabel">N° personas a cargo</div><input type="number" id="f_personasACargo" min="0" max="20" placeholder="0"></div>
+            <div class="fld sa"><div class="flabel">¿Con quién vive?</div>
+              <div class="ck-grid" id="ck_conQuienVive">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Solo/a"><div class="ck-box"></div>Solo/a</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Cónyuge/Pareja"><div class="ck-box"></div>Cónyuge/Pareja</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Hijos"><div class="ck-box"></div>Hijos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Padre / Madre"><div class="ck-box"></div>Padre / Madre</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Hermanos"><div class="ck-box"></div>Hermanos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Otros familiares"><div class="ck-box"></div>Otros familiares</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Amigos"><div class="ck-box"></div>Amigos</div>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Tiene hijos?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_hij_si" onclick="setSino('f_tieneHijos','SI','sb_hij_si','sb_hij_no');toggleEl('hijos_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_hij_no" onclick="setSino('f_tieneHijos','NO','sb_hij_si','sb_hij_no');toggleEl('hijos_det',false)">No</button>
+              </div><input type="hidden" id="f_tieneHijos">
+            </div>
+            <div class="fld"><div class="flabel">N° de hijos</div><input type="number" id="f_nHijos" min="0" max="20" placeholder="0"></div>
+            <div class="sa" id="hijos_det" style="display:none">
+              <div class="subsec">
+                <div class="subsec-title">Detalle de hijos</div>
+                <div id="hijos_tabla"></div>
+                <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="addHijo()">＋ Agregar hijo</button>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Familiar con discapacidad?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_fdis_si" onclick="setSino('f_familiarDiscap','SI','sb_fdis_si','sb_fdis_no');toggleEl('fdis_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_fdis_no" onclick="setSino('f_familiarDiscap','NO','sb_fdis_si','sb_fdis_no');toggleEl('fdis_det',false)">No</button>
+              </div><input type="hidden" id="f_familiarDiscap">
+            </div>
+            <div id="fdis_det" style="display:none">
+              <div class="fld"><div class="flabel">¿Depende económicamente de usted?</div>
+                <div class="sino-group">
+                  <button class="sino-btn" id="sb_dep_si" onclick="setSino('f_depecon','SI','sb_dep_si','sb_dep_no')">Sí</button>
+                  <button class="sino-btn" id="sb_dep_no" onclick="setSino('f_depecon','NO','sb_dep_si','sb_dep_no')">No</button>
+                </div><input type="hidden" id="f_depecon">
+              </div>
+            </div>
+            <div class="fld sa"><div class="flabel">Situaciones presentes en el grupo familiar</div>
+              <div class="ck-grid" id="ck_situFamiliares">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Deudas que superan los ingresos"><div class="ck-box"></div>Deudas que superan los ingresos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Violencia intrafamiliar"><div class="ck-box"></div>Violencia intrafamiliar</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Consumo de sustancias"><div class="ck-box"></div>Consumo de sustancias</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Enfermedad grave"><div class="ck-box"></div>Enfermedad grave</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Duelo reciente"><div class="ck-box"></div>Duelo reciente</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Separación / Divorcio"><div class="ck-box"></div>Separación / Divorcio</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Ninguna"><div class="ck-box"></div>Ninguna</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">¿Quién cuida los hijos?</div>
+              <select id="f_quienCuidaHijos"><option value="">— —</option><option>Cónyuge/Pareja</option><option>Padres/Abuelos</option><option>Jardín/Colegio</option><option>Cuidador pagado</option><option>Se cuidan solos</option><option>No aplica</option></select>
+            </div>
+            <div class="fld"><div class="flabel">¿Convivientes trabajan?</div>
+              <select id="f_convivientesTrabajan"><option value="">— —</option><option>Sí, todos</option><option>Sí, algunos</option><option>No</option><option>No aplica</option></select>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Paga cuidador?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_cuid_si" onclick="setSino('f_pagaCuidador','SI','sb_cuid_si','sb_cuid_no')">Sí</button>
+                <button class="sino-btn" id="sb_cuid_no" onclick="setSino('f_pagaCuidador','NO','sb_cuid_si','sb_cuid_no')">No</button>
+              </div><input type="hidden" id="f_pagaCuidador">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN VI: SALUD ─── -->
+      <div class="acc-sec" id="sec6">
+        <div class="acc-hdr" onclick="toggleAcc('sec6','b6')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-orange-lt);color:var(--esq-orange)">VI</div>
+            <div><div class="acc-title">Condiciones de Salud y Hábitos</div><div class="acc-subtitle">Grupo sanguíneo, enfermedades, hábitos · D.1072 §condiciones de salud</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-orange-lt);color:var(--esq-orange)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b6">
+          <div class="fgrid g3">
+            <div class="fld"><div class="flabel">Grupo sanguíneo / RH <span class="req">*</span></div>
+              <select id="f_rh" onchange="updateProg()"><option value="">— —</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select>
+            </div>
+            <div class="fld"><div class="flabel">Discapacidad propia</div>
+              <select id="f_discapPropia"><option value="">— —</option><option>No</option><option>Física</option><option>Auditiva</option><option>Visual</option><option>Cognitiva</option><option>Múltiple</option><option>Otra</option></select>
+            </div>
+            <div class="fld"><div class="flabel">Enfermedad preexistente <span class="req">*</span></div>
+              <select id="f_enfPre" onchange="updateProg()"><option value="">— —</option><option>Ninguna</option><option>Diabetes</option><option>Hipertensión</option><option>Asma</option><option>Cardiovascular</option><option>Tiroides</option><option>Otra</option></select>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Tratamiento médico actual?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_trat_si" onclick="setSino('f_tratMedico','SI','sb_trat_si','sb_trat_no');toggleEl('trat_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_trat_no" onclick="setSino('f_tratMedico','NO','sb_trat_si','sb_trat_no');toggleEl('trat_det',false)">No</button>
+              </div><input type="hidden" id="f_tratMedico">
+            </div>
+            <div id="trat_det" style="display:none">
+              <div class="fld"><div class="flabel">Medicamento(s)</div><input type="text" id="f_medicamento" placeholder="Nombre del medicamento"></div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Alérgico?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_aler_si" onclick="setSino('f_alergico','SI','sb_aler_si','sb_aler_no');toggleEl('aler_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_aler_no" onclick="setSino('f_alergico','NO','sb_aler_si','sb_aler_no');toggleEl('aler_det',false)">No</button>
+              </div><input type="hidden" id="f_alergico">
+            </div>
+            <div id="aler_det" style="display:none">
+              <div class="fld"><div class="flabel">¿A qué?</div><input type="text" id="f_cualAlergia" placeholder="Describir alergia"></div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Consume alcohol?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_alc_si" onclick="setSino('f_alcohol','SI','sb_alc_si','sb_alc_no');toggleEl('alc_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_alc_no" onclick="setSino('f_alcohol','NO','sb_alc_si','sb_alc_no');toggleEl('alc_det',false)">No</button>
+              </div><input type="hidden" id="f_alcohol">
+            </div>
+            <div id="alc_det" style="display:none">
+              <div class="fld"><div class="flabel">Frecuencia</div>
+                <select id="f_frecAlcohol"><option value="">— —</option><option>Social / Solo en eventos</option><option>Quincenal</option><option>Semanal</option><option>Diario</option></select>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Fuma?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_fuma_si" onclick="setSino('f_fuma','SI','sb_fuma_si','sb_fuma_no');toggleEl('fuma_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_fuma_no" onclick="setSino('f_fuma','NO','sb_fuma_si','sb_fuma_no');toggleEl('fuma_det',false)">No</button>
+              </div><input type="hidden" id="f_fuma">
+            </div>
+            <div id="fuma_det" style="display:none">
+              <div class="fld"><div class="flabel">Frecuencia</div>
+                <select id="f_frecFuma"><option value="">— —</option><option>Ocasional</option><option>Diario</option><option>Varios al día</option></select>
+              </div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Realiza actividad física?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_af_si" onclick="setSino('f_actFisica','SI','sb_af_si','sb_af_no');toggleEl('af_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_af_no" onclick="setSino('f_actFisica','NO','sb_af_si','sb_af_no');toggleEl('af_det',false)">No</button>
+              </div><input type="hidden" id="f_actFisica">
+            </div>
+            <div class="sa" id="af_det" style="display:none">
+              <div class="subsec">
+                <div class="subsec-title">Actividad física</div>
+                <div class="fgrid g2">
+                  <div class="fld sa"><div class="flabel">Tipo de actividad</div>
+                    <div class="ck-grid" id="ck_actFisicaSelec">
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Gimnasio / Pesas"><div class="ck-box"></div>Gimnasio / Pesas</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Correr / Trotar"><div class="ck-box"></div>Correr / Trotar</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Caminar"><div class="ck-box"></div>Caminar</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Natación"><div class="ck-box"></div>Natación</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Ciclismo"><div class="ck-box"></div>Ciclismo</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Fútbol"><div class="ck-box"></div>Fútbol</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Baile"><div class="ck-box"></div>Baile</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Yoga / Pilates"><div class="ck-box"></div>Yoga / Pilates</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Otro"><div class="ck-box"></div>Otro</div>
+                    </div>
+                  </div>
+                  <div class="fld"><div class="flabel">Frecuencia</div>
+                    <select id="f_frecActFis"><option value="">— —</option><option>1 vez/semana</option><option>2–3 veces/semana</option><option>4–5 veces/semana</option><option>Diario</option></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN VII: MASCOTAS ─── -->
+      <div class="acc-sec" id="sec7">
+        <div class="acc-hdr" onclick="toggleAcc('sec7','b7')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-blue-lt);color:var(--esq-blue)">VII</div>
+            <div><div class="acc-title">Mascotas</div><div class="acc-subtitle">Tenencia de animales</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-blue-lt);color:var(--esq-blue)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b7">
+          <div class="fgrid g3">
+            <div class="fld">
+              <div class="flabel">¿Tiene mascotas?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_masc_si" onclick="setSino('f_tieneMascotas','SI','sb_masc_si','sb_masc_no');toggleEl('masc_det',true);updateProg()">Sí</button>
+                <button class="sino-btn" id="sb_masc_no" onclick="setSino('f_tieneMascotas','NO','sb_masc_si','sb_masc_no');toggleEl('masc_det',false);updateProg()">No</button>
+              </div><input type="hidden" id="f_tieneMascotas">
+            </div>
+            <div class="sa" id="masc_det" style="display:none">
+              <div class="fgrid g2">
+                <div class="fld sa"><div class="flabel">Tipo de mascota</div>
+                  <div class="ck-grid" id="ck_tipoMascota">
+                    <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Perro"><div class="ck-box"></div>Perro</div>
+                    <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Gato"><div class="ck-box"></div>Gato</div>
+                    <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Ave"><div class="ck-box"></div>Ave</div>
+                    <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Pez"><div class="ck-box"></div>Pez</div>
+                    <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Otro"><div class="ck-box"></div>Otro</div>
+                  </div>
+                </div>
+                <div class="fld"><div class="flabel">N° de mascotas</div><input type="number" id="f_nMascotas" min="0" max="20" placeholder="0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN VIII: TELETRABAJO ─── -->
+      <div class="acc-sec" id="sec8">
+        <div class="acc-hdr" onclick="toggleAcc('sec8','b8')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--green-lt);color:var(--green)">VIII</div>
+            <div><div class="acc-title">Trabajo Remoto / Teletrabajo</div><div class="acc-subtitle">Condiciones de trabajo en casa</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--green-lt);color:var(--green)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b8">
+          <div class="fgrid g3">
+            <div class="fld">
+              <div class="flabel">¿Realiza teletrabajo?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_rem_si" onclick="setSino('f_trabajaRemoto','SI','sb_rem_si','sb_rem_no');toggleEl('remoto_det',true);updateProg()">Sí</button>
+                <button class="sino-btn" id="sb_rem_no" onclick="setSino('f_trabajaRemoto','NO','sb_rem_si','sb_rem_no');toggleEl('remoto_det',false);updateProg()">No</button>
+              </div><input type="hidden" id="f_trabajaRemoto">
+            </div>
+            <div class="sa" id="remoto_det" style="display:none">
+              <div class="subsec">
+                <div class="subsec-title">Condiciones de teletrabajo</div>
+                <div class="fgrid g2">
+                  <div class="fld sa"><div class="flabel">Lugar en casa donde trabaja</div>
+                    <div class="ck-grid" id="ck_lugarCasa">
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Estudio / Oficina"><div class="ck-box"></div>Estudio / Oficina</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Sala"><div class="ck-box"></div>Sala</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Habitación"><div class="ck-box"></div>Habitación</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Comedor"><div class="ck-box"></div>Comedor</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Otro"><div class="ck-box"></div>Otro</div>
+                    </div>
+                  </div>
+                  <div class="fld sa"><div class="flabel">Insumos disponibles</div>
+                    <div class="ck-grid" id="ck_insumos">
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Escritorio"><div class="ck-box"></div>Escritorio</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Silla ergonómica"><div class="ck-box"></div>Silla ergonómica</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Monitor externo"><div class="ck-box"></div>Monitor externo</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Teclado/Mouse"><div class="ck-box"></div>Teclado/Mouse</div>
+                      <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Audífonos"><div class="ck-box"></div>Audífonos</div>
+                    </div>
+                  </div>
+                  <div class="fld"><div class="flabel">¿El lugar es seguro?</div>
+                    <div class="sino-group">
+                      <button class="sino-btn" id="sb_lseg_si" onclick="setSino('f_lugarSeguro','SI','sb_lseg_si','sb_lseg_no')">Sí</button>
+                      <button class="sino-btn" id="sb_lseg_no" onclick="setSino('f_lugarSeguro','NO','sb_lseg_si','sb_lseg_no')">No</button>
+                    </div><input type="hidden" id="f_lugarSeguro">
+                  </div>
+                  <div class="fld"><div class="flabel">¿Buena iluminación?</div>
+                    <div class="sino-group">
+                      <button class="sino-btn" id="sb_ilum_si" onclick="setSino('f_buenaIlum','SI','sb_ilum_si','sb_ilum_no')">Sí</button>
+                      <button class="sino-btn" id="sb_ilum_no" onclick="setSino('f_buenaIlum','NO','sb_ilum_si','sb_ilum_no')">No</button>
+                    </div><input type="hidden" id="f_buenaIlum">
+                  </div>
+                  <div class="fld"><div class="flabel">¿Hace pausas activas?</div>
+                    <div class="sino-group">
+                      <button class="sino-btn" id="sb_pau_si" onclick="setSino('f_pausasActivas','SI','sb_pau_si','sb_pau_no')">Sí</button>
+                      <button class="sino-btn" id="sb_pau_no" onclick="setSino('f_pausasActivas','NO','sb_pau_si','sb_pau_no')">No</button>
+                    </div><input type="hidden" id="f_pausasActivas">
+                  </div>
+                  <div class="fld"><div class="flabel">¿Las relaciones familiares favorecen el teletrabajo?</div>
+                    <select id="f_relFamFavorece"><option value="">— —</option><option>Sí, totalmente</option><option>Parcialmente</option><option>No</option></select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN IX: DESARROLLO PERSONAL ─── -->
+      <div class="acc-sec" id="sec9">
+        <div class="acc-hdr" onclick="toggleAcc('sec9','b9')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:#fdf5e0;color:#8a6a00">IX</div>
+            <div><div class="acc-title">Desarrollo Personal y Laboral</div><div class="acc-subtitle">Bienestar, formación, hobbies</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:#fdf5e0;color:#8a6a00">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b9">
+          <div class="fgrid g2">
+            <div class="fld sa"><div class="flabel">Preferencias de bienestar</div>
+              <div class="ck-grid" id="ck_bienestar">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Reconocimientos"><div class="ck-box"></div>Reconocimientos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Compensación económica"><div class="ck-box"></div>Compensación económica</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Transporte o ruta al trabajo"><div class="ck-box"></div>Transporte o ruta</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Formación y educación"><div class="ck-box"></div>Formación y educación</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Integración familiar"><div class="ck-box"></div>Integración familiar</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Actividades deportivas"><div class="ck-box"></div>Actividades deportivas</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Otras preferencias</div><input type="text" id="f_bienestarOtras" placeholder="Escribir otras preferencias"></div>
+            <div class="fld sa"><div class="flabel">Temas de formación — Personales</div>
+              <div class="ck-grid" id="ck_formacion">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Salud financiera"><div class="ck-box"></div>Salud financiera</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Salud mental"><div class="ck-box"></div>Salud mental</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Estilos de vida saludable"><div class="ck-box"></div>Estilos de vida saludable</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Manejo del estrés"><div class="ck-box"></div>Manejo del estrés</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Relaciones interpersonales"><div class="ck-box"></div>Relaciones interpersonales</div>
+              </div>
+            </div>
+            <div class="fld sa"><div class="flabel">Temas de formación — Técnicos</div>
+              <div class="ck-grid" id="ck_formacionTec">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Seguridad y Salud en el Trabajo"><div class="ck-box"></div>SST</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Gestión de calidad"><div class="ck-box"></div>Calidad</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Gestión ambiental"><div class="ck-box"></div>Ambiental</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Tecnología e informática"><div class="ck-box"></div>Tecnología</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Idiomas"><div class="ck-box"></div>Idiomas</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Liderazgo"><div class="ck-box"></div>Liderazgo</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Otras formaciones</div><input type="text" id="f_formacionOtras" placeholder="Escribir otros temas"></div>
+            <div class="fld sa"><div class="flabel">Hobbies e intereses</div>
+              <div class="ck-grid" id="ck_hobbiesSelec">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Lectura"><div class="ck-box"></div>Lectura</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Videojuegos"><div class="ck-box"></div>Videojuegos</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Baile"><div class="ck-box"></div>Baile</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Cine / Series"><div class="ck-box"></div>Cine / Series</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Música"><div class="ck-box"></div>Música</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Cocina"><div class="ck-box"></div>Cocina</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Viajes"><div class="ck-box"></div>Viajes</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Deportes"><div class="ck-box"></div>Deportes</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Manualidades"><div class="ck-box"></div>Manualidades</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Otros hobbies</div><input type="text" id="f_hobbiesExtras" placeholder="Escribir otros hobbies"></div>
+            <div class="fld">
+              <div class="flabel">¿Tiene trabajo independiente?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_ind_si" onclick="setSino('f_trabajoIndep','SI','sb_ind_si','sb_ind_no');toggleEl('trabind_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_ind_no" onclick="setSino('f_trabajoIndep','NO','sb_ind_si','sb_ind_no');toggleEl('trabind_det',false)">No</button>
+              </div><input type="hidden" id="f_trabajoIndep">
+            </div>
+            <div id="trabind_det" style="display:none">
+              <div class="fld"><div class="flabel">¿Cuál?</div><input type="text" id="f_cualTrabInd" placeholder="Describir actividad independiente"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN X: COMUNICACIÓN ─── -->
+      <div class="acc-sec" id="sec10">
+        <div class="acc-hdr" onclick="toggleAcc('sec10','b10')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-blue-lt);color:var(--esq-blue)">X</div>
+            <div><div class="acc-title">Comunicación y Redes</div><div class="acc-subtitle">Canales de comunicación, mensajería, redes sociales</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-blue-lt);color:var(--esq-blue)">Pendiente</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b10">
+          <div class="fgrid g3">
+            <div class="fld sa"><div class="flabel">Canal de comunicación preferido</div>
+              <div class="ck-grid" id="ck_canal">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Correo corporativo"><div class="ck-box"></div>Correo corporativo</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Correo personal"><div class="ck-box"></div>Correo personal</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="WhatsApp"><div class="ck-box"></div>WhatsApp</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Cartelera"><div class="ck-box"></div>Cartelera</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Presencial"><div class="ck-box"></div>Presencial</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Otro canal</div><input type="text" id="f_canalOtro" placeholder="Especificar"></div>
+            <div class="fld sa"><div class="flabel">Mensajería autorizada</div>
+              <div class="ck-grid" id="ck_autMensajeria">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="WhatsApp"><div class="ck-box"></div>WhatsApp</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="SMS / Mensaje de texto"><div class="ck-box"></div>SMS</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Telegram"><div class="ck-box"></div>Telegram</div>
+              </div>
+            </div>
+            <div class="fld"><div class="flabel">Otra mensajería</div><input type="text" id="f_mensajeriaOtro" placeholder="Especificar"></div>
+            <div class="fld">
+              <div class="flabel">¿Tiene correo corporativo?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_ec_si" onclick="setSino('f_tieneEmailCorp','SI','sb_ec_si','sb_ec_no');toggleEl('emailcorp_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_ec_no" onclick="setSino('f_tieneEmailCorp','NO','sb_ec_si','sb_ec_no');toggleEl('emailcorp_det',false)">No</button>
+              </div><input type="hidden" id="f_tieneEmailCorp">
+            </div>
+            <div id="emailcorp_det" style="display:none">
+              <div class="fld"><div class="flabel">Correo corporativo</div><input type="email" id="f_emailCorp" placeholder="usuario@empresa.com"></div>
+            </div>
+            <div class="fld">
+              <div class="flabel">¿Tiene línea corporativa?</div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_lc_si" onclick="setSino('f_tieneLineCorp','SI','sb_lc_si','sb_lc_no');toggleEl('telcorp_det',true)">Sí</button>
+                <button class="sino-btn" id="sb_lc_no" onclick="setSino('f_tieneLineCorp','NO','sb_lc_si','sb_lc_no');toggleEl('telcorp_det',false)">No</button>
+              </div><input type="hidden" id="f_tieneLineCorp">
+            </div>
+            <div id="telcorp_det" style="display:none">
+              <div class="fld"><div class="flabel">Línea corporativa</div><input type="tel" id="f_lineaCorp" placeholder="Número"></div>
+            </div>
+            <div class="fld sa"><div class="flabel">Redes sociales</div>
+              <div class="ck-grid" id="ck_redes">
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Facebook"><div class="ck-box"></div>Facebook</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="Instagram"><div class="ck-box"></div>Instagram</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="YouTube"><div class="ck-box"></div>YouTube</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="TikTok"><div class="ck-box"></div>TikTok</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="LinkedIn"><div class="ck-box"></div>LinkedIn</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="X (Twitter)"><div class="ck-box"></div>X (Twitter)</div>
+                <div class="ck-item" onclick="toggleCk(this,event)"><input type="checkbox" value="WhatsApp"><div class="ck-box"></div>WhatsApp</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── SECCIÓN XI: CONSENTIMIENTO ─── -->
+      <div class="acc-sec" id="sec11" style="border:2px solid var(--esq-orange);box-shadow:0 4px 16px rgba(232,78,27,.12)">
+        <div class="acc-hdr" onclick="toggleAcc('sec11','b11')">
+          <div class="acc-left">
+            <div class="acc-num" style="background:var(--esq-orange);color:#fff">✍</div>
+            <div><div class="acc-title">Consentimiento y Firma</div><div class="acc-subtitle">Ley 1581/2012 · Protección de datos personales · Diligenciar al final</div></div>
+          </div>
+          <div class="acc-right">
+            <span class="acc-status" style="background:var(--esq-orange);color:#fff">⚡ Requerido</span>
+            <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+        </div>
+        <div class="acc-body" id="b11">
+          <div class="consent-box">
+            Esta encuesta hace parte de la estructura del <strong>Sistema de Gestión en Seguridad y Salud en el Trabajo (SG-SST)</strong> de <strong>Especialidades Químicas Industriales SAS (ESQUIVENSA)</strong>, conforme al <strong>Decreto 1072 de 2015</strong>, Art. 2.2.4.6.16 Literal 7. La información es confidencial y será utilizada únicamente para fines de bienestar laboral e identificación de condiciones de salud, en cumplimiento de la <strong>Ley 1581 de 2012</strong>.
+          </div>
+          <div id="no_autoriza_warn" style="display:none;background:#fff0f0;border:1px solid #fcc;border-radius:var(--r-sm);padding:14px 16px;margin-bottom:14px;font-size:12.5px;color:#8b2000;line-height:1.65">
+            ⚠️ <strong>Atención:</strong> Al no autorizar el tratamiento de sus datos, el formulario quedará registrado únicamente con fines de control de asistencia. El registro se guardará con estado <strong>"Sin autorización"</strong>.
+          </div>
+          <div class="fgrid g2">
+            <div class="fld"><div class="flabel">¿Autoriza el tratamiento de sus datos personales para fines del SG-SST? <span class="req">*</span></div>
+              <div class="sino-group">
+                <button class="sino-btn" id="sb_aut_si" onclick="setSino('f_autorizaDatos','SI','sb_aut_si','sb_aut_no');toggleEl('no_autoriza_warn',false);updateProg()">✅ Sí, autorizo</button>
+                <button class="sino-btn" id="sb_aut_no" onclick="setSino('f_autorizaDatos','NO','sb_aut_si','sb_aut_no');toggleEl('no_autoriza_warn',true);updateProg()">❌ No autorizo</button>
+              </div><input type="hidden" id="f_autorizaDatos">
+            </div>
+            <div class="fld"><div class="flabel">Observaciones del trabajador</div>
+              <textarea id="f_observaciones" placeholder="Observaciones adicionales, aclaraciones o motivo de no autorización..." rows="2"></textarea>
+            </div>
+          </div>
+          <div class="subsec" style="margin-top:16px"><div class="subsec-title">👤 Datos de quien aplica la encuesta</div>
+            <div class="fgrid g3" style="margin-top:8px">
+              <div class="fld"><div class="flabel">Fecha de aplicación</div>
+                <input type="date" id="f_fechaEncuesta">
+                <div class="fhint">Se establece automáticamente al guardar si está vacío</div>
+              </div>
+              <div class="fld"><div class="flabel">Cédula del responsable</div>
+                <input type="text" id="f_respEncuestaCedula" placeholder="Cédula del responsable" oninput="buscarResponsable(this.value)">
+                <div class="fhint">Digite la cédula para buscar en la base de datos</div>
+              </div>
+              <div class="fld"><div class="flabel">Nombre del responsable</div>
+                <input type="text" id="f_respEncuestaNombre" placeholder="Nombre completo" oninput="updateFirmasEnVivo()">
+              </div>
+              <div class="fld"><div class="flabel">Cargo del responsable</div>
+                <input type="text" id="f_respEncuestaCargo" placeholder="Ej: Coordinador HSE, Jefe RRHH" oninput="updateFirmasEnVivo()">
+              </div>
+            </div>
+          </div>
+          <!-- Firmas -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:36px;padding-top:24px;border-top:2px dashed var(--border)">
+            <div style="text-align:center">
+              <div style="height:60px"></div>
+              <div style="border-top:2px solid var(--text);margin-bottom:10px"></div>
+              <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px">Firma del Trabajador</div>
+              <div style="font-size:11.5px;color:var(--text)" id="firma_nombre_trabajador">Nombre: _______________________________</div>
+              <div style="font-size:11.5px;color:var(--text);margin-top:4px" id="firma_cc_trabajador">C.C. ____________________</div>
+              <div style="font-size:11.5px;color:var(--text);margin-top:4px" id="firma_fecha_trabajador">Fecha: _________________________________</div>
+            </div>
+            <div style="text-align:center">
+              <div style="height:60px"></div>
+              <div style="border-top:2px solid var(--text);margin-bottom:10px"></div>
+              <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px">Responsable diligenciamiento</div>
+              <div style="font-size:11.5px;color:var(--text)" id="firma_resp_nombre">Nombre: _______________________________</div>
+              <div style="font-size:11.5px;color:var(--text);margin-top:4px" id="firma_resp_cargo">Cargo: __________________________________</div>
+              <div style="font-size:11.5px;color:var(--text);margin-top:4px" id="firma_fecha_resp">Fecha: _________________________________</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- fin modal-body -->
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-sociodem')">Cancelar</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="imprimirFormulario()">👁 Vista previa / Imprimir</button>
+        <button class="btn btn-primary" onclick="sdGuardar()">💾 Guardar encuesta</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Datalists para municipios y departamentos -->
+<datalist id="dl_dptos"></datalist>
+<datalist id="dl_municipios"></datalist>
+
+
+
+<!-- ═══════════════════════════════════════════════
+     SESIÓN 22 — 🎓 CAPACITACIONES
+     Sub-módulos: Alturas · Confinados · Capacitaciones
+═══════════════════════════════════════════════ -->
 
 </body>
 </html>
