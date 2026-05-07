@@ -1640,7 +1640,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
 <div class="overlay" id="ov-task">
   <div class="modal">
     <div class="modal-hdr">
-      <div><div class="modal-title" id="task-modal-title">Nueva Actividad</div><div class="modal-hdr-sub">Solo administradores pueden crear o editar</div></div>
+      <div><div class="modal-title" id="task-modal-title">Nueva Actividad</div><div class="modal-hdr-sub">Puedes crear y editar tus propias actividades</div></div>
       <button class="modal-close" onclick="closeOv('ov-task')">✕</button>
     </div>
     <div class="modal-body">
@@ -2415,7 +2415,7 @@ function saveTask(){
     (act?.creado_por && act.creado_por===currentUser?.cedula) ||
     (myFirst && (act?.responsable||'').toLowerCase().includes(myFirst))
   );
-  if(!isAdmin && !isSupervisor && editingTaskIdx===null){showToast('⚠️ Solo admin o supervisores pueden crear actividades');return;}
+  // B11 FIX S26: cualquier usuario autenticado puede crear sus propias actividades (decisión #18)
   if(!isAdmin && !isSupervisor && !isOwner){showToast('⚠️ Solo puedes gestionar tus propias actividades');return;}
   const desc=sanitize(document.getElementById('t-desc').value);
   if(!desc){showToast('⚠️ Descripción obligatoria');return;}
@@ -4541,9 +4541,43 @@ function checkAutoEmail() {
             <option value="No aplica">No aplica</option>
           </select>
         </div>
-        <div class="form-group form-full">
-          <label class="form-lbl">Recomendaciones / Restricciones laborales</label>
-          <textarea class="form-inp" id="emo-recom" rows="2" placeholder="Restricciones o recomendaciones del médico…" style="resize:vertical"></textarea>
+        <!-- B12 S26 FINAL: Cuadro de Recomendaciones estructurado (3 columnas multi-select, sin textarea de recom) -->
+        <div class="form-group form-full" style="border:1px solid var(--border);border-radius:var(--r-sm);padding:12px;background:var(--surface)">
+          <div style="font-weight:700;font-size:12px;color:var(--text-1);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">📋 Recomendaciones Médicas Ocupacionales</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+            <!-- Col 1: Médicas -->
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--esq-navy);background:var(--surface-2);padding:4px 8px;border-radius:4px;margin-bottom:6px;text-transform:uppercase">Recomendaciones Médicas</div>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Usar corrección visual durante jornada laboral" style="margin-top:2px;flex-shrink:0"> Usar corrección visual durante jornada laboral</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Examen visual de control en un año" style="margin-top:2px;flex-shrink:0"> Examen visual de control en un año</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Audiometría de control en un año" style="margin-top:2px;flex-shrink:0"> Audiometría de control en un año</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Espirometría de control en un año" style="margin-top:2px;flex-shrink:0"> Espirometría de control en un año</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Valoración por EPS: médico general / control niveles de lípidos" style="margin-top:2px;flex-shrink:0"> Valoración por EPS: médico general / control lípidos</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Especialista: otorrinolaringología" style="margin-top:2px;flex-shrink:0"> Especialista: otorrinolaringología</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rm" value="Control médico por EPS" style="margin-top:2px;flex-shrink:0"> Control médico por EPS</label>
+            </div>
+            <!-- Col 2: Ocupacionales -->
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--esq-navy);background:var(--surface-2);padding:4px 8px;border-radius:4px;margin-bottom:6px;text-transform:uppercase">Recomendaciones Ocupacionales</div>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Uso de EPP: auditivos en áreas que lo requieran" style="margin-top:2px;flex-shrink:0"> Uso de EPP: auditivos en áreas que lo requieran</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Pausas activas e higiene postural" style="margin-top:2px;flex-shrink:0"> Pausas activas e higiene postural</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Capacitación: trabajo seguro en altura y espacios confinados" style="margin-top:2px;flex-shrink:0"> Capacitación: trabajo seguro en altura y espacios confinados</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Respetar las normas de seguridad de la empresa" style="margin-top:2px;flex-shrink:0"> Respetar las normas de seguridad de la empresa</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Usar los elementos de protección personal correctamente" style="margin-top:2px;flex-shrink:0"> Usar los EPP correctamente</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Restricción para trabajo en alturas" style="margin-top:2px;flex-shrink:0"> Restricción para trabajo en alturas</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-ro" value="Restricción para trabajo en espacios confinados" style="margin-top:2px;flex-shrink:0"> Restricción para trabajo en confinados</label>
+            </div>
+            <!-- Col 3: Hábitos -->
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--esq-navy);background:var(--surface-2);padding:4px 8px;border-radius:4px;margin-bottom:6px;text-transform:uppercase">Hábitos y Estilo de Vida Saludables</div>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Hábitos saludables" style="margin-top:2px;flex-shrink:0"> Hábitos saludables</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Actividad física aeróbica" style="margin-top:2px;flex-shrink:0"> Actividad física aeróbica</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Dieta balanceada" style="margin-top:2px;flex-shrink:0"> Dieta balanceada</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Dejar de fumar" style="margin-top:2px;flex-shrink:0"> Dejar de fumar</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Reducción de consumo de alcohol" style="margin-top:2px;flex-shrink:0"> Reducción de consumo de alcohol</label>
+              <label style="display:flex;gap:6px;align-items:flex-start;font-size:11.5px;margin-bottom:4px;cursor:pointer"><input type="checkbox" class="emo-rh" value="Control de peso" style="margin-top:2px;flex-shrink:0"> Control de peso</label>
+            </div>
+          </div>
         </div>
         <div class="form-group form-full">
           <label class="form-lbl">Observaciones</label>
@@ -5112,9 +5146,11 @@ function abrirModalEMO(cedulaPreset){
     if(cedulaPreset && t.cedula===cedulaPreset) opt.selected=true;
     sel.appendChild(opt);
   });
-  ['emo-tipo','emo-fecha','emo-proximo','emo-ips','emo-concepto','emo-apta-ta','emo-apta-conf','emo-apta-brig','emo-recom','emo-obs'].forEach(id=>{
+  ['emo-tipo','emo-fecha','emo-proximo','emo-ips','emo-concepto','emo-apta-ta','emo-apta-conf','emo-apta-brig','emo-obs'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
+  // B12 S26: limpiar checkboxes de recomendaciones
+  document.querySelectorAll('.emo-rm,.emo-ro,.emo-rh').forEach(function(cb){ cb.checked=false; });
   document.getElementById('emo-fecha').value = new Date().toISOString().split('T')[0];
   emoCalcProximo();
   openOv('ov-form-emo');
@@ -5144,8 +5180,12 @@ function abrirEditEMO(docId){
   document.getElementById('emo-apta-ta').value    = ex.aptitudAlturas||'';
   document.getElementById('emo-apta-conf').value  = ex.aptitudConfinados||'';
   document.getElementById('emo-apta-brig').value  = ex.aptitudBrigadista||'';
-  document.getElementById('emo-recom').value      = ex.recomendaciones||'';
   document.getElementById('emo-obs').value        = ex.obs||'';
+  // B12 S26 FINAL: Restaurar checkboxes desde arrays guardados
+  document.querySelectorAll('.emo-rm,.emo-ro,.emo-rh').forEach(function(cb){ cb.checked=false; });
+  (ex.recomMedicas||[]).forEach(function(v){ var cb=document.querySelector('.emo-rm[value="'+v+'"]'); if(cb) cb.checked=true; });
+  (ex.recomOcupacionales||[]).forEach(function(v){ var cb=document.querySelector('.emo-ro[value="'+v+'"]'); if(cb) cb.checked=true; });
+  (ex.recomHabitos||[]).forEach(function(v){ var cb=document.querySelector('.emo-rh[value="'+v+'"]'); if(cb) cb.checked=true; });
   openOv('ov-form-emo');
 }
 
@@ -5177,7 +5217,10 @@ async function guardarEMO(){
     aptitudAlturas   : document.getElementById('emo-apta-ta').value,
     aptitudConfinados: document.getElementById('emo-apta-conf').value,
     aptitudBrigadista: document.getElementById('emo-apta-brig').value,
-    recomendaciones  : document.getElementById('emo-recom').value.trim(),
+    recomMedicas     : Array.from(document.querySelectorAll('.emo-rm:checked')).map(function(c){return c.value;}),
+    recomOcupacionales: Array.from(document.querySelectorAll('.emo-ro:checked')).map(function(c){return c.value;}),
+    recomHabitos     : Array.from(document.querySelectorAll('.emo-rh:checked')).map(function(c){return c.value;}),
+    obs              : document.getElementById('emo-obs').value.trim(),
     obs              : document.getElementById('emo-obs').value.trim(),
     _docId           : document.getElementById('emo-edit-docid').value || null,
   };
@@ -5223,7 +5266,9 @@ function mostrarHistEMO(cedula){
             Alt: ${sanitize(ex.aptitudAlturas||'—')} · Conf: ${sanitize(ex.aptitudConfinados||'—')} · Brig: ${sanitize(ex.aptitudBrigadista||'—')}
           </div>
           ${ex.recomendaciones?`<div style="font-size:11px;color:var(--amber);margin-top:3px">📋 ${sanitize(ex.recomendaciones)}</div>`:''}
-        </div>
+          ${(ex.recomMedicas&&ex.recomMedicas.length)?`<div style="font-size:10.5px;color:var(--esq-navy);margin-top:4px"><b>Médicas:</b> ${ex.recomMedicas.map(function(v){return sanitize(v);}).join(' · ')}</div>`:''}
+          ${(ex.recomOcupacionales&&ex.recomOcupacionales.length)?`<div style="font-size:10.5px;color:var(--esq-navy);margin-top:2px"><b>Ocupacionales:</b> ${ex.recomOcupacionales.map(function(v){return sanitize(v);}).join(' · ')}</div>`:''}
+          ${(ex.recomHabitos&&ex.recomHabitos.length)?`<div style="font-size:10.5px;color:var(--esq-navy);margin-top:2px"><b>Hábitos:</b> ${ex.recomHabitos.map(function(v){return sanitize(v);}).join(' · ')}</div>`:''}
         <div style="display:flex;gap:4px;flex-shrink:0">
           <span style="background:${sem.color}20;color:${sem.color};padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;white-space:nowrap">${sem.label}</span>
           <button class="btn btn-ghost btn-xs" onclick="closeOv('ov-hist-emo');abrirEditEMO('${ex._docId}')" style="font-size:10px">✏️</button>
@@ -6102,26 +6147,32 @@ async function eliminarCert(modulo,fid){
   }catch(e){showToast('Error eliminando');}
 }
 
-// Delegación de eventos para los botones de la tabla cert (evita problemas de escape)
+// B10 FIX S26: Delegacion SEPARADA para cert-action y cap-action.
+// Antes habia un solo listener con early-return en cert que impedia
+// que los botones de historial de Capacitaciones respondieran.
 document.addEventListener('click',function(e){
   var btn=e.target.closest('[data-cert-action]');
-  if(!btn)return;
-  var action=btn.dataset.certAction;
-  var mod=btn.dataset.mod;
-  var fid=btn.dataset.fid;
-  var ced=btn.dataset.ced;
-  var niv=btn.dataset.niv;
-  if(action==='edit')    abrirModalCert(mod,fid);
-  if(action==='del')     eliminarCert(mod,fid);
-  if(action==='hist')    mostrarHistorialCert(mod,ced,niv);
+  if(btn){
+    var action=btn.dataset.certAction;
+    var mod=btn.dataset.mod;
+    var fid=btn.dataset.fid;
+    var ced=btn.dataset.ced;
+    var niv=btn.dataset.niv;
+    if(action==='edit') abrirModalCert(mod,fid);
+    if(action==='del')  eliminarCert(mod,fid);
+    if(action==='hist') mostrarHistorialCert(mod,ced,niv);
+    return;
+  }
   var bcap=e.target.closest('[data-cap-action]');
-  if(!bcap)return;
-  var ac=bcap.dataset.capAction;
-  var cfid=bcap.dataset.fid;
-  var cced=bcap.dataset.ced;
-  if(ac==='edit')  abrirModalCAP(cfid);
-  if(ac==='del')   eliminarCAP(cfid);
-  if(ac==='hist')  mostrarHistorialCAP(cced);
+  if(bcap){
+    var ac=bcap.dataset.capAction;
+    var cfid=bcap.dataset.fid;
+    var cced=bcap.dataset.ced;
+    if(ac==='edit') abrirModalCAP(cfid);
+    if(ac==='del')  eliminarCAP(cfid);
+    if(ac==='hist') mostrarHistorialCAP(cced);
+    return;
+  }
 });
 
 function renderCertModulo(modulo){
