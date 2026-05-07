@@ -3648,6 +3648,7 @@ async function loadFirebase() {
     window._fb = { collection, getDocs, doc, setDoc, deleteDoc, onSnapshot, query, orderBy,
                    signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword,
                    EmailAuthProvider, reauthenticateWithCredential, updatePassword, getDoc, addDoc };
+    window._db = db;   // Sesión 25c — exponer db en window para dashboards EMO/Ausentismo
     FB_READY = true;
     console.log('✅ Firebase conectado');
     return true;
