@@ -912,7 +912,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
 
     <!-- ════ VISTA: TRABAJADORES ════ -->
     <div class="view" id="view-trabajadores">
-      <div class="sec-hdr" style="margin-bottom:16px">
+      <div class="sec-hdr" style="margin-bottom:12px">
         <div>
           <div class="sec-title">🧑‍🏭 Trabajadores</div>
           <div class="sec-sub">Base de datos unificada · cédula como clave primaria en todo el SIG</div>
@@ -923,35 +923,169 @@ body.is-admin .admin-only-block:not(.view){display:block}
           <button class="btn btn-primary btn-sm" onclick="abrirFormTrab(null)">＋ Nuevo trabajador</button>
         </div>
       </div>
-      <div class="kpi-grid" id="trab-kpis" style="margin-bottom:14px"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
-        <input class="form-inp" id="trab-q" placeholder="🔍 Nombre, cédula o cargo…" style="max-width:260px;font-size:12px" oninput="renderTabTrabajadores()">
-        <select class="form-sel" id="trab-f-estado" style="font-size:12px;max-width:130px" onchange="renderTabTrabajadores()">
-          <option value="">Estado</option>
-          <option value="Activo">Activo</option>
-          <option value="Inactivo">Inactivo</option>
-          <option value="Retirado">Retirado</option>
-        </select>
-        <select class="form-sel" id="trab-f-area" style="font-size:12px;max-width:160px" onchange="renderTabTrabajadores()">
-          <option value="">Área</option>
-        </select>
-        <select class="form-sel" id="trab-f-empresa" style="font-size:12px;max-width:160px" onchange="renderTabTrabajadores()">
-          <option value="">Empresa</option>
-        </select>
+      <!-- Sub-tabs Trabajadores -->
+      <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0;flex-wrap:wrap">
+        <button id="ttab-lista"   class="ctab active" onclick="showTrabTab('lista')">📋 Lista</button>
+        <button id="ttab-dash"    class="ctab"        onclick="showTrabTab('dash')">📊 Dashboard</button>
+        <button id="ttab-config"  class="ctab admin-only-block" onclick="showTrabTab('config')" style="margin-left:auto">⚙️ Catálogos</button>
       </div>
-      <div style="overflow-x:auto">
-        <table class="admin-table" style="min-width:680px">
-          <thead><tr>
-            <th>Foto</th><th>Nombre</th><th>Cédula</th><th>Empresa</th>
-            <th>Cargo</th><th>Área</th><th>Encuesta</th><th>Estado</th><th>Acciones</th>
-          </tr></thead>
-          <tbody id="trab-tbody">
-            <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">Cargando…</td></tr>
-          </tbody>
-        </table>
+
+      <!-- ── SUB-VISTA: LISTA ── -->
+      <div id="tview-lista" class="cview">
+        <div class="kpi-grid" id="trab-kpis" style="margin-bottom:14px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <input class="form-inp" id="trab-q" placeholder="🔍 Nombre, cédula o cargo…" style="max-width:260px;font-size:12px" oninput="renderTabTrabajadores()">
+          <select class="form-sel" id="trab-f-estado" style="font-size:12px;max-width:130px" onchange="renderTabTrabajadores()">
+            <option value="">Estado</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+            <option value="Retirado">Retirado</option>
+          </select>
+          <select class="form-sel" id="trab-f-area" style="font-size:12px;max-width:160px" onchange="renderTabTrabajadores()">
+            <option value="">Área</option>
+          </select>
+          <select class="form-sel" id="trab-f-empresa" style="font-size:12px;max-width:160px" onchange="renderTabTrabajadores()">
+            <option value="">Empresa</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="admin-table" style="min-width:680px">
+            <thead><tr>
+              <th>Foto</th><th>Nombre</th><th>Cédula</th><th>Empresa</th>
+              <th>Cargo</th><th>Área</th><th>Encuesta</th><th>Estado</th><th>Acciones</th>
+            </tr></thead>
+            <tbody id="trab-tbody">
+              <tr><td colspan="9" style="text-align:center;padding:32px;color:var(--text-3)">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="trab-count" style="font-size:11px;color:var(--text-3);margin-top:8px;text-align:right"></div>
       </div>
-      <div id="trab-count" style="font-size:11px;color:var(--text-3);margin-top:8px;text-align:right"></div>
+
+      <!-- ── SUB-VISTA: DASHBOARD ── -->
+      <div id="tview-dash" class="cview" style="display:none">
+        <!-- KPIs expandidos -->
+        <div class="kpi-grid" id="trab-dash-kpis" style="margin-bottom:18px"></div>
+        <!-- Gráficas fila 1 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px">
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📊 Por empresa / contratista</div>
+            <div style="position:relative;height:220px"><canvas id="tc-empresa"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🗂 Por área</div>
+            <div style="position:relative;height:220px"><canvas id="tc-area"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">💼 Por cargo</div>
+            <div style="position:relative;height:220px"><canvas id="tc-cargo"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📋 Estado encuesta sociodem.</div>
+            <div style="position:relative;height:220px"><canvas id="tc-encuesta"></canvas></div>
+          </div>
+        </div>
+        <!-- Gráficas fila 2 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">⚠️ Nivel de riesgo ARL</div>
+            <div style="position:relative;height:220px"><canvas id="tc-riesgo"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🎓 Escolaridad</div>
+            <div style="position:relative;height:220px"><canvas id="tc-escolaridad"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">💍 Estado civil</div>
+            <div style="position:relative;height:220px"><canvas id="tc-civil"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📄 Tipo de contrato</div>
+            <div style="position:relative;height:220px"><canvas id="tc-contrato"></canvas></div>
+          </div>
+        </div>
+        <!-- Gráficas fila 3 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:14px;margin-bottom:14px">
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🏠 Tipo de vivienda</div>
+            <div style="position:relative;height:220px"><canvas id="tc-vivienda"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🚗 Transporte al trabajo</div>
+            <div style="position:relative;height:220px"><canvas id="tc-transporte"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🩸 Grupo sanguíneo / RH</div>
+            <div style="position:relative;height:220px"><canvas id="tc-rh"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🏋️ Actividad física</div>
+            <div style="position:relative;height:220px"><canvas id="tc-actfis"></canvas></div>
+          </div>
+        </div>
+        <!-- Gráfica estrato -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px">
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🏙️ Estrato socioeconómico</div>
+            <div style="position:relative;height:220px"><canvas id="tc-estrato"></canvas></div>
+          </div>
+          <div class="dash-card" style="padding:16px">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">⚧️ Sexo biológico</div>
+            <div style="position:relative;height:220px"><canvas id="tc-sexo"></canvas></div>
+          </div>
+        </div>
+        <!-- Reporte Hijos Navidad -->
+        <div class="dash-card" style="padding:18px;margin-bottom:4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div>
+              <div style="font-size:14px;font-weight:800;color:var(--dark)">🎄 Hijos de trabajadores — Segmentos navidad</div>
+              <div style="font-size:11px;color:var(--text-2);margin-top:3px">Solo trabajadores activos con encuesta · <span id="trab-hijos-total" style="font-weight:700">0</span> hijos registrados</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="exportarHijosTrabCSV()">⬇️ Exportar CSV</button>
+          </div>
+          <div id="trab-hijos-segmentos" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:10px"></div>
+          <div id="trab-hijos-empty" style="display:none;font-size:12px;color:var(--text-3);padding:8px 0">Sin datos de hijos. Completa la Sección V (Familia) en las encuestas sociodemográficas.</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-3);margin-top:6px;text-align:right">* Datos sociodemográficos solo para trabajadores con encuesta completa</div>
+      </div>
     </div>
+
+      <!-- ── SUB-VISTA: CATÁLOGOS (Solo admin) ── -->
+      <div id="tview-config" class="cview" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:20px;font-weight:800;color:var(--dark)">⚙️ Catálogos del Sistema</div>
+            <div style="font-size:12px;color:var(--text-2);margin-top:3px">Gestiona cargos, áreas y empresas — estos valores se usan en todos los módulos</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px">
+          <!-- Cargos -->
+          <div class="dash-card" style="padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:13px;font-weight:800;color:var(--dark)">💼 Cargos</div>
+              <button class="btn btn-primary btn-sm" onclick="catAgregar('cargos')">＋ Agregar</button>
+            </div>
+            <div id="cat-cargos-list" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
+          </div>
+          <!-- Áreas -->
+          <div class="dash-card" style="padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:13px;font-weight:800;color:var(--dark)">🗂 Áreas</div>
+              <button class="btn btn-primary btn-sm" onclick="catAgregar('areas')">＋ Agregar</button>
+            </div>
+            <div id="cat-areas-list" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
+          </div>
+          <!-- Empresas -->
+          <div class="dash-card" style="padding:20px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:13px;font-weight:800;color:var(--dark)">🏢 Empresas / Contratistas</div>
+              <button class="btn btn-primary btn-sm" onclick="catAgregar('empresas')">＋ Agregar</button>
+            </div>
+            <div id="cat-empresas-list" style="display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto"></div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:11px;color:var(--text-3)">⚠️ Los cambios se aplican inmediatamente en toda la aplicación. Eliminar un valor no borra los registros existentes que lo usen.</div>
+      </div>
 
     <!-- ════ VISTA: MEDICINA LABORAL ════ -->
     <div class="view" id="view-examenes">
@@ -1173,6 +1307,99 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <button id="ctab-alturas"       class="ctab"        onclick="showCTab2('alturas')">🧗 Alturas</button>
     <button id="ctab-confinados"    class="ctab"        onclick="showCTab2('confinados')">⚠️ Confinados</button>
     <button id="ctab-cap"           class="ctab"        onclick="showCTab2('cap')">🎓 Capacitaciones</button>
+    <button id="ctab-programa"      class="ctab"        onclick="showCTab2('programa')">📋 Programa Anual</button>
+  </div>
+
+  <!-- ── PROGRAMA ANUAL FM-HSE-011 ── -->
+  <div id="cview-programa" class="cview" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">📋 Programa Anual de Capacitaciones</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:3px">FM-HSE-011 · Training Plan · Matriz cargo × tema · 27 temas SST</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select class="form-sel" id="prog-sel-year" style="font-size:13px" onchange="renderProgramaAnual()">
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+          <option value="2027">2027</option>
+        </select>
+        <button class="btn btn-primary btn-sm admin-only-block" onclick="abrirModalNuevaTema()">＋ Nuevo tema</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirModalProg(null)">✏️ Registrar ejecución</button>
+      </div>
+    </div>
+    <!-- Banner año no creado -->
+    <div id="prog-banner-nuevo" style="display:none;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:var(--r);padding:16px 20px;margin-bottom:18px">
+      <div style="font-size:14px;font-weight:800;color:var(--amber);margin-bottom:10px">⚠️ No existe un programa para este año</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm admin-only-block" onclick="crearPrograma('plantilla')">📋 Crear con 27 temas SST</button>
+        <button class="btn btn-ghost btn-sm admin-only-block" onclick="crearPrograma('copiar')">📄 Copiar año anterior</button>
+        <button class="btn btn-ghost btn-sm admin-only-block" onclick="crearPrograma('vacio')">🆕 Programa vacío</button>
+      </div>
+    </div>
+    <!-- Banner año cerrado -->
+    <div id="prog-banner-cerrado" style="display:none;background:var(--red-lt);border:1.5px solid var(--red);border-radius:var(--r);padding:12px 20px;margin-bottom:18px;font-size:13px;font-weight:700;color:var(--red)">
+      🔒 Año cerrado — solo lectura
+    </div>
+    <!-- KPIs Programa -->
+    <div class="kpi-grid" id="prog-kpis" style="margin-bottom:18px"></div>
+    <!-- Sub-tabs internos del Programa -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap">
+      <button id="ptab-plan"  class="ctab active" onclick="showProgTab('plan')" style="font-size:12px">📅 Training Plan</button>
+      <button id="ptab-hse"   class="ctab"        onclick="showProgTab('hse')"  style="font-size:12px">🟦 Matriz HSE</button>
+      <button id="ptab-op"    class="ctab"        onclick="showProgTab('op')"   style="font-size:12px">🟧 Matriz OP</button>
+      <button id="ptab-seg"   class="ctab"        onclick="showProgTab('seg')"  style="font-size:12px">📊 Seguimiento</button>
+      <button id="ptab-ind"   class="ctab"        onclick="showProgTab('ind')"  style="font-size:12px">📈 Indicadores</button>
+    </div>
+    <!-- Training Plan -->
+    <div id="pview-plan">
+      <div style="overflow-x:auto">
+        <table class="admin-table" style="min-width:900px;font-size:12px">
+          <thead><tr>
+            <th style="width:40px">#</th>
+            <th>Tema / Contenido</th>
+            <th>Objetivo</th>
+            <th>Dirigido a</th>
+            <th>Facilitador</th>
+            <th style="width:60px">Horas</th>
+            <th style="width:80px">Frec.</th>
+            <th style="width:100px">F. Ejecución</th>
+            <th style="width:90px">Estado</th>
+            <th style="width:100px">Acciones</th>
+          </tr></thead>
+          <tbody id="prog-plan-tbody">
+            <tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-3)">Cargando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Matriz HSE -->
+    <div id="pview-hse" style="display:none">
+      <div style="overflow-x:auto" id="prog-matriz-hse"></div>
+    </div>
+    <!-- Matriz OP -->
+    <div id="pview-op" style="display:none">
+      <div style="overflow-x:auto" id="prog-matriz-op"></div>
+    </div>
+    <!-- Seguimiento -->
+    <div id="pview-seg" style="display:none">
+      <div style="overflow-x:auto" id="prog-seguimiento"></div>
+    </div>
+    <!-- Indicadores -->
+    <div id="pview-ind" style="display:none">
+      <div class="kpi-grid" id="prog-ind-kpis" style="margin-bottom:18px"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+        <div class="dash-card" style="padding:16px">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📉 Reducción END capacitados</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Meta &lt; 30% · END asociados a temas capacitados / Total END × 100</div>
+          <div style="position:relative;height:200px"><canvas id="prog-chart-end"></canvas></div>
+        </div>
+        <div class="dash-card" style="padding:16px">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">⚠️ Desviaciones temas capacitados</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Meta &lt; 20% · Desviaciones en temas capacitados / Total desviaciones × 100</div>
+          <div style="position:relative;height:200px"><canvas id="prog-chart-desv"></canvas></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ── DASHBOARD CAPACITACIONES ── -->
@@ -3413,6 +3640,8 @@ async function initApp() {
   populateRespFilters();
   migrateRespIds();
   setTimeout(checkAutoAlerts, 1500);
+  // Cargar catálogos en background
+  if (window._db) fbCargarCatalogos();
   showTab('dashboard');
   refreshAll();
 }
@@ -9589,6 +9818,892 @@ function exportarAusentismoCSV(){
      SESIÓN 22 — 🎓 CAPACITACIONES
      Sub-módulos: Alturas · Confinados · Capacitaciones
 ═══════════════════════════════════════════════ -->
+
+<script>
+// ════════════════════════════════════════════════════════════
+// SESIÓN 27 — PARTE A: DASHBOARD TRABAJADORES
+// ════════════════════════════════════════════════════════════
+
+var _trabCharts = {};
+
+function showTrabTab(id) {
+  ['lista','dash','config'].forEach(function(t) {
+    var el = document.getElementById('tview-' + t);
+    if (el) el.style.display = 'none';
+    var btn = document.getElementById('ttab-' + t);
+    if (btn) btn.classList.remove('active');
+  });
+  var view = document.getElementById('tview-' + id);
+  if (view) view.style.display = 'block';
+  var tab = document.getElementById('ttab-' + id);
+  if (tab) tab.classList.add('active');
+  if (id === 'dash') renderTrabDashboard();
+  if (id === 'lista') renderTabTrabajadores();
+  if (id === 'config') {
+    if (!_catalogosLoaded) {
+      fbCargarCatalogos().then(function() { renderCatalogos(); });
+    } else {
+      renderCatalogos();
+    }
+  }
+}
+
+function _contarCampo(lista, campo) {
+  var m = {};
+  lista.forEach(function(t) {
+    var v = t[campo] || '—';
+    m[v] = (m[v] || 0) + 1;
+  });
+  return m;
+}
+
+function _mkChart(canvasId, tipo, labels, datos, colores) {
+  if (_trabCharts[canvasId]) { try { _trabCharts[canvasId].destroy(); } catch(e){} }
+  var el = document.getElementById(canvasId);
+  if (!el) return;
+  var isDark = document.body.getAttribute('data-theme') === 'dark';
+  var gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  var textColor = isDark ? '#94A3B8' : '#64748B';
+  _trabCharts[canvasId] = new Chart(el.getContext('2d'), {
+    type: tipo,
+    data: { labels: labels, datasets: [{ data: datos, backgroundColor: colores, borderWidth: tipo === 'doughnut' ? 2 : 0, borderColor: isDark ? '#1e293b' : '#fff', borderRadius: tipo === 'bar' ? 4 : 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: tipo === 'doughnut' ? 'right' : 'top', labels: { font: { size: 11, family: "'Exo 2',sans-serif" }, color: textColor, padding: 8, boxWidth: 12 } }, tooltip: { callbacks: { label: function(c){ return ' ' + c.label + ': ' + c.raw; } } } },
+      scales: tipo === 'bar' ? { x: { ticks: { color: textColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: textColor, font: { size: 11 }, precision: 0 }, grid: { color: gridColor } } } : {}
+    }
+  });
+}
+
+function _mkHBar(canvasId, labels, datos) {
+  if (_trabCharts[canvasId]) { try { _trabCharts[canvasId].destroy(); } catch(e){} }
+  var el = document.getElementById(canvasId);
+  if (!el) return;
+  var isDark = document.body.getAttribute('data-theme') === 'dark';
+  var textColor = isDark ? '#94A3B8' : '#64748B';
+  var barColor = isDark ? 'rgba(26,60,143,0.7)' : 'rgba(26,60,143,0.75)';
+  _trabCharts[canvasId] = new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: { labels: labels, datasets: [{ data: datos, backgroundColor: barColor, borderRadius: 4, borderWidth: 0 }] },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c){ return ' ' + c.raw + ' trabajadores'; } } } },
+      scales: {
+        x: { ticks: { color: textColor, font: { size: 11 }, precision: 0 }, grid: { color: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)' } },
+        y: { ticks: { color: textColor, font: { size: 11 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderTrabDashboard() {
+  if (!_trabList.length) { fbTrabCargar().then(renderTrabDashboard); return; }
+
+  var activos   = _trabList.filter(function(t){ return t.estado==='Activo'; });
+  var conEnc    = _trabList.filter(function(t){ return !!(t.sociodem?.completada || t.estadoCivil || t.escolaridad || t.autorizaDatos); });
+  var empresas  = [...new Set(_trabList.map(function(t){ return t.empresa; }).filter(Boolean))].length;
+
+  // Contar hijos (campo hijos_detalle JSON array o campo nHijos)
+  var totalHijos = 0;
+  activos.forEach(function(t) {
+    var h = [];
+    try { h = JSON.parse(t.hijos_detalle || t.sociodem?.hijos_detalle || '[]'); } catch(e){}
+    if (!Array.isArray(h)) h = [];
+    totalHijos += h.length;
+  });
+
+  var conHijos   = activos.filter(function(t){ return t.tieneHijos === 'SI' || (function(){ try{ return JSON.parse(t.hijos_detalle||t.sociodem?.hijos_detalle||'[]').length>0; }catch(e){ return false; } })(); }).length;
+  var cabezaFam  = activos.filter(function(t){ return (t.cabeFamily||'').toUpperCase() === 'SI'; }).length;
+
+  // Sexo (activos con encuesta)
+  var hombres = activos.filter(function(t){ return (t.sexo||'').toLowerCase().startsWith('h'); }).length;
+  var mujeres = activos.filter(function(t){ return (t.sexo||'').toLowerCase().startsWith('m'); }).length;
+
+  // KPIs ampliados
+  document.getElementById('trab-dash-kpis').innerHTML =
+    '<div class="kpi blue"><div class="kpi-ico">👥</div><div class="kpi-lbl">Total personal</div><div class="kpi-val">' + _trabList.length + '</div><div class="kpi-note">en Firestore</div></div>' +
+    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">Activos</div><div class="kpi-val">' + activos.length + '</div><div class="kpi-note">' + (_trabList.length ? Math.round(activos.length/_trabList.length*100) : 0) + '%</div></div>' +
+    '<div class="kpi blue"><div class="kpi-ico">👨</div><div class="kpi-lbl">Hombres</div><div class="kpi-val">' + hombres + '</div><div class="kpi-note">activos</div></div>' +
+    '<div class="kpi" style="background:var(--purple-lt)"><div class="kpi-ico">👩</div><div class="kpi-lbl">Mujeres</div><div class="kpi-val" style="color:var(--purple)">' + mujeres + '</div><div class="kpi-note">activas</div></div>' +
+    '<div class="kpi yellow"><div class="kpi-ico">📋</div><div class="kpi-lbl">Con encuesta</div><div class="kpi-val">' + conEnc.length + '</div><div class="kpi-note">de ' + _trabList.length + '</div></div>' +
+    '<div class="kpi orange"><div class="kpi-ico">🏢</div><div class="kpi-lbl">Empresas</div><div class="kpi-val">' + empresas + '</div><div class="kpi-note">distintas</div></div>' +
+    '<div class="kpi green"><div class="kpi-ico">👶</div><div class="kpi-lbl">Con hijos</div><div class="kpi-val">' + conHijos + '</div><div class="kpi-note">' + totalHijos + ' hijos total</div></div>' +
+    '<div class="kpi blue"><div class="kpi-ico">🏠</div><div class="kpi-lbl">Cabeza familia</div><div class="kpi-val">' + cabezaFam + '</div><div class="kpi-note">activos</div></div>';
+
+  // Paletas
+  var pal  = ['#1A3C8F','#F5C800','#E84E1B','#16A34A','#7C3AED','#D97706','#DC2626','#0891B2','#059669','#DB2777','#6D28D9','#92400E'];
+  var pal2 = ['#60A5FA','#34D399','#F97316','#A78BFA','#FBBF24','#FB923C','#38BDF8','#4ADE80','#F472B6','#818CF8'];
+
+  // 1. Empresa (doughnut)
+  var empMap = _contarCampo(_trabList, 'empresa');
+  var empLabs = Object.keys(empMap);
+  _mkChart('tc-empresa', 'doughnut', empLabs, empLabs.map(function(k){ return empMap[k]; }), pal.slice(0, empLabs.length));
+
+  // 2. Área (horizontal bar) — top 8
+  var areaMap = _contarCampo(_trabList, 'area');
+  var areaSorted = Object.entries(areaMap).sort(function(a,b){ return b[1]-a[1]; }).slice(0,8);
+  _mkHBar('tc-area', areaSorted.map(function(x){ return x[0]; }), areaSorted.map(function(x){ return x[1]; }));
+
+  // 3. Cargo (horizontal bar) — top 8
+  var cargoMap = _contarCampo(_trabList, 'cargo');
+  var cargoSorted = Object.entries(cargoMap).sort(function(a,b){ return b[1]-a[1]; }).slice(0,8);
+  _mkHBar('tc-cargo', cargoSorted.map(function(x){ return x[0]; }), cargoSorted.map(function(x){ return x[1]; }));
+
+  // 4. Estado encuesta (doughnut)
+  _mkChart('tc-encuesta', 'doughnut', ['Completa','Pendiente'], [conEnc.length, _trabList.length - conEnc.length], ['#16A34A','#E84E1B']);
+
+  // 5. Riesgo ARL (doughnut)
+  var riesgoMap = _contarCampo(_trabList, 'riesgo');
+  var rLabs = Object.keys(riesgoMap).filter(Boolean).map(function(k){ return 'Nivel ' + k; });
+  if (rLabs.length) _mkChart('tc-riesgo', 'doughnut', rLabs, Object.entries(riesgoMap).filter(function(e){ return e[0]; }).map(function(e){ return e[1]; }), ['#16A34A','#D97706','#E84E1B','#DC2626','#7C3AED']);
+
+  // 6. Escolaridad (bar) — solo con encuesta
+  var escMap = _contarCampo(conEnc, 'escolaridad');
+  var esLabs = Object.keys(escMap).filter(Boolean);
+  if (esLabs.length) _mkChart('tc-escolaridad', 'bar', esLabs, esLabs.map(function(k){ return escMap[k]; }), pal.slice(0, esLabs.length));
+
+  // 7. Estado civil (doughnut)
+  var civilMap = _contarCampo(conEnc, 'estadoCivil');
+  var cvLabs = Object.keys(civilMap).filter(Boolean);
+  if (cvLabs.length) _mkChart('tc-civil', 'doughnut', cvLabs, cvLabs.map(function(k){ return civilMap[k]; }), pal2.slice(0, cvLabs.length));
+
+  // 8. Tipo contrato (doughnut)
+  var contMap = _contarCampo(conEnc, 'tipoContrato');
+  var ctLabs = Object.keys(contMap).filter(Boolean);
+  if (ctLabs.length) _mkChart('tc-contrato', 'doughnut', ctLabs, ctLabs.map(function(k){ return contMap[k]; }), pal.slice(0, ctLabs.length));
+
+  // 9. Tipo vivienda (doughnut)
+  var vivMap = _contarCampo(conEnc, 'tipoVivienda');
+  var vLabs = Object.keys(vivMap).filter(Boolean);
+  if (vLabs.length) _mkChart('tc-vivienda', 'doughnut', vLabs, vLabs.map(function(k){ return vivMap[k]; }), pal2.slice(0, vLabs.length));
+
+  // 10. Transporte (bar horizontal)
+  var transMap = _contarCampo(conEnc, 'transporte');
+  var trSorted = Object.entries(transMap).filter(function(e){ return e[0]; }).sort(function(a,b){ return b[1]-a[1]; });
+  if (trSorted.length) _mkHBar('tc-transporte', trSorted.map(function(x){ return x[0]; }), trSorted.map(function(x){ return x[1]; }));
+
+  // 11. Grupo sanguíneo/RH (doughnut)
+  var rhMap = _contarCampo(conEnc, 'rh');
+  var rhLabs = Object.keys(rhMap).filter(Boolean);
+  if (!rhLabs.length) { // intentar campo alternativo
+    rhMap = _contarCampo(conEnc, 'grupoSanguineo');
+    rhLabs = Object.keys(rhMap).filter(Boolean);
+  }
+  if (rhLabs.length) _mkChart('tc-rh', 'doughnut', rhLabs, rhLabs.map(function(k){ return rhMap[k]; }), ['#DC2626','#1A3C8F','#16A34A','#D97706','#7C3AED','#0891B2','#DB2777','#059669']);
+
+  // 12. Actividad física (doughnut)
+  var afMap = _contarCampo(conEnc, 'actFisica');
+  var afLabs = Object.keys(afMap).filter(Boolean);
+  if (afLabs.length) _mkChart('tc-actfis', 'doughnut', afLabs, afLabs.map(function(k){ return afMap[k]; }), ['#16A34A','#E84E1B','#D97706']);
+
+  // 13. Estrato (bar)
+  var estMap = _contarCampo(conEnc, 'estrato');
+  var estLabs = Object.keys(estMap).filter(Boolean).sort();
+  if (estLabs.length) _mkChart('tc-estrato', 'bar', estLabs.map(function(k){ return 'Estrato '+k; }), estLabs.map(function(k){ return estMap[k]; }), pal2.slice(0, estLabs.length));
+
+  // 14. Sexo biológico (doughnut)
+  var sexoMap = _contarCampo(activos, 'sexo');
+  var sxLabs = Object.keys(sexoMap).filter(Boolean);
+  if (sxLabs.length) _mkChart('tc-sexo', 'doughnut', sxLabs, sxLabs.map(function(k){ return sexoMap[k]; }), ['#1A3C8F','#DB2777','#7C3AED','#16A34A']);
+
+  // 🎄 Reporte hijos navidad
+  _renderHijosNavidad(activos);
+}
+
+// Exponer showTrabTab al global
+window.showTrabTab = showTrabTab;
+
+// ════════════════════════════════════════════════════════════
+// SESIÓN 28 — CATÁLOGOS + TRAINING PLAN FIRESTORE + LÓGICA AÑO
+// ════════════════════════════════════════════════════════════
+
+// ── Catálogos: cargos, áreas, empresas ───────────────────────
+var _catalogos = { cargos: [], areas: [], empresas: [] };
+var _catalogosLoaded = false;
+
+var CAT_DEFAULTS = {
+  cargos: ['Administración','Almacén','Civil','Conductor','Coordinación','Eléctrica',
+           'HSE','Logística','Mecánica','Metalistería','Operación','Pintura',
+           'Serv. Generales','COPASST','Brigadista'],
+  areas:  ['Operaciones','Mantenimiento','Administrativo','HSE','Logística','Metalistería',
+           'Pintura','Civil','Eléctrica','Almacén'],
+  empresas: ['ESQUIVENSA','Contratista']
+};
+
+async function fbCargarCatalogos() {
+  if (!window._db || !window._fb) return;
+  var collection = window._fb.collection, getDocs = window._fb.getDocs, setDoc = window._fb.setDoc, doc = window._fb.doc;
+  try {
+    var snap = await getDocs(collection(window._db, 'config'));
+    var found = false;
+    snap.forEach(function(d) { if (d.id === 'catalogos') { _catalogos = Object.assign({ cargos:[], areas:[], empresas:[] }, d.data()); found = true; } });
+    if (!found) {
+      await setDoc(doc(window._db, 'config', 'catalogos'), CAT_DEFAULTS);
+      _catalogos = JSON.parse(JSON.stringify(CAT_DEFAULTS));
+    }
+    _catalogosLoaded = true;
+  } catch(e) { console.warn('fbCargarCatalogos:', e); _catalogos = JSON.parse(JSON.stringify(CAT_DEFAULTS)); _catalogosLoaded = true; }
+}
+
+async function fbGuardarCatalogos() {
+  if (!window._db || !window._fb) return;
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  await setDoc(doc(window._db, 'config', 'catalogos'), _catalogos);
+}
+
+function renderCatalogos() {
+  ['cargos','areas','empresas'].forEach(function(tipo) {
+    var lista = _catalogos[tipo] || [];
+    var html = lista.length ? lista.map(function(v, i) {
+      return '<div style="display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:var(--r-sm);padding:7px 10px">' +
+        '<span style="flex:1;font-size:12px;font-weight:600">' + v + '</span>' +
+        '<button class="btn btn-ghost btn-xs" onclick="catEditar(\'' + tipo + '\',' + i + ')" title="Editar">✏️</button>' +
+        '<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="catEliminar(\'' + tipo + '\',' + i + ')" title="Eliminar">🗑</button>' +
+        '</div>';
+    }).join('') : '<div style="color:var(--text-3);font-size:12px;padding:8px">Sin elementos. Agrega el primero.</div>';
+    var el = document.getElementById('cat-' + tipo + '-list');
+    if (el) el.innerHTML = html;
+  });
+}
+
+function catAgregar(tipo) {
+  var label = tipo === 'cargos' ? 'cargo' : tipo === 'areas' ? 'área' : 'empresa';
+  var val = prompt('Nombre del nuevo ' + label + ':');
+  if (!val || !val.trim()) return;
+  val = val.trim();
+  if (_catalogos[tipo].includes(val)) { showToast('⚠️ Ya existe'); return; }
+  _catalogos[tipo].push(val);
+  _catalogos[tipo].sort();
+  fbGuardarCatalogos().then(function() {
+    renderCatalogos();
+    _actualizarSelectoresCatalogos();
+    showToast('✅ ' + val + ' agregado');
+  });
+}
+
+function catEditar(tipo, idx) {
+  var val = prompt('Nuevo nombre:', _catalogos[tipo][idx]);
+  if (!val || !val.trim()) return;
+  val = val.trim();
+  _catalogos[tipo][idx] = val;
+  _catalogos[tipo].sort();
+  fbGuardarCatalogos().then(function() {
+    renderCatalogos();
+    _actualizarSelectoresCatalogos();
+    showToast('✅ Actualizado');
+  });
+}
+
+function catEliminar(tipo, idx) {
+  var nombre = _catalogos[tipo][idx];
+  if (!confirm('¿Eliminar "' + nombre + '"? Los registros que lo usen no se modifican.')) return;
+  _catalogos[tipo].splice(idx, 1);
+  fbGuardarCatalogos().then(function() {
+    renderCatalogos();
+    _actualizarSelectoresCatalogos();
+    showToast('🗑 Eliminado');
+  });
+}
+
+function _actualizarSelectoresCatalogos() {
+  // Actualizar todos los <select> de cargo, área y empresa en la app
+  var selCargo  = ['prof-cargo-sel', 'form-cargo', 'trab-f-cargo', 'prog-tema-modal-cargo'];
+  var selArea   = ['form-area', 'trab-f-area'];
+  var selEmpresa= ['form-empresa', 'trab-f-empresa'];
+  function _llenar(ids, lista, placeholder) {
+    ids.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var cur = el.value;
+      var opts = '<option value="">' + placeholder + '</option>' + lista.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
+      el.innerHTML = opts;
+    });
+  }
+  _llenar(selCargo,   _catalogos.cargos,   '— Cargo —');
+  _llenar(selArea,    _catalogos.areas,    '— Área —');
+  _llenar(selEmpresa, _catalogos.empresas, '— Empresa —');
+}
+
+// ── Catálogo de los 27 temas base (plantilla) ────────────────
+var PROG_TEMAS_BASE = [
+  {orden:1,  tema:'Inducción HSE',                    objetivo:'Presentar el SG-HSE a personal nuevo',           dirigido:'Todo el personal nuevo',            facilitador:'Coordinador HSE',       horas:4,  frec:'Por requisito'},
+  {orden:2,  tema:'Reinducción SST',                   objetivo:'Actualizar políticas y procedimientos',           dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
+  {orden:3,  tema:'Política y objetivos SST',          objetivo:'Divulgar política del SG-HSE',                   dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Anual'},
+  {orden:4,  tema:'Reglamento higiene y seguridad',    objetivo:'Conocer el reglamento interno',                  dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Anual'},
+  {orden:5,  tema:'Riesgo mecánico — ACST',            objetivo:'Identificar peligros y riesgos',                 dirigido:'Mecánica · Eléctrica · Civil',       facilitador:'Coordinador HSE',       horas:2,  frec:'Mensual'},
+  {orden:6,  tema:'Riesgo eléctrico',                  objetivo:'Prevenir accidentes eléctricos',                 dirigido:'Eléctrica · Operación',              facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:7,  tema:'Trabajo en alturas',                objetivo:'Res. 4272/2021 · trabajo seguro',                dirigido:'Alturas · Civil · Mecánica',         facilitador:'Externo certificado',   horas:16, frec:'Anual'},
+  {orden:8,  tema:'Espacios confinados',               objetivo:'Res. 0491/2020 · entrada segura',                dirigido:'Operación · Mecánica',               facilitador:'Externo certificado',   horas:8,  frec:'Anual'},
+  {orden:9,  tema:'Manejo de productos químicos',      objetivo:'Seguridad con sustancias químicas',              dirigido:'Almacén · Operación · Mecánica',     facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:10, tema:'Manejo y disposición de residuos',  objetivo:'PGIR · gestión ambiental',                       dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:11, tema:'EPP — uso y mantenimiento',         objetivo:'Uso correcto de EPP por cargo',                  dirigido:'Todo el personal operativo',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:12, tema:'Primeros auxilios',                 objetivo:'Respuesta inicial ante emergencias médicas',      dirigido:'Brigada · Todo el personal',         facilitador:'ARL / Externo',         horas:8,  frec:'Anual'},
+  {orden:13, tema:'Control de incendios y extintores', objetivo:'Uso de extintores',                              dirigido:'Brigada · Todo el personal',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:14, tema:'Plan de emergencias y evacuación',  objetivo:'Rutas y puntos de encuentro',                    dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:15, tema:'Investigación de incidentes',       objetivo:'Metodología de investigación',                   dirigido:'HSE · Supervisores · COPASST',       facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
+  {orden:16, tema:'Riesgo psicosocial',                objetivo:'Factores de riesgo psicosocial',                 dirigido:'Todo el personal',                  facilitador:'ARL / Externo',         horas:4,  frec:'Anual'},
+  {orden:17, tema:'Riesgo biomecánico — higiene postural',objetivo:'Prevención osteomuscular',                    dirigido:'Administrativo · Operación',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:18, tema:'Riesgo físico — ruido y vibración', objetivo:'Controles ruido',                                dirigido:'Mecánica · Eléctrica · Operación',   facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:19, tema:'Riesgo biológico',                  objetivo:'Vectores, COVID y patógenos',                    dirigido:'Todo el personal',                  facilitador:'EPS / ARL',             horas:2,  frec:'Anual'},
+  {orden:20, tema:'Observaciones de seguridad',        objetivo:'Formato y reporte de condiciones',               dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Mensual'},
+  {orden:21, tema:'COPASST — funciones y reuniones',   objetivo:'Rol del comité paritario',                       dirigido:'COPASST · Supervisores',             facilitador:'Coordinador HSE',       horas:2,  frec:'Trimestral'},
+  {orden:22, tema:'Manejo defensivo',                  objetivo:'Conducción segura',                              dirigido:'Conductores · Logística',            facilitador:'Externo / ARL',         horas:8,  frec:'Anual'},
+  {orden:23, tema:'Gestión ambiental ISO 14001',       objetivo:'Aspectos e impactos ambientales',                dirigido:'HSE · Coordinación · Operación',     facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
+  {orden:24, tema:'Bloqueo y etiquetado (LOTO)',       objetivo:'Control de energías peligrosas',                 dirigido:'Mecánica · Eléctrica',               facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
+  {orden:25, tema:'Gestión del cambio',                objetivo:'Procedimiento cambio seguro',                    dirigido:'HSE · Supervisores · Coordinación',  facilitador:'Coordinador HSE',       horas:2,  frec:'Anual'},
+  {orden:26, tema:'Metalistería y trabajos en caliente',objetivo:'Riesgos soldadura / corte',                     dirigido:'Metalistería · Mecánica',            facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
+  {orden:27, tema:'Pintura — exposición a solventes',  objetivo:'Riesgo químico en pintura',                      dirigido:'Pintura · Metalistería',             facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'}
+];
+
+// Keep PROG_TEMAS as alias for matriz rendering (legacy support)
+var PROG_TEMAS = PROG_TEMAS_BASE;
+
+// Matriz cargo × tema (HSE Matriz) — 1=aplica
+var MATRIZ_HSE = {
+  'Administración' :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,0,1,1,0,0,1,0,0,1,0,0,0,0],
+  'Almacén'        :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,1,1,0,0,0,0,0,0,0],
+  'Civil'          :[1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
+  'Conductor'      :[1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,1,0,0,0,1,0,1,0,0,0,0,0],
+  'Coordinación'   :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0],
+  'Eléctrica'      :[1,1,1,1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
+  'HSE'            :[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
+  'Logística'      :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,0,0,0,0],
+  'Mecánica'       :[1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,1],
+  'Metalistería'   :[1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1],
+  'Operación'      :[1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0],
+  'Pintura'        :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,1],
+  'Serv. Generales':[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
+  'COPASST'        :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0],
+  'Brigadista'     :[1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0]
+};
+
+var MATRIZ_OP = {
+  'Administración' :[0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0],
+  'Almacén'        :[0,0,0,0,1,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
+  'Civil'          :[0,0,0,0,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
+  'Conductor'      :[0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,0,0,0,1,0,1,0,0,0,0,0],
+  'Coordinación'   :[0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0],
+  'Eléctrica'      :[0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
+  'HSE'            :[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
+  'Logística'      :[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,0,0,0,0],
+  'Mecánica'       :[0,0,0,0,1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,1],
+  'Metalistería'   :[0,0,0,0,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1],
+  'Operación'      :[0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0],
+  'Pintura'        :[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,1],
+  'Serv. Generales':[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
+  'COPASST'        :[0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0],
+  'Brigadista'     :[0,0,0,0,0,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0]
+};
+
+// Estado Firestore del año
+var _progData   = {};   // key = docId → {fechaEjec, estado, ...}
+var _progTemas  = [];   // temas del año cargados de Firestore
+var _progLoaded = false;
+var _progCharts = {};
+var _progAnioCerrado = false;
+var _progAnioExiste  = false;
+
+// ── Cargar temas del año desde Firestore ──────────────────────
+async function fbProgCargarTemas(year) {
+  if (!window._db || !window._fb) return;
+  var collection = window._fb.collection, getDocs = window._fb.getDocs;
+  var snap = await getDocs(collection(window._db, 'planes_cap', String(year), 'temas'));
+  _progTemas = [];
+  snap.forEach(function(d) { _progTemas.push(Object.assign({ _id: d.id }, d.data())); });
+  _progTemas.sort(function(a,b){ return (a.orden||0)-(b.orden||0); });
+}
+
+// ── Cargar ejecuciones del año desde Firestore ────────────────
+async function fbProgCargarEjecuciones(year) {
+  if (!window._db || !window._fb) return;
+  var collection = window._fb.collection, getDocs = window._fb.getDocs;
+  var snap = await getDocs(collection(window._db, 'programa_cap'));
+  _progData = {};
+  snap.forEach(function(d) {
+    var dat = d.data();
+    if (String(dat.year) === String(year)) _progData[dat.temaId || dat._temaDocId] = dat;
+  });
+}
+
+// ── Cargar metadata del año (cerrado, etc.) ───────────────────
+async function fbProgCargarMeta(year) {
+  if (!window._db || !window._fb) return { existe: false, cerrado: false };
+  var collection = window._fb.collection, getDocs = window._fb.getDocs;
+  try {
+    var snap = await getDocs(collection(window._db, 'planes_cap'));
+    var existe = false; var cerrado = false;
+    snap.forEach(function(d) { if (d.id === String(year)) { existe = true; cerrado = d.data().cerrado || false; } });
+    return { existe: existe, cerrado: cerrado };
+  } catch(e) { return { existe: false, cerrado: false }; }
+}
+
+// ── Crear programa del año ────────────────────────────────────
+async function crearPrograma(modo) {
+  if (!window._db || !window._fb) { showToast('⚠️ Firebase no disponible'); return; }
+  var collection = window._fb.collection, getDocs = window._fb.getDocs, setDoc = window._fb.setDoc, doc = window._fb.doc;
+  var year = parseInt(document.getElementById('prog-sel-year')?.value || new Date().getFullYear());
+  try {
+    await setDoc(doc(window._db, 'planes_cap', String(year)), { year: year, cerrado: false, creadoEn: new Date().toISOString() });
+    var temasACrear = [];
+    if (modo === 'plantilla') {
+      temasACrear = PROG_TEMAS_BASE;
+    } else if (modo === 'copiar') {
+      var snapAnt = await getDocs(collection(window._db, 'planes_cap', String(year-1), 'temas'));
+      snapAnt.forEach(function(d) { temasACrear.push(d.data()); });
+      if (!temasACrear.length) { temasACrear = PROG_TEMAS_BASE; showToast('ℹ️ Año anterior sin temas — usando plantilla base'); }
+    }
+    for (var i=0; i<temasACrear.length; i++) {
+      var t = temasACrear[i];
+      var docId = 'tema_' + String(t.orden || i+1).padStart(3,'0');
+      await setDoc(doc(window._db, 'planes_cap', String(year), 'temas', docId), {
+        orden: t.orden || i+1, tema: t.tema || '', objetivo: t.objetivo || '',
+        dirigido: t.dirigido || '', facilitador: t.facilitador || '',
+        horas: t.horas || 0, frec: t.frec || '', estado: '', fechaEjec: null,
+        calificacion: null, observaciones: ''
+      });
+    }
+    showToast('✅ Programa ' + year + ' creado con ' + (temasACrear.length||0) + ' temas');
+    await renderProgramaAnual();
+  } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+// ── Render principal ──────────────────────────────────────────
+async function renderProgramaAnual() {
+  var year = document.getElementById('prog-sel-year')?.value || new Date().getFullYear();
+  var meta = await fbProgCargarMeta(year);
+  _progAnioExiste  = meta.existe;
+  _progAnioCerrado = meta.cerrado;
+
+  var bannerNuevo   = document.getElementById('prog-banner-nuevo');
+  var bannerCerrado = document.getElementById('prog-banner-cerrado');
+
+  if (bannerNuevo)   bannerNuevo.style.display   = _progAnioExiste ? 'none' : 'block';
+  if (bannerCerrado) bannerCerrado.style.display  = _progAnioCerrado ? 'block' : 'none';
+
+  if (_progAnioExiste) {
+    await fbProgCargarTemas(year);
+    await fbProgCargarEjecuciones(year);
+    // Sync _progData con temas por orden
+    _progTemas.forEach(function(t) {
+      if (_progData[t._id]) t._ejec = _progData[t._id];
+      else if (_progData[t.orden]) t._ejec = _progData[t.orden];
+      else t._ejec = {};
+    });
+  }
+
+  _progLoaded = true;
+  _renderProgKPIs(year);
+  showProgTab('plan');
+}
+
+function _renderProgKPIs(year) {
+  var temas   = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE;
+  var total   = temas.length;
+  var ejec    = temas.filter(function(t){ return (t._ejec||{}).estado === 'Ejecutado'; }).length;
+  var prog    = temas.filter(function(t){ return (t._ejec||{}).estado === 'Programado'; }).length;
+  var reprog  = temas.filter(function(t){ return (t._ejec||{}).estado === 'Reprogramado'; }).length;
+  var pct     = total ? Math.round(ejec/total*100) : 0;
+  document.getElementById('prog-kpis').innerHTML =
+    '<div class="kpi blue"><div class="kpi-ico">📋</div><div class="kpi-lbl">Total temas</div><div class="kpi-val">' + total + '</div><div class="kpi-note">' + year + '</div></div>' +
+    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">Ejecutados</div><div class="kpi-val">' + ejec + '</div><div class="kpi-note">' + pct + '% cumplimiento</div></div>' +
+    '<div class="kpi yellow"><div class="kpi-ico">📅</div><div class="kpi-lbl">Programados</div><div class="kpi-val">' + prog + '</div><div class="kpi-note">pendientes</div></div>' +
+    '<div class="kpi orange"><div class="kpi-ico">🔄</div><div class="kpi-lbl">Reprogramados</div><div class="kpi-val">' + reprog + '</div><div class="kpi-note">&nbsp;</div></div>';
+}
+
+function showProgTab(id) {
+  ['plan','hse','op','seg','ind'].forEach(function(t) {
+    var v = document.getElementById('pview-' + t); if (v) v.style.display = 'none';
+    var b = document.getElementById('ptab-' + t); if (b) b.classList.remove('active');
+  });
+  var v = document.getElementById('pview-' + id); if (v) v.style.display = 'block';
+  var b = document.getElementById('ptab-' + id); if (b) b.classList.add('active');
+  if (id === 'plan')  _renderProgPlan();
+  if (id === 'hse')   _renderProgMatriz('hse');
+  if (id === 'op')    _renderProgMatriz('op');
+  if (id === 'seg')   _renderProgSeguimiento();
+  if (id === 'ind')   _renderProgIndicadores();
+}
+
+function _estadoBadge(est) {
+  var m = { 'Ejecutado':'<span style="font-size:11px;font-weight:700;color:var(--green);background:var(--green-lt);padding:2px 8px;border-radius:99px">✅ Ejecutado</span>',
+             'Programado':'<span style="font-size:11px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px">📅 Programado</span>',
+             'Reprogramado':'<span style="font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-lt);padding:2px 8px;border-radius:99px">🔄 Reprogramado</span>' };
+  return m[est] || '<span style="font-size:11px;color:var(--text-3);background:var(--surface);padding:2px 8px;border-radius:99px">— Sin estado</span>';
+}
+
+function _renderProgPlan() {
+  var temas = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE.map(function(t){ return Object.assign({}, t, {_ejec:{}, _id: null}); });
+  if (!temas.length) {
+    document.getElementById('prog-plan-tbody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-3)">Selecciona un año y crea el programa para empezar.</td></tr>';
+    return;
+  }
+  var isAdmin = (window.currentUser && window.currentUser.role === 'admin');
+  var isCerrado = _progAnioCerrado;
+  var rows = temas.map(function(t) {
+    var d = t._ejec || {};
+    var acciones = '';
+    if (!isCerrado) {
+      acciones += '<button class="btn btn-ghost btn-xs" onclick="abrirModalProg(\'' + (t._id||t.orden) + '\')" title="Registrar ejecución">📝</button> ';
+      if (isAdmin && _progAnioExiste) {
+        acciones += '<button class="btn btn-ghost btn-xs" onclick="editarTema(\'' + (t._id||'') + '\')" title="Editar tema">✏️</button> ' +
+                    '<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="eliminarTema(\'' + (t._id||'') + '\')" title="Eliminar tema">🗑</button>';
+      }
+    }
+    return '<tr>' +
+      '<td style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-3)">' + (t.orden||'') + '</td>' +
+      '<td style="font-weight:600;font-size:12px">' + (t.tema||'') + '</td>' +
+      '<td style="font-size:11px;color:var(--text-2)">' + (t.objetivo||'') + '</td>' +
+      '<td style="font-size:11px">' + (t.dirigido||'') + '</td>' +
+      '<td style="font-size:11px">' + (t.facilitador||'') + '</td>' +
+      '<td style="text-align:center;font-size:11px">' + (t.horas||0) + 'h</td>' +
+      '<td style="font-size:11px">' + (t.frec||'') + '</td>' +
+      '<td style="font-size:11px;font-family:var(--mono)">' + (d.fechaEjec || '—') + '</td>' +
+      '<td>' + _estadoBadge(d.estado) + '</td>' +
+      '<td style="white-space:nowrap">' + acciones + '</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('prog-plan-tbody').innerHTML = rows;
+}
+
+function _renderProgMatriz(tipo) {
+  var mat = tipo === 'hse' ? MATRIZ_HSE : MATRIZ_OP;
+  var cargos = Object.keys(mat);
+  var temas  = (_progAnioExiste && _progTemas.length) ? _progTemas : PROG_TEMAS_BASE;
+  var html = '<table style="border-collapse:collapse;font-size:10px;min-width:' + (temas.length*28+160) + 'px"><thead><tr>' +
+    '<th style="background:var(--surface);padding:6px 8px;text-align:left;position:sticky;left:0;z-index:2;border:1px solid var(--border)">Cargo</th>' +
+    temas.map(function(t,i){
+      return '<th style="background:var(--esq-blue-lt);color:var(--esq-blue);padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);width:28px;border:1px solid var(--border);font-weight:700;max-height:140px" title="' + (t.tema||t) + '">' + (t.orden||i+1) + '</th>';
+    }).join('') + '</tr></thead><tbody>' +
+    cargos.map(function(c) {
+      var fila = mat[c] || [];
+      return '<tr><td style="padding:4px 8px;font-weight:600;background:var(--card);border:1px solid var(--border);white-space:nowrap;position:sticky;left:0;z-index:1">' + c + '</td>' +
+        fila.map(function(v,i){
+          var d = (temas[i] && temas[i]._ejec) ? temas[i]._ejec : (_progData[i+1] || {});
+          var bg = v ? (d.estado === 'Ejecutado' ? '#DCFCE7' : d.estado === 'Programado' ? '#EEF2FF' : '#DBEAFE') : '';
+          return '<td style="text-align:center;width:28px;background:' + bg + ';border:1px solid var(--border)">' + (v ? '<span style="color:' + (d.estado === 'Ejecutado' ? 'var(--green)' : 'var(--esq-blue)') + ';font-weight:900">✓</span>' : '<span style="color:var(--border)">·</span>') + '</td>';
+        }).join('') + '</tr>';
+    }).join('') + '</tbody></table>';
+  html += '<div style="margin-top:10px;font-size:10px;color:var(--text-2);display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px 16px">' +
+    temas.map(function(t,i){ return '<span><b>' + (t.orden||i+1) + '.</b> ' + (t.tema||t) + '</span>'; }).join('') + '</div>';
+  document.getElementById('prog-matriz-' + tipo).innerHTML = html;
+}
+
+function _renderProgSeguimiento() {
+  if (!_trabList.length) { document.getElementById('prog-seguimiento').innerHTML = '<p style="color:var(--text-3);padding:20px">Carga los trabajadores primero.</p>'; return; }
+  var activos = _trabList.filter(function(t){ return t.estado === 'Activo'; });
+  var temas   = (_progAnioExiste && _progTemas.length) ? _progTemas : PROG_TEMAS_BASE;
+  var html = '<table style="border-collapse:collapse;font-size:10px;min-width:' + (temas.length*28+180) + 'px"><thead><tr>' +
+    '<th style="background:var(--surface);padding:6px 8px;text-align:left;position:sticky;left:0;z-index:2;border:1px solid var(--border)">Trabajador</th>' +
+    temas.map(function(t,i){ return '<th style="background:var(--amber-lt);color:var(--amber);padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);width:28px;border:1px solid var(--border);font-weight:700;max-height:140px" title="' + (t.tema||t) + '">' + (t.orden||i+1) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    activos.map(function(t) {
+      return '<tr><td style="padding:4px 8px;font-weight:600;background:var(--card);border:1px solid var(--border);white-space:nowrap;position:sticky;left:0;z-index:1">' + (t.nombre1||'') + ' ' + (t.apellido1||'') + '<br><span style="font-size:9px;color:var(--text-3)">' + (t.cargo||'—') + '</span></td>' +
+        temas.map(function(){ return '<td style="text-align:center;width:28px;border:1px solid var(--border)"><span style="color:var(--border)">·</span></td>'; }).join('') + '</tr>';
+    }).join('') + '</tbody></table>';
+  html += '<div style="margin-top:8px;font-size:11px;color:var(--text-3)">* Seguimiento individual se completará en S29. ✓=Ejecutado</div>';
+  document.getElementById('prog-seguimiento').innerHTML = html;
+}
+
+function _renderProgIndicadores() {
+  var temas = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE;
+  var total = temas.length;
+  var ejec  = temas.filter(function(t){ return (t._ejec||{}).estado === 'Ejecutado'; }).length;
+  var pct   = total ? Math.round(ejec/total*100) : 0;
+  var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  document.getElementById('prog-ind-kpis').innerHTML =
+    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">% Cumplimiento</div><div class="kpi-val">' + pct + '%</div><div class="kpi-note">Meta 100%</div></div>' +
+    '<div class="kpi blue"><div class="kpi-ico">📋</div><div class="kpi-lbl">Temas ejecutados</div><div class="kpi-val">' + ejec + '</div><div class="kpi-note">de ' + total + '</div></div>' +
+    '<div class="kpi yellow"><div class="kpi-ico">📉</div><div class="kpi-lbl">Indicador END</div><div class="kpi-val">—%</div><div class="kpi-note">Meta &lt;30%</div></div>' +
+    '<div class="kpi orange"><div class="kpi-ico">⚠️</div><div class="kpi-lbl">Indicador Desv.</div><div class="kpi-val">—%</div><div class="kpi-note">Meta &lt;20%</div></div>';
+
+  if (_progCharts['prog-chart-end']) { try { _progCharts['prog-chart-end'].destroy(); } catch(e){} }
+  var el1 = document.getElementById('prog-chart-end');
+  if (el1) _progCharts['prog-chart-end'] = new Chart(el1.getContext('2d'), {
+    type: 'line', data: { labels: meses, datasets: [{ label:'% Reducción END', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#1A3C8F', backgroundColor:'rgba(26,60,143,0.1)', tension:.4, fill:true, pointRadius:4 }, { label:'Meta 30%', data:[30,30,30,30,30,30,30,30,30,30,30,30], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){ return v+'%'; }} } } }
+  });
+  if (_progCharts['prog-chart-desv']) { try { _progCharts['prog-chart-desv'].destroy(); } catch(e){} }
+  var el2 = document.getElementById('prog-chart-desv');
+  if (el2) _progCharts['prog-chart-desv'] = new Chart(el2.getContext('2d'), {
+    type: 'line', data: { labels: meses, datasets: [{ label:'% Desviaciones', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#D97706', backgroundColor:'rgba(217,119,6,0.1)', tension:.4, fill:true, pointRadius:4 }, { label:'Meta 20%', data:[20,20,20,20,20,20,20,20,20,20,20,20], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){ return v+'%'; }} } } }
+  });
+}
+
+// ── Modal registrar ejecución ─────────────────────────────────
+function abrirModalProg(temaRef) {
+  var year = document.getElementById('prog-sel-year')?.value || new Date().getFullYear();
+  var temas = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE;
+  var d = {};
+  var tema = null;
+  if (temaRef !== null && temaRef !== undefined) {
+    tema = temas.find(function(t){ return t._id === temaRef || String(t.orden) === String(temaRef); });
+    if (tema) d = tema._ejec || {};
+  }
+  var opts = ['Programado','Ejecutado','Reprogramado'].map(function(e){ return '<option' + (d.estado===e?' selected':'') + '>' + e + '</option>'; }).join('');
+  var temaOpts = temas.map(function(t){ return '<option value="' + (t._id||t.orden) + '"' + ((tema && (t._id===temaRef||String(t.orden)===String(temaRef)))?' selected':'') + '>' + (t.orden||'') + '. ' + (t.tema||'') + '</option>'; }).join('');
+  var html = '<div id="modal-prog-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'modal-prog-overlay\')cerrarModalProg()">' +
+    '<div style="background:var(--card);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:var(--sh-xl)">' +
+    '<div style="font-size:16px;font-weight:800;margin-bottom:18px;color:var(--dark)">📋 Registrar Ejecución — FM-HSE-011</div>' +
+    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Tema</label><select id="mp-tema" class="form-sel" style="width:100%;margin-top:4px">' + temaOpts + '</select></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Fecha ejecución</label><input type="date" id="mp-fecha" class="form-inp" style="width:100%;margin-top:4px" value="' + (d.fechaEjec||'') + '"></div>' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Estado</label><select id="mp-estado" class="form-sel" style="width:100%;margin-top:4px"><option value="">— Estado</option>' + opts + '</select></div>' +
+    '</div>' +
+    '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Calificación promedio</label><input type="number" id="mp-cal" class="form-inp" style="width:100%;margin-top:4px" min="0" max="100" placeholder="0–100" value="' + (d.calificacion||'') + '"></div>' +
+    '<div style="margin-bottom:16px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Observaciones</label><textarea id="mp-obs" class="form-inp" rows="2" style="width:100%;margin-top:4px;resize:vertical">' + (d.observaciones||'') + '</textarea></div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end">' +
+    '<button class="btn btn-ghost" onclick="cerrarModalProg()">Cancelar</button>' +
+    '<button class="btn btn-primary" onclick="guardarProgEjec(' + year + ')">💾 Guardar</button>' +
+    '</div></div></div>';
+  var div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div.firstChild);
+}
+
+function cerrarModalProg() { var el = document.getElementById('modal-prog-overlay'); if (el) el.remove(); }
+
+async function guardarProgEjec(year) {
+  var temaRef = document.getElementById('mp-tema').value;
+  var fecha   = document.getElementById('mp-fecha').value;
+  var estado  = document.getElementById('mp-estado').value;
+  var cal     = document.getElementById('mp-cal').value;
+  var obs     = document.getElementById('mp-obs').value;
+  if (!temaRef || !estado) { showToast('⚠️ Selecciona el tema y el estado'); return; }
+  if (!window._db || !window._fb) { showToast('⚠️ Firebase no disponible'); return; }
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  var tema = (_progAnioExiste ? _progTemas : PROG_TEMAS_BASE).find(function(t){ return (t._id||String(t.orden)) === String(temaRef); });
+  var docId = year + '_' + temaRef;
+  try {
+    await setDoc(doc(window._db, 'programa_cap', docId), {
+      year: parseInt(year), temaId: temaRef, _temaDocId: temaRef,
+      temaNombre: tema ? (tema.tema||'') : '',
+      fechaEjec: fecha||null, estado: estado,
+      calificacion: cal?parseInt(cal):null, observaciones: obs||null,
+      updatedAt: new Date().toISOString()
+    });
+    cerrarModalProg();
+    await renderProgramaAnual();
+    showToast('✅ Guardado');
+  } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+// ── Modal nuevo tema ──────────────────────────────────────────
+function abrirModalNuevaTema() {
+  if (!_progAnioExiste) { showToast('⚠️ Crea el programa del año primero'); return; }
+  _abrirModalTema(null);
+}
+
+function editarTema(docId) { _abrirModalTema(docId); }
+
+function _abrirModalTema(docId) {
+  var year = document.getElementById('prog-sel-year')?.value || new Date().getFullYear();
+  var t = docId ? (_progTemas.find(function(x){ return x._id === docId; }) || {}) : {};
+  var maxOrden = _progTemas.length ? Math.max.apply(null, _progTemas.map(function(x){ return x.orden||0; })) : 0;
+  var html = '<div id="modal-tema-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'modal-tema-overlay\')cerrarModalTema()">' +
+    '<div style="background:var(--card);border-radius:16px;padding:28px;width:100%;max-width:520px;box-shadow:var(--sh-xl);max-height:90vh;overflow-y:auto">' +
+    '<div style="font-size:16px;font-weight:800;margin-bottom:18px;color:var(--dark)">' + (docId ? '✏️ Editar Tema' : '＋ Nuevo Tema') + '</div>' +
+    '<div style="display:grid;grid-template-columns:80px 1fr;gap:12px;margin-bottom:12px">' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Orden</label><input type="number" id="mt-orden" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.orden||maxOrden+1) + '" min="1"></div>' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Nombre del tema</label><input type="text" id="mt-tema" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.tema||'') + '" placeholder="Ej: Riesgo eléctrico"></div>' +
+    '</div>' +
+    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Objetivo</label><input type="text" id="mt-objetivo" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.objetivo||'') + '" placeholder="Objetivo de la capacitación"></div>' +
+    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Dirigido a</label><input type="text" id="mt-dirigido" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.dirigido||'') + '" placeholder="Ej: Todo el personal"></div>' +
+    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Facilitador</label><input type="text" id="mt-facilitador" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.facilitador||'') + '" placeholder="Ej: Coordinador HSE"></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Horas</label><input type="number" id="mt-horas" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.horas||2) + '" min="1"></div>' +
+    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Frecuencia</label><select id="mt-frec" class="form-sel" style="width:100%;margin-top:4px"><option value="Mensual"' + (t.frec==='Mensual'?' selected':'') + '>Mensual</option><option value="Trimestral"' + (t.frec==='Trimestral'?' selected':'') + '>Trimestral</option><option value="Semestral"' + (t.frec==='Semestral'?' selected':'') + '>Semestral</option><option value="Anual"' + (t.frec==='Anual'?' selected':'') + '>Anual</option><option value="Por requisito"' + (t.frec==='Por requisito'?' selected':'') + '>Por requisito</option></select></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;justify-content:flex-end">' +
+    '<button class="btn btn-ghost" onclick="cerrarModalTema()">Cancelar</button>' +
+    '<button class="btn btn-primary" onclick="guardarTema(\'' + year + '\',\'' + (docId||'') + '\')">💾 Guardar</button>' +
+    '</div></div></div>';
+  var div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div.firstChild);
+}
+
+function cerrarModalTema() { var el = document.getElementById('modal-tema-overlay'); if (el) el.remove(); }
+
+async function guardarTema(year, docId) {
+  var orden = parseInt(document.getElementById('mt-orden').value) || 1;
+  var tema  = (document.getElementById('mt-tema').value||'').trim();
+  var obj   = (document.getElementById('mt-objetivo').value||'').trim();
+  var dir   = (document.getElementById('mt-dirigido').value||'').trim();
+  var fac   = (document.getElementById('mt-facilitador').value||'').trim();
+  var horas = parseInt(document.getElementById('mt-horas').value) || 2;
+  var frec  = document.getElementById('mt-frec').value || 'Anual';
+  if (!tema) { showToast('⚠️ El nombre del tema es obligatorio'); return; }
+  if (!window._db || !window._fb) { showToast('⚠️ Firebase no disponible'); return; }
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  var id = docId || ('tema_' + String(orden).padStart(3,'0') + '_' + Date.now());
+  try {
+    await setDoc(doc(window._db, 'planes_cap', String(year), 'temas', id), {
+      orden: orden, tema: tema, objetivo: obj, dirigido: dir,
+      facilitador: fac, horas: horas, frec: frec,
+      estado: '', fechaEjec: null, calificacion: null, observaciones: ''
+    });
+    cerrarModalTema();
+    await renderProgramaAnual();
+    showToast('✅ Tema guardado');
+  } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+async function eliminarTema(docId) {
+  if (!docId) return;
+  var t = _progTemas.find(function(x){ return x._id === docId; });
+  if (!confirm('¿Eliminar el tema "' + (t?t.tema:'') + '"? Esta acción no se puede deshacer.')) return;
+  var year = document.getElementById('prog-sel-year')?.value || new Date().getFullYear();
+  if (!window._fb) { showToast('⚠️ Firebase no disponible'); return; }
+  var deleteDoc = window._fb.deleteDoc, doc = window._fb.doc;
+  try {
+    await deleteDoc(doc(window._db, 'planes_cap', String(year), 'temas', docId));
+    await renderProgramaAnual();
+    showToast('🗑 Tema eliminado');
+  } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+window.abrirModalProg    = abrirModalProg;
+window.cerrarModalProg   = cerrarModalProg;
+window.guardarProgEjec   = guardarProgEjec;
+window.showProgTab       = showProgTab;
+window.renderProgramaAnual = renderProgramaAnual;
+window.crearPrograma     = crearPrograma;
+window.abrirModalNuevaTema = abrirModalNuevaTema;
+window.editarTema        = editarTema;
+window.eliminarTema      = eliminarTema;
+window.cerrarModalTema   = cerrarModalTema;
+window.guardarTema       = guardarTema;
+window.catAgregar        = catAgregar;
+window.catEditar         = catEditar;
+window.catEliminar       = catEliminar;
+
+// ── Override showCTab2 para incluir 'programa' ────────────────
+(function(){
+  var _orig = window.showCTab2 || function(){};
+  window.showCTab2 = function(id) {
+    if (id === 'programa') {
+      ['cap-dashboard','alturas','confinados','cap','programa'].forEach(function(i){
+        var v = document.getElementById('cview-'+i); if(v) v.style.display='none';
+      });
+      document.querySelectorAll('[id^="ctab-dashboard-cap"],[id="ctab-alturas"],[id="ctab-confinados"],[id="ctab-cap"],[id="ctab-programa"]').forEach(function(t){ t.classList.remove('active'); });
+      var cv = document.getElementById('cview-programa'); if(cv) cv.style.display='block';
+      var ct = document.getElementById('ctab-programa'); if(ct) ct.classList.add('active');
+      if (!_progLoaded) renderProgramaAnual();
+      return;
+    }
+    _orig(id);
+    var ct = document.getElementById('ctab-programa'); if(ct) ct.classList.remove('active');
+    var cv = document.getElementById('cview-programa'); if(cv) cv.style.display='none';
+  };
+})();
+
+// ── Reporte Hijos Navidad ─────────────────────────────────
+function _calcEdadHijo(fnac) {
+  if (!fnac) return null;
+  var hoy = new Date(); var n = new Date(fnac);
+  if (isNaN(n.getTime())) return null;
+  var edad = hoy.getFullYear() - n.getFullYear();
+  if (hoy.getMonth() < n.getMonth() || (hoy.getMonth() === n.getMonth() && hoy.getDate() < n.getDate())) edad--;
+  return edad >= 0 ? edad : null;
+}
+
+function _segmentoHijo(edad, genero) {
+  if (edad === null) return null;
+  var g = (genero || '').toUpperCase();
+  var esF = g === 'F' || g === 'FEMENINO' || g === 'NIÑA' || g === 'MUJER';
+  var esM = g === 'M' || g === 'MASCULINO' || g === 'NIÑO' || g === 'HOMBRE';
+  if (edad <= 6)  return esF ? 'Niñas 0–6'    : esM ? 'Niños 0–6'    : 'Sin género 0–6';
+  if (edad <= 15) return esF ? 'Niñas 7–15'   : esM ? 'Niños 7–15'   : 'Sin género 7–15';
+  return              esF ? 'Mujeres +16'  : esM ? 'Hombres +16'  : 'Sin género +16';
+}
+
+function _renderHijosNavidad(activos) {
+  var segEl  = document.getElementById('trab-hijos-segmentos');
+  var totEl  = document.getElementById('trab-hijos-total');
+  var empEl  = document.getElementById('trab-hijos-empty');
+  if (!segEl) return;
+
+  var conteos = {};
+  var total = 0;
+
+  activos.forEach(function(t) {
+    var hijos = [];
+    try { hijos = JSON.parse(t.hijos_detalle || t.sociodem?.hijos_detalle || '[]'); } catch(e){}
+    if (!Array.isArray(hijos)) hijos = [];
+    hijos.forEach(function(h) {
+      var edad = _calcEdadHijo(h.fnac);
+      var seg  = _segmentoHijo(edad, h.genero);
+      if (seg) { conteos[seg] = (conteos[seg] || 0) + 1; total++; }
+    });
+  });
+
+  if (totEl) totEl.textContent = total;
+
+  if (total === 0) {
+    segEl.innerHTML = '';
+    if (empEl) empEl.style.display = 'block';
+    return;
+  }
+  if (empEl) empEl.style.display = 'none';
+
+  var colores = {
+    'Niños 0–6'      : { bg:'#DBEAFE', color:'#1D4ED8', emoji:'👶' },
+    'Niñas 0–6'      : { bg:'#FCE7F3', color:'#9D174D', emoji:'👶' },
+    'Niños 7–15'     : { bg:'#EDE9FE', color:'#4C1D95', emoji:'🧒' },
+    'Niñas 7–15'     : { bg:'#FEE2E2', color:'#991B1B', emoji:'🧒' },
+    'Hombres +16'    : { bg:'#D1FAE5', color:'#065F46', emoji:'👦' },
+    'Mujeres +16'    : { bg:'#FEF3C7', color:'#92400E', emoji:'👧' },
+    'Sin género 0–6' : { bg:'var(--surface)', color:'var(--text-3)', emoji:'🧒' },
+    'Sin género 7–15': { bg:'var(--surface)', color:'var(--text-3)', emoji:'🧒' },
+    'Sin género +16' : { bg:'var(--surface)', color:'var(--text-3)', emoji:'👤' }
+  };
+
+  var orden = ['Niños 0–6','Niñas 0–6','Niños 7–15','Niñas 7–15','Hombres +16','Mujeres +16','Sin género 0–6','Sin género 7–15','Sin género +16'];
+  segEl.innerHTML = orden.filter(function(s){ return conteos[s] > 0; }).map(function(s) {
+    var c = colores[s] || { bg:'var(--surface)', color:'var(--text-2)', emoji:'👤' };
+    var pct = total > 0 ? Math.round(conteos[s]/total*100) : 0;
+    return '<div style="background:' + c.bg + ';border-radius:12px;padding:14px;text-align:center">' +
+      '<div style="font-size:22px;margin-bottom:4px">' + c.emoji + '</div>' +
+      '<div style="font-size:11px;font-weight:700;color:' + c.color + '">' + s + '</div>' +
+      '<div style="font-size:24px;font-weight:800;color:' + c.color + ';margin:4px 0">' + conteos[s] + '</div>' +
+      '<div style="font-size:11px;color:var(--text-3)">' + pct + '% del total</div>' +
+    '</div>';
+  }).join('');
+}
+
+function exportarHijosTrabCSV() {
+  if (!_trabList.length) { showToast('⚠️ Sin datos'); return; }
+  var activos = _trabList.filter(function(t){ return t.estado === 'Activo'; });
+  var filas = [['Cédula','Trabajador','Cargo','Empresa','Nombre hijo','Fecha nac.','Edad','Género','Nivel escolar','Segmento']];
+  activos.forEach(function(t) {
+    var hijos = [];
+    try { hijos = JSON.parse(t.hijos_detalle || t.sociodem?.hijos_detalle || '[]'); } catch(e){}
+    if (!Array.isArray(hijos) || !hijos.length) return;
+    var nomTrab = (t.nombre1||'') + ' ' + (t.apellido1||'');
+    hijos.forEach(function(h) {
+      var edad = _calcEdadHijo(h.fnac);
+      var seg  = _segmentoHijo(edad, h.genero) || 'Sin segmento';
+      filas.push([
+        t.cedula, nomTrab.trim(), t.cargo||'', t.empresa||'',
+        h.nombre||'', h.fnac||'', edad !== null ? edad : '',
+        h.genero||'', h.nivel||'', seg
+      ]);
+    });
+  });
+  if (filas.length <= 1) { showToast('Sin hijos registrados en trabajadores activos'); return; }
+  var csv = filas.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csv);
+  a.download = 'Hijos_Navidad_' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  showToast('✅ CSV descargado — ' + (filas.length-1) + ' hijos');
+}
+
+window.exportarHijosTrabCSV = exportarHijosTrabCSV;
+window.fbCargarCatalogos    = fbCargarCatalogos;
+window.renderCatalogos      = renderCatalogos;
+window.showTrabTab          = showTrabTab;
+
+// ════════════════════════════════════════════════════════════
+// SESIÓN 28 — FIN
+// ════════════════════════════════════════════════════════════
+</script>
 
 </body>
 </html>
