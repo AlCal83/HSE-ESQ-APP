@@ -927,7 +927,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0;flex-wrap:wrap">
         <button id="ttab-lista"   class="ctab active" onclick="showTrabTab('lista')">📋 Lista</button>
         <button id="ttab-dash"    class="ctab"        onclick="showTrabTab('dash')">📊 Dashboard</button>
-        <button id="ttab-config"  class="ctab admin-only-block" onclick="showTrabTab('config')" style="margin-left:auto">⚙️ Catálogos</button>
+        <button id="ttab-config"  class="ctab admin-only-block" onclick="showTrabTab('config')" style="margin-left:auto">⚙️ Configuración</button>
       </div>
 
       <!-- ── SUB-VISTA: LISTA ── -->
@@ -1344,11 +1344,10 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div class="kpi-grid" id="prog-kpis" style="margin-bottom:18px"></div>
     <!-- Sub-tabs internos del Programa -->
     <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap">
-      <button id="ptab-plan"  class="ctab active" onclick="showProgTab('plan')" style="font-size:12px">📅 Training Plan</button>
-      <button id="ptab-hse"   class="ctab"        onclick="showProgTab('hse')"  style="font-size:12px">🟦 Matriz HSE</button>
-      <button id="ptab-op"    class="ctab"        onclick="showProgTab('op')"   style="font-size:12px">🟧 Matriz OP</button>
-      <button id="ptab-seg"   class="ctab"        onclick="showProgTab('seg')"  style="font-size:12px">📊 Seguimiento</button>
-      <button id="ptab-ind"   class="ctab"        onclick="showProgTab('ind')"  style="font-size:12px">📈 Indicadores</button>
+      <button id="ptab-plan"   class="ctab active" onclick="showProgTab('plan')"   style="font-size:12px">📅 Training Plan</button>
+      <button id="ptab-matriz" class="ctab"        onclick="showProgTab('matriz')" style="font-size:12px">🎯 Matriz cargo × tema</button>
+      <button id="ptab-seg"    class="ctab"        onclick="showProgTab('seg')"    style="font-size:12px">📊 Seguimiento</button>
+      <button id="ptab-ind"    class="ctab"        onclick="showProgTab('ind')"    style="font-size:12px">📈 Indicadores</button>
     </div>
     <!-- Training Plan -->
     <div id="pview-plan">
@@ -1372,16 +1371,28 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </table>
       </div>
     </div>
-    <!-- Matriz HSE -->
-    <div id="pview-hse" style="display:none">
-      <div style="overflow-x:auto" id="prog-matriz-hse"></div>
-    </div>
-    <!-- Matriz OP -->
-    <div id="pview-op" style="display:none">
-      <div style="overflow-x:auto" id="prog-matriz-op"></div>
+    <!-- Matriz unificada cargo × tema -->
+    <div id="pview-matriz" style="display:none">
+      <div id="prog-matriz-toolbar" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+        <div style="font-size:11.5px;color:var(--text-2)">
+          <span style="display:inline-block;width:10px;height:10px;background:#DCFCE7;border:1px solid var(--green);border-radius:2px;vertical-align:middle"></span> Ejecutado
+          &nbsp;·&nbsp;
+          <span style="display:inline-block;width:10px;height:10px;background:#DBEAFE;border:1px solid var(--esq-blue);border-radius:2px;vertical-align:middle"></span> Programado
+          &nbsp;·&nbsp;
+          <span style="display:inline-block;width:10px;height:10px;background:#fff;border:1px solid var(--border);border-radius:2px;vertical-align:middle"></span> No aplica
+        </div>
+        <div id="prog-matriz-status" style="font-size:11px;color:var(--text-3)"></div>
+      </div>
+      <div style="overflow-x:auto" id="prog-matriz"></div>
     </div>
     <!-- Seguimiento -->
     <div id="pview-seg" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">
+        <select class="form-sel" id="seg-f-cargo"   onchange="_renderProgSeguimiento()" style="font-size:12px"><option value="">Cargo</option></select>
+        <select class="form-sel" id="seg-f-area"    onchange="_renderProgSeguimiento()" style="font-size:12px"><option value="">Área</option></select>
+        <select class="form-sel" id="seg-f-empresa" onchange="_renderProgSeguimiento()" style="font-size:12px"><option value="">Empresa</option></select>
+        <input  class="form-inp" id="seg-f-q"       oninput="_renderProgSeguimiento()" placeholder="🔍 Trabajador / cédula" style="font-size:12px">
+      </div>
       <div style="overflow-x:auto" id="prog-seguimiento"></div>
     </div>
     <!-- Indicadores -->
@@ -1389,13 +1400,23 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <div class="kpi-grid" id="prog-ind-kpis" style="margin-bottom:18px"></div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
         <div class="dash-card" style="padding:16px">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📅 Cumplimiento mensual</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Temas programados vs ejecutados por mes del año</div>
+          <div style="position:relative;height:220px"><canvas id="prog-chart-mensual"></canvas></div>
+        </div>
+        <div class="dash-card" style="padding:16px">
+          <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">👥 Cumplimiento por cargo</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">% de temas requeridos completados por cargo</div>
+          <div style="position:relative;height:240px"><canvas id="prog-chart-cargo"></canvas></div>
+        </div>
+        <div class="dash-card" style="padding:16px">
           <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📉 Reducción END capacitados</div>
-          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Meta &lt; 30% · END asociados a temas capacitados / Total END × 100</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Placeholder hasta sesión 31 (Incidentes)</div>
           <div style="position:relative;height:200px"><canvas id="prog-chart-end"></canvas></div>
         </div>
         <div class="dash-card" style="padding:16px">
           <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">⚠️ Desviaciones temas capacitados</div>
-          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Meta &lt; 20% · Desviaciones en temas capacitados / Total desviaciones × 100</div>
+          <div style="font-size:11px;color:var(--text-2);margin-bottom:8px">Placeholder hasta sesión 31 (Incidentes)</div>
           <div style="position:relative;height:200px"><canvas id="prog-chart-desv"></canvas></div>
         </div>
       </div>
@@ -3136,8 +3157,20 @@ function _doShowTab(name){
     admin     : ()=>{if(!builtViews.admin_init){initAdmin();builtViews.admin_init=true;}renderAdmin();},
     responsables: ()=>renderResponsables(),
     notificar : ()=>{renderResponsables();buildNotifPreview();},
-    trabajadores: ()=>renderTabTrabajadores(),
-    examenes  : ()=>renderTabExamenes(),
+    trabajadores: ()=>{
+      // B13: si la pestaña Configuración estaba activa, resetear a Lista al volver al módulo
+      var cfgView = document.getElementById('tview-config');
+      if (cfgView && cfgView.style.display !== 'none') {
+        ['lista','dash','config'].forEach(function(t){
+          var el=document.getElementById('tview-'+t); if(el) el.style.display='none';
+          var bt=document.getElementById('ttab-'+t);  if(bt) bt.classList.remove('active');
+        });
+        var vL=document.getElementById('tview-lista'); if(vL) vL.style.display='block';
+        var tL=document.getElementById('ttab-lista');  if(tL) tL.classList.add('active');
+      }
+      renderTabTrabajadores();
+    },
+    examenes  : ()=>{renderTabExamenes(); if(typeof renderEMODashboard==='function') setTimeout(function(){renderEMODashboard();},300); },
     capacitaciones: ()=>renderTabCapacitaciones(),
     sociodem  : ()=>renderTabSociodem(),
   };
@@ -6835,7 +6868,10 @@ function renderCapDashboard(){
 
   // Tipos capacitaciones
   var tipos={};
-  CAP_DATA.forEach(function(r){tipos[r.tipo||'Otro']=(tipos[r.tipo||'Otro']||0)+1;});
+  CAP_DATA.forEach(function(r){
+    var t=(r.tipo && r.tipo !== 'undefined') ? r.tipo : 'Otro';
+    tipos[t]=(tipos[t]||0)+1;
+  });
   _renderCapChart('cap-chart-tipos','bar',Object.keys(tipos),Object.values(tipos),
     ['#0B1C3D','#F5C800','#E84E1B','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6']
   );
@@ -6983,7 +7019,7 @@ function renderEMODashboard(_retry){
       else vigente++;
     }
     // Tipos
-    var t=r.tipo||'Otro';
+    var t=(r.tipo && r.tipo !== 'undefined') ? r.tipo : 'Otro';
     tipos[t]=(tipos[t]||0)+1;
     // Aptitud
     var a=r.concepto||'Sin concepto';
@@ -10158,42 +10194,46 @@ var PROG_TEMAS_BASE = [
 // Keep PROG_TEMAS as alias for matriz rendering (legacy support)
 var PROG_TEMAS = PROG_TEMAS_BASE;
 
-// Matriz cargo × tema (HSE Matriz) — 1=aplica
-var MATRIZ_HSE = {
-  'Administración' :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,0,1,1,0,0,1,0,0,1,0,0,0,0],
-  'Almacén'        :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,1,1,0,0,0,0,0,0,0],
-  'Civil'          :[1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
-  'Conductor'      :[1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,1,0,0,0,1,0,1,0,0,0,0,0],
-  'Coordinación'   :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0],
-  'Eléctrica'      :[1,1,1,1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
-  'HSE'            :[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
-  'Logística'      :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,0,0,0,0],
-  'Mecánica'       :[1,1,1,1,1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,1],
-  'Metalistería'   :[1,1,1,1,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1],
-  'Operación'      :[1,1,1,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0],
-  'Pintura'        :[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,1],
-  'Serv. Generales':[1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
-  'COPASST'        :[1,1,1,1,0,0,0,0,0,1,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0],
-  'Brigadista'     :[1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0]
-};
+// ── Matriz unificada cargo × tema (Sesión 29) ─────────────────
+// Estado en Firestore: matriz_cap/{year}/{cargoId} → { checks: {temaId: bool}, year, updatedAt }
+var _matrizCap     = {};   // {cargoId: {temaId: bool}}
+var _matrizLoaded  = false;
 
-var MATRIZ_OP = {
-  'Administración' :[0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0],
-  'Almacén'        :[0,0,0,0,1,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
-  'Civil'          :[0,0,0,0,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
-  'Conductor'      :[0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,1,0,0,0,1,0,1,0,0,0,0,0],
-  'Coordinación'   :[0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,1,0,1,0,0],
-  'Eléctrica'      :[0,0,0,0,1,1,1,0,0,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0],
-  'HSE'            :[0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1],
-  'Logística'      :[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,1,0,0,0,0,0],
-  'Mecánica'       :[0,0,0,0,1,1,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,1,0,1],
-  'Metalistería'   :[0,0,0,0,1,0,1,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,1,1],
-  'Operación'      :[0,0,0,0,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,1,0,0,0],
-  'Pintura'        :[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,1,0,1,0,0,0,0,0,1,1],
-  'Serv. Generales':[0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,1,1,0,0,1,0,0,0,0,0,0,0],
-  'COPASST'        :[0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0],
-  'Brigadista'     :[0,0,0,0,0,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0]
-};
+async function fbMatrizCargar(year) {
+  if (!window._db || !window._fb) { _matrizCap = {}; _matrizLoaded = true; return; }
+  var collection = window._fb.collection, getDocs = window._fb.getDocs;
+  try {
+    var snap = await getDocs(collection(window._db, 'matriz_cap', String(year), 'cargos'));
+    _matrizCap = {};
+    snap.forEach(function(d) {
+      var dat = d.data() || {};
+      _matrizCap[d.id] = dat.checks || {};
+    });
+    _matrizLoaded = true;
+  } catch(e) {
+    console.warn('fbMatrizCargar:', e);
+    _matrizCap = {}; _matrizLoaded = true;
+  }
+}
+
+async function fbMatrizGuardarCheck(year, cargoId, temaId, value) {
+  if (!window._db || !window._fb) return false;
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  if (!_matrizCap[cargoId]) _matrizCap[cargoId] = {};
+  _matrizCap[cargoId][temaId] = !!value;
+  try {
+    await setDoc(doc(window._db, 'matriz_cap', String(year), 'cargos', cargoId), {
+      checks: _matrizCap[cargoId],
+      year: parseInt(year),
+      updatedAt: new Date().toISOString()
+    });
+    return true;
+  } catch(e) {
+    console.warn('fbMatrizGuardarCheck:', e);
+    showToast('⚠️ Error al guardar — verifica permisos');
+    return false;
+  }
+}
 
 // Estado Firestore del año
 var _progData   = {};   // key = docId → {fechaEjec, estado, ...}
@@ -10291,6 +10331,12 @@ async function renderProgramaAnual() {
     });
   }
 
+  // S29 — Cargar dependencias para Matriz/Seguimiento/Indicadores
+  try { await fbMatrizCargar(year); } catch(e){ console.warn('fbMatrizCargar:', e); }
+  if (!_catalogosLoaded) { try { await fbCargarCatalogos(); } catch(e){ console.warn('fbCargarCatalogos:', e); } }
+  if (!_trabList.length) { try { await fbTrabCargar(); } catch(e){ console.warn('fbTrabCargar:', e); } }
+  if (!_capLoaded) { try { await cargarTodosCap(); _capLoaded = true; } catch(e){ console.warn('cargarTodosCap:', e); } }
+
   _progLoaded = true;
   _renderProgKPIs(year);
   showProgTab('plan');
@@ -10311,17 +10357,16 @@ function _renderProgKPIs(year) {
 }
 
 function showProgTab(id) {
-  ['plan','hse','op','seg','ind'].forEach(function(t) {
+  ['plan','matriz','seg','ind'].forEach(function(t) {
     var v = document.getElementById('pview-' + t); if (v) v.style.display = 'none';
     var b = document.getElementById('ptab-' + t); if (b) b.classList.remove('active');
   });
   var v = document.getElementById('pview-' + id); if (v) v.style.display = 'block';
   var b = document.getElementById('ptab-' + id); if (b) b.classList.add('active');
-  if (id === 'plan')  _renderProgPlan();
-  if (id === 'hse')   _renderProgMatriz('hse');
-  if (id === 'op')    _renderProgMatriz('op');
-  if (id === 'seg')   _renderProgSeguimiento();
-  if (id === 'ind')   _renderProgIndicadores();
+  if (id === 'plan')   _renderProgPlan();
+  if (id === 'matriz') _renderProgMatriz();
+  if (id === 'seg')    _renderProgSeguimiento();
+  if (id === 'ind')    _renderProgIndicadores();
 }
 
 function _estadoBadge(est) {
@@ -10365,67 +10410,277 @@ function _renderProgPlan() {
   document.getElementById('prog-plan-tbody').innerHTML = rows;
 }
 
-function _renderProgMatriz(tipo) {
-  var mat = tipo === 'hse' ? MATRIZ_HSE : MATRIZ_OP;
-  var cargos = Object.keys(mat);
-  var temas  = (_progAnioExiste && _progTemas.length) ? _progTemas : PROG_TEMAS_BASE;
-  var html = '<table style="border-collapse:collapse;font-size:10px;min-width:' + (temas.length*28+160) + 'px"><thead><tr>' +
+// ── A. Matriz unificada editable cargo × tema (s29) ───────────
+function _renderProgMatriz() {
+  var year = parseInt(document.getElementById('prog-sel-year')?.value || new Date().getFullYear());
+  var cargos = (_catalogos && _catalogos.cargos && _catalogos.cargos.length) ? _catalogos.cargos.slice().sort() : [];
+  var temas  = (_progAnioExiste && _progTemas.length) ? _progTemas : [];
+  var cont = document.getElementById('prog-matriz');
+  var status = document.getElementById('prog-matriz-status');
+
+  if (!_progAnioExiste) {
+    cont.innerHTML = '<p style="color:var(--text-3);padding:30px;text-align:center">📌 Crea el Programa de Capacitaciones del año ' + year + ' para gestionar la matriz.</p>';
+    if (status) status.textContent = '';
+    return;
+  }
+  if (!cargos.length) {
+    cont.innerHTML = '<p style="color:var(--text-3);padding:30px;text-align:center">⚠️ No hay cargos en Configuración. Agrégalos en Trabajadores → ⚙️ Configuración.</p>';
+    return;
+  }
+  if (!temas.length) {
+    cont.innerHTML = '<p style="color:var(--text-3);padding:30px;text-align:center">⚠️ No hay temas en el Training Plan del año ' + year + '.</p>';
+    return;
+  }
+
+  var isAdmin = (window.currentUser && window.currentUser.role === 'admin');
+  var editable = isAdmin && !_progAnioCerrado;
+  if (status) status.textContent = editable ? '✏️ Modo edición — click en celda para marcar/desmarcar' : (_progAnioCerrado ? '🔒 Año cerrado — solo lectura' : '👁 Solo lectura');
+
+  var html = '<table style="border-collapse:collapse;font-size:10px;min-width:' + (temas.length*32+200) + 'px"><thead><tr>' +
     '<th style="background:var(--surface);padding:6px 8px;text-align:left;position:sticky;left:0;z-index:2;border:1px solid var(--border)">Cargo</th>' +
-    temas.map(function(t,i){
-      return '<th style="background:var(--esq-blue-lt);color:var(--esq-blue);padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);width:28px;border:1px solid var(--border);font-weight:700;max-height:140px" title="' + (t.tema||t) + '">' + (t.orden||i+1) + '</th>';
+    temas.map(function(t){
+      return '<th style="background:var(--esq-blue-lt);color:var(--esq-blue);padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);width:32px;border:1px solid var(--border);font-weight:700;max-height:160px" title="' + (t.tema||'') + '">' + (t.orden||'') + '. ' + (t.tema||'').slice(0,40) + '</th>';
     }).join('') + '</tr></thead><tbody>' +
     cargos.map(function(c) {
-      var fila = mat[c] || [];
+      var cargoId = c.replace(/[^a-zA-Z0-9]/g,'_');
+      var checks = _matrizCap[cargoId] || {};
       return '<tr><td style="padding:4px 8px;font-weight:600;background:var(--card);border:1px solid var(--border);white-space:nowrap;position:sticky;left:0;z-index:1">' + c + '</td>' +
-        fila.map(function(v,i){
-          var d = (temas[i] && temas[i]._ejec) ? temas[i]._ejec : (_progData[i+1] || {});
-          var bg = v ? (d.estado === 'Ejecutado' ? '#DCFCE7' : d.estado === 'Programado' ? '#EEF2FF' : '#DBEAFE') : '';
-          return '<td style="text-align:center;width:28px;background:' + bg + ';border:1px solid var(--border)">' + (v ? '<span style="color:' + (d.estado === 'Ejecutado' ? 'var(--green)' : 'var(--esq-blue)') + ';font-weight:900">✓</span>' : '<span style="color:var(--border)">·</span>') + '</td>';
+        temas.map(function(t){
+          var temaId = String(t._id || t.orden);
+          var v = !!checks[temaId];
+          var d = (t._ejec) ? t._ejec : (_progData[temaId] || {});
+          var bg = v ? (d.estado === 'Ejecutado' ? '#DCFCE7' : d.estado === 'Programado' ? '#DBEAFE' : '#EEF2FF') : '#fff';
+          var color = v ? (d.estado === 'Ejecutado' ? 'var(--green)' : 'var(--esq-blue)') : 'var(--border)';
+          var cursor = editable ? 'cursor:pointer' : 'cursor:default';
+          var onclick = editable ? ' onclick="_matrizToggle(\'' + cargoId + '\',\'' + temaId + '\',this)"' : '';
+          return '<td style="text-align:center;width:32px;background:' + bg + ';border:1px solid var(--border);' + cursor + '"' + onclick + '><span style="color:' + color + ';font-weight:900;font-size:13px">' + (v ? '✓' : '·') + '</span></td>';
         }).join('') + '</tr>';
     }).join('') + '</tbody></table>';
-  html += '<div style="margin-top:10px;font-size:10px;color:var(--text-2);display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:2px 16px">' +
-    temas.map(function(t,i){ return '<span><b>' + (t.orden||i+1) + '.</b> ' + (t.tema||t) + '</span>'; }).join('') + '</div>';
-  document.getElementById('prog-matriz-' + tipo).innerHTML = html;
+  html += '<div style="margin-top:12px;font-size:10px;color:var(--text-2);display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px 16px">' +
+    temas.map(function(t){ return '<span><b>' + (t.orden||'') + '.</b> ' + (t.tema||'') + '</span>'; }).join('') + '</div>';
+  cont.innerHTML = html;
 }
 
+async function _matrizToggle(cargoId, temaId, cell) {
+  var year = parseInt(document.getElementById('prog-sel-year')?.value || new Date().getFullYear());
+  if (!_matrizCap[cargoId]) _matrizCap[cargoId] = {};
+  var newVal = !_matrizCap[cargoId][temaId];
+  // Optimistic UI
+  cell.innerHTML = '<span style="color:' + (newVal ? 'var(--esq-blue)' : 'var(--border)') + ';font-weight:900;font-size:13px">' + (newVal ? '✓' : '·') + '</span>';
+  cell.style.background = newVal ? '#DBEAFE' : '#fff';
+  var ok = await fbMatrizGuardarCheck(year, cargoId, temaId, newVal);
+  if (!ok) {
+    // Revert
+    _matrizCap[cargoId][temaId] = !newVal;
+    cell.innerHTML = '<span style="color:' + (!newVal ? 'var(--esq-blue)' : 'var(--border)') + ';font-weight:900;font-size:13px">' + (!newVal ? '✓' : '·') + '</span>';
+    cell.style.background = !newVal ? '#DBEAFE' : '#fff';
+  }
+}
+
+// ── B. Seguimiento cruzado: brechas por trabajador (s29) ──────
 function _renderProgSeguimiento() {
-  if (!_trabList.length) { document.getElementById('prog-seguimiento').innerHTML = '<p style="color:var(--text-3);padding:20px">Carga los trabajadores primero.</p>'; return; }
-  var activos = _trabList.filter(function(t){ return t.estado === 'Activo'; });
-  var temas   = (_progAnioExiste && _progTemas.length) ? _progTemas : PROG_TEMAS_BASE;
-  var html = '<table style="border-collapse:collapse;font-size:10px;min-width:' + (temas.length*28+180) + 'px"><thead><tr>' +
-    '<th style="background:var(--surface);padding:6px 8px;text-align:left;position:sticky;left:0;z-index:2;border:1px solid var(--border)">Trabajador</th>' +
-    temas.map(function(t,i){ return '<th style="background:var(--amber-lt);color:var(--amber);padding:3px 2px;writing-mode:vertical-rl;transform:rotate(180deg);width:28px;border:1px solid var(--border);font-weight:700;max-height:140px" title="' + (t.tema||t) + '">' + (t.orden||i+1) + '</th>'; }).join('') + '</tr></thead><tbody>' +
-    activos.map(function(t) {
-      return '<tr><td style="padding:4px 8px;font-weight:600;background:var(--card);border:1px solid var(--border);white-space:nowrap;position:sticky;left:0;z-index:1">' + (t.nombre1||'') + ' ' + (t.apellido1||'') + '<br><span style="font-size:9px;color:var(--text-3)">' + (t.cargo||'—') + '</span></td>' +
-        temas.map(function(){ return '<td style="text-align:center;width:28px;border:1px solid var(--border)"><span style="color:var(--border)">·</span></td>'; }).join('') + '</tr>';
-    }).join('') + '</tbody></table>';
-  html += '<div style="margin-top:8px;font-size:11px;color:var(--text-3)">* Seguimiento individual se completará en S29. ✓=Ejecutado</div>';
-  document.getElementById('prog-seguimiento').innerHTML = html;
+  var cont = document.getElementById('prog-seguimiento');
+  if (!_trabList.length) { cont.innerHTML = '<p style="color:var(--text-3);padding:20px;text-align:center">⚠️ Carga los trabajadores primero.</p>'; return; }
+  var year  = parseInt(document.getElementById('prog-sel-year')?.value || new Date().getFullYear());
+  var temas = (_progAnioExiste && _progTemas.length) ? _progTemas : [];
+
+  // Poblar filtros (solo la primera vez)
+  var selC = document.getElementById('seg-f-cargo');
+  var selA = document.getElementById('seg-f-area');
+  var selE = document.getElementById('seg-f-empresa');
+  if (selC && selC.children.length <= 1) {
+    var cargosOpts   = [...new Set(_trabList.map(function(t){return t.cargo;}).filter(Boolean))].sort();
+    var areasOpts    = [...new Set(_trabList.map(function(t){return t.area;}).filter(Boolean))].sort();
+    var empresasOpts = [...new Set(_trabList.map(function(t){return t.empresa;}).filter(Boolean))].sort();
+    selC.innerHTML = '<option value="">Cargo</option>'   + cargosOpts.map(function(c){return '<option>'+c+'</option>';}).join('');
+    selA.innerHTML = '<option value="">Área</option>'    + areasOpts.map(function(a){return '<option>'+a+'</option>';}).join('');
+    selE.innerHTML = '<option value="">Empresa</option>' + empresasOpts.map(function(e){return '<option>'+e+'</option>';}).join('');
+  }
+  var fC = selC?.value || '', fA = selA?.value || '', fE = selE?.value || '';
+  var q  = ((document.getElementById('seg-f-q')?.value)||'').toLowerCase();
+
+  if (!_progAnioExiste || !temas.length) {
+    cont.innerHTML = '<p style="color:var(--text-3);padding:30px;text-align:center">📌 Crea el programa del año ' + year + ' con temas en el Training Plan para ver el seguimiento.</p>';
+    return;
+  }
+
+  // Construir mapa temas completados por trabajador desde colección "capacitaciones"
+  // Match: por tema (texto) — fallback flexible
+  var capsByCed = {};
+  (CAP_DATA || []).forEach(function(c){
+    var k = String(c.cedula||'');
+    if (!k) return;
+    if (!capsByCed[k]) capsByCed[k] = [];
+    capsByCed[k].push((c.tema||c.capacitacion||'').toLowerCase());
+  });
+
+  var activos = _trabList.filter(function(t){
+    if (t.estado !== 'Activo') return false;
+    if (fC && t.cargo   !== fC) return false;
+    if (fA && t.area    !== fA) return false;
+    if (fE && t.empresa !== fE) return false;
+    if (q) {
+      var nom = ((t.nombre1||'')+' '+(t.apellido1||'')+' '+(t.nombre2||'')+' '+(t.apellido2||'')).toLowerCase();
+      if (!nom.includes(q) && !String(t.cedula||'').includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!activos.length) { cont.innerHTML = '<p style="color:var(--text-3);padding:30px;text-align:center">Sin trabajadores que coincidan con los filtros.</p>'; return; }
+
+  // Filas: por cada trabajador, mostrar requeridos / completados / faltantes
+  var rows = activos.map(function(t){
+    var cargo = t.cargo || '';
+    var cargoId = cargo.replace(/[^a-zA-Z0-9]/g,'_');
+    var requeridos = (_matrizCap[cargoId]) ? Object.keys(_matrizCap[cargoId]).filter(function(k){return _matrizCap[cargoId][k];}) : [];
+    if (!requeridos.length) {
+      return '<tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)"><div style="font-weight:600;font-size:12px">' + (t.nombre1||'') + ' ' + (t.apellido1||'') + '</div><div style="font-size:10px;color:var(--text-3)">' + sanitize(t.cedula||'') + ' · ' + cargo + '</div></td>' +
+        '<td style="text-align:center;font-size:11px;color:var(--text-3);border-bottom:1px solid var(--border)">— Sin matriz —</td>' +
+        '<td colspan="3" style="text-align:center;font-size:11px;color:var(--text-3);border-bottom:1px solid var(--border)">Define los temas que aplican a este cargo en la Matriz</td></tr>';
+    }
+    var capsLista = capsByCed[String(t.cedula||'')] || [];
+    var completados = 0, faltantesArr = [];
+    requeridos.forEach(function(temaId){
+      var tema = temas.find(function(x){ return String(x._id||x.orden) === String(temaId); });
+      if (!tema) return;
+      var temaTxt = (tema.tema||'').toLowerCase();
+      var done = capsLista.some(function(cap){ return cap && temaTxt && (cap.includes(temaTxt) || temaTxt.includes(cap)); });
+      // O si el tema fue ejecutado globalmente (programa_cap)
+      if (!done) {
+        var d = tema._ejec || _progData[temaId] || {};
+        if (d.estado === 'Ejecutado') done = true;
+      }
+      if (done) completados++; else faltantesArr.push(tema.orden + '. ' + (tema.tema||''));
+    });
+    var pct = requeridos.length ? Math.round(completados/requeridos.length*100) : 0;
+    var sem = pct >= 100 ? {emo:'🟢', lbl:'Completo', col:'var(--green)'} : (pct > 0 ? {emo:'🟡', lbl:'Parcial', col:'var(--amber)'} : {emo:'🔴', lbl:'Sin iniciar', col:'var(--red)'});
+    var faltantesHTML = faltantesArr.length ? '<div style="font-size:10px;color:var(--text-3);margin-top:2px;max-width:340px;white-space:normal">' + faltantesArr.slice(0,3).join(' · ') + (faltantesArr.length>3?' …(+'+(faltantesArr.length-3)+')':'') + '</div>' : '';
+    return '<tr>' +
+      '<td style="padding:6px 10px;border-bottom:1px solid var(--border)"><div style="font-weight:600;font-size:12px">' + sanitize((t.nombre1||'') + ' ' + (t.apellido1||'')) + '</div><div style="font-size:10px;color:var(--text-3)">' + sanitize(t.cedula||'') + ' · ' + sanitize(cargo) + '</div></td>' +
+      '<td style="text-align:center;font-size:18px;border-bottom:1px solid var(--border)" title="' + sem.lbl + '">' + sem.emo + '</td>' +
+      '<td style="text-align:center;font-size:12px;font-weight:700;color:' + sem.col + ';border-bottom:1px solid var(--border)">' + pct + '%</td>' +
+      '<td style="text-align:center;font-size:11px;border-bottom:1px solid var(--border)">' + completados + ' / ' + requeridos.length + '</td>' +
+      '<td style="padding:4px 10px;border-bottom:1px solid var(--border)">' + faltantesHTML + '</td>' +
+    '</tr>';
+  }).join('');
+
+  cont.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+    '<thead><tr style="background:var(--surface)">' +
+      '<th style="text-align:left;padding:8px 10px;font-size:11px;font-weight:700;color:var(--text-2)">Trabajador</th>' +
+      '<th style="text-align:center;padding:8px;font-size:11px;font-weight:700;color:var(--text-2);width:60px">Estado</th>' +
+      '<th style="text-align:center;padding:8px;font-size:11px;font-weight:700;color:var(--text-2);width:70px">% Cumpl.</th>' +
+      '<th style="text-align:center;padding:8px;font-size:11px;font-weight:700;color:var(--text-2);width:90px">Temas</th>' +
+      '<th style="text-align:left;padding:8px;font-size:11px;font-weight:700;color:var(--text-2)">Faltantes</th>' +
+    '</tr></thead><tbody>' + rows + '</tbody></table>' +
+    '<div style="margin-top:10px;font-size:11px;color:var(--text-3)">Leyenda: 🟢 Completo · 🟡 Parcial · 🔴 Sin iniciar — Cruce: Matriz cargo × tema vs colección <code>capacitaciones</code> + ejecuciones del programa</div>';
 }
 
+// ── C. Dashboard Programa con indicadores reales (s29) ────────
 function _renderProgIndicadores() {
-  var temas = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE;
+  var year = parseInt(document.getElementById('prog-sel-year')?.value || new Date().getFullYear());
+  var temas = (_progAnioExiste && _progTemas.length) ? _progTemas : [];
   var total = temas.length;
-  var ejec  = temas.filter(function(t){ return (t._ejec||{}).estado === 'Ejecutado'; }).length;
+  var ejec  = temas.filter(function(t){ return ((t._ejec||{}).estado) === 'Ejecutado'; }).length;
   var pct   = total ? Math.round(ejec/total*100) : 0;
   var meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  document.getElementById('prog-ind-kpis').innerHTML =
-    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">% Cumplimiento</div><div class="kpi-val">' + pct + '%</div><div class="kpi-note">Meta 100%</div></div>' +
-    '<div class="kpi blue"><div class="kpi-ico">📋</div><div class="kpi-lbl">Temas ejecutados</div><div class="kpi-val">' + ejec + '</div><div class="kpi-note">de ' + total + '</div></div>' +
-    '<div class="kpi yellow"><div class="kpi-ico">📉</div><div class="kpi-lbl">Indicador END</div><div class="kpi-val">—%</div><div class="kpi-note">Meta &lt;30%</div></div>' +
-    '<div class="kpi orange"><div class="kpi-ico">⚠️</div><div class="kpi-lbl">Indicador Desv.</div><div class="kpi-val">—%</div><div class="kpi-note">Meta &lt;20%</div></div>';
 
+  // Brechas por trabajador
+  var activos = _trabList.filter(function(t){ return t.estado === 'Activo'; });
+  var capsByCed = {};
+  (CAP_DATA || []).forEach(function(c){
+    var k = String(c.cedula||''); if (!k) return;
+    if (!capsByCed[k]) capsByCed[k] = [];
+    capsByCed[k].push((c.tema||c.capacitacion||'').toLowerCase());
+  });
+  var trabCompletos = 0, trabBrecha = 0, trabSinMatriz = 0;
+  var cargosCobertura = {}; // {cargo: {req: n, done: n}}
+  activos.forEach(function(t){
+    var cargo = t.cargo || '—';
+    var cargoId = cargo.replace(/[^a-zA-Z0-9]/g,'_');
+    var requeridos = (_matrizCap[cargoId]) ? Object.keys(_matrizCap[cargoId]).filter(function(k){return _matrizCap[cargoId][k];}) : [];
+    if (!requeridos.length) { trabSinMatriz++; return; }
+    var caps = capsByCed[String(t.cedula||'')] || [];
+    var done = 0;
+    requeridos.forEach(function(temaId){
+      var tema = temas.find(function(x){return String(x._id||x.orden)===String(temaId);});
+      if (!tema) return;
+      var temaTxt = (tema.tema||'').toLowerCase();
+      var hit = caps.some(function(c){return c && temaTxt && (c.includes(temaTxt) || temaTxt.includes(c));});
+      if (!hit) { var d = tema._ejec || _progData[temaId] || {}; if (d.estado === 'Ejecutado') hit = true; }
+      if (hit) done++;
+    });
+    if (done >= requeridos.length) trabCompletos++; else trabBrecha++;
+    if (!cargosCobertura[cargo]) cargosCobertura[cargo] = {req:0,done:0};
+    cargosCobertura[cargo].req  += requeridos.length;
+    cargosCobertura[cargo].done += done;
+  });
+
+  // KPIs
+  var bannerCerrado = _progAnioCerrado
+    ? '<div class="kpi red"><div class="kpi-ico">🔒</div><div class="kpi-lbl">Año cerrado</div><div class="kpi-val">' + year + '</div><div class="kpi-note">Solo lectura</div></div>'
+    : '';
+  document.getElementById('prog-ind-kpis').innerHTML =
+    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">% Cumplimiento</div><div class="kpi-val">' + pct + '%</div><div class="kpi-note">' + ejec + '/' + total + ' temas · Meta 100%</div></div>' +
+    '<div class="kpi blue"><div class="kpi-ico">👥</div><div class="kpi-lbl">Trabajadores OK</div><div class="kpi-val">' + trabCompletos + '</div><div class="kpi-note">de ' + activos.length + ' activos</div></div>' +
+    '<div class="kpi orange"><div class="kpi-ico">⚠️</div><div class="kpi-lbl">Con brecha</div><div class="kpi-val">' + trabBrecha + '</div><div class="kpi-note">requieren capacitación</div></div>' +
+    '<div class="kpi yellow"><div class="kpi-ico">📋</div><div class="kpi-lbl">Sin matriz</div><div class="kpi-val">' + trabSinMatriz + '</div><div class="kpi-note">cargo sin temas asignados</div></div>' +
+    bannerCerrado;
+
+  // Gráfica 1: Cumplimiento mensual (programados vs ejecutados)
+  var progMes = [0,0,0,0,0,0,0,0,0,0,0,0];
+  var ejecMes = [0,0,0,0,0,0,0,0,0,0,0,0];
+  temas.forEach(function(t){
+    var d = t._ejec || {};
+    var f = d.fechaEjec || '';
+    if (f && f.length>=7) {
+      var m = parseInt(f.slice(5,7)) - 1;
+      if (m>=0 && m<12) {
+        if (d.estado === 'Ejecutado') ejecMes[m]++;
+        else if (d.estado === 'Programado' || d.estado === 'Reprogramado') progMes[m]++;
+      }
+    }
+  });
+  if (_progCharts['prog-chart-mensual']) { try { _progCharts['prog-chart-mensual'].destroy(); } catch(e){} }
+  var elM = document.getElementById('prog-chart-mensual');
+  if (elM && typeof Chart !== 'undefined') _progCharts['prog-chart-mensual'] = new Chart(elM.getContext('2d'), {
+    type:'bar',
+    data:{ labels:meses, datasets:[
+      { label:'Programados', data:progMes, backgroundColor:'rgba(26,60,143,0.7)', borderRadius:3 },
+      { label:'Ejecutados',  data:ejecMes, backgroundColor:'rgba(34,197,94,0.85)', borderRadius:3 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ beginAtZero:true, ticks:{ stepSize:1, precision:0 } } } }
+  });
+
+  // Gráfica 2: Cumplimiento por cargo
+  var cargosArr = Object.keys(cargosCobertura).sort();
+  var cargosLabels = cargosArr;
+  var cargosPct = cargosArr.map(function(c){ var x = cargosCobertura[c]; return x.req ? Math.round(x.done/x.req*100) : 0; });
+  if (_progCharts['prog-chart-cargo']) { try { _progCharts['prog-chart-cargo'].destroy(); } catch(e){} }
+  var elC = document.getElementById('prog-chart-cargo');
+  if (elC && typeof Chart !== 'undefined') _progCharts['prog-chart-cargo'] = new Chart(elC.getContext('2d'), {
+    type:'bar',
+    data:{ labels:cargosLabels, datasets:[{ label:'% Cumplimiento', data:cargosPct, backgroundColor:'rgba(245,200,0,0.85)', borderRadius:3 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function(ctx){ return ' ' + ctx.raw + '%'; } } } }, scales:{ x:{ min:0, max:100, ticks:{ callback:function(v){ return v+'%'; }, font:{size:10} } }, y:{ ticks:{font:{size:10}} } } }
+  });
+
+  // Gráficas 3-4: Placeholders END / Desviaciones (hasta s31)
   if (_progCharts['prog-chart-end']) { try { _progCharts['prog-chart-end'].destroy(); } catch(e){} }
   var el1 = document.getElementById('prog-chart-end');
-  if (el1) _progCharts['prog-chart-end'] = new Chart(el1.getContext('2d'), {
-    type: 'line', data: { labels: meses, datasets: [{ label:'% Reducción END', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#1A3C8F', backgroundColor:'rgba(26,60,143,0.1)', tension:.4, fill:true, pointRadius:4 }, { label:'Meta 30%', data:[30,30,30,30,30,30,30,30,30,30,30,30], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){ return v+'%'; }} } } }
+  if (el1 && typeof Chart !== 'undefined') _progCharts['prog-chart-end'] = new Chart(el1.getContext('2d'), {
+    type:'line', data:{ labels:meses, datasets:[
+      { label:'% Reducción END', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#1A3C8F', backgroundColor:'rgba(26,60,143,0.1)', tension:.4, fill:true, pointRadius:4 },
+      { label:'Meta 30%', data:[30,30,30,30,30,30,30,30,30,30,30,30], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){return v+'%';}} } } }
   });
   if (_progCharts['prog-chart-desv']) { try { _progCharts['prog-chart-desv'].destroy(); } catch(e){} }
   var el2 = document.getElementById('prog-chart-desv');
-  if (el2) _progCharts['prog-chart-desv'] = new Chart(el2.getContext('2d'), {
-    type: 'line', data: { labels: meses, datasets: [{ label:'% Desviaciones', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#D97706', backgroundColor:'rgba(217,119,6,0.1)', tension:.4, fill:true, pointRadius:4 }, { label:'Meta 20%', data:[20,20,20,20,20,20,20,20,20,20,20,20], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){ return v+'%'; }} } } }
+  if (el2 && typeof Chart !== 'undefined') _progCharts['prog-chart-desv'] = new Chart(el2.getContext('2d'), {
+    type:'line', data:{ labels:meses, datasets:[
+      { label:'% Desviaciones', data:[0,0,0,0,0,0,0,0,0,0,0,0], borderColor:'#D97706', backgroundColor:'rgba(217,119,6,0.1)', tension:.4, fill:true, pointRadius:4 },
+      { label:'Meta 20%', data:[20,20,20,20,20,20,20,20,20,20,20,20], borderColor:'#E84E1B', borderDash:[5,5], fill:false, pointRadius:0 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{size:11} } } }, scales:{ y:{ min:0, max:100, ticks:{callback:function(v){return v+'%';}} } } }
   });
 }
 
