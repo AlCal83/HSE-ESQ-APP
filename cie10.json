@@ -1,0 +1,246 @@
+[
+  [
+    "A09",
+    "Diarrea y gastroenteritis de presunto origen infeccioso"
+  ],
+  [
+    "A90",
+    "Dengue clásico"
+  ],
+  [
+    "A91",
+    "Dengue hemorrágico"
+  ],
+  [
+    "B34.9",
+    "Infección viral no especificada"
+  ],
+  [
+    "F32",
+    "Episodio depresivo"
+  ],
+  [
+    "F32.0",
+    "Episodio depresivo leve"
+  ],
+  [
+    "F32.1",
+    "Episodio depresivo moderado"
+  ],
+  [
+    "F41.1",
+    "Trastorno de ansiedad generalizada"
+  ],
+  [
+    "F43.1",
+    "Trastorno de estrés postraumático"
+  ],
+  [
+    "G43",
+    "Migraña"
+  ],
+  [
+    "G43.0",
+    "Migraña sin aura"
+  ],
+  [
+    "G43.1",
+    "Migraña con aura"
+  ],
+  [
+    "H10",
+    "Conjuntivitis"
+  ],
+  [
+    "H10.3",
+    "Conjuntivitis aguda no especificada"
+  ],
+  [
+    "I10",
+    "Hipertensión esencial"
+  ],
+  [
+    "J00",
+    "Rinofaringitis aguda (resfriado común)"
+  ],
+  [
+    "J01",
+    "Sinusitis aguda"
+  ],
+  [
+    "J06",
+    "Infección aguda de vías respiratorias superiores"
+  ],
+  [
+    "J11",
+    "Influenza por virus no identificado"
+  ],
+  [
+    "J18",
+    "Neumonía no especificada"
+  ],
+  [
+    "J20",
+    "Bronquitis aguda"
+  ],
+  [
+    "J45",
+    "Asma"
+  ],
+  [
+    "K29",
+    "Gastritis y duodenitis"
+  ],
+  [
+    "K29.7",
+    "Gastritis no especificada"
+  ],
+  [
+    "L02",
+    "Absceso cutáneo"
+  ],
+  [
+    "M10",
+    "Gota"
+  ],
+  [
+    "M17",
+    "Gonarthrosis (artrosis de rodilla)"
+  ],
+  [
+    "M25.5",
+    "Dolor articular"
+  ],
+  [
+    "M47",
+    "Espondiloartrosis"
+  ],
+  [
+    "M48.0",
+    "Estenosis del canal vertebral"
+  ],
+  [
+    "M51",
+    "Trastornos de discos intervertebrales lumbares"
+  ],
+  [
+    "M51.1",
+    "Radiculopatía lumbar"
+  ],
+  [
+    "M54",
+    "Dorsalgia"
+  ],
+  [
+    "M54.2",
+    "Cervicalgia"
+  ],
+  [
+    "M54.4",
+    "Lumbago con ciática"
+  ],
+  [
+    "M54.5",
+    "Lumbago no especificado"
+  ],
+  [
+    "M54.9",
+    "Dorsalgia no especificada"
+  ],
+  [
+    "M62.4",
+    "Contractura muscular"
+  ],
+  [
+    "M65",
+    "Sinovitis y tenosinovitis"
+  ],
+  [
+    "M75",
+    "Lesiones del hombro"
+  ],
+  [
+    "M75.1",
+    "Síndrome del manguito rotador"
+  ],
+  [
+    "M77.0",
+    "Epicondilitis medial"
+  ],
+  [
+    "M77.1",
+    "Epicondilitis lateral"
+  ],
+  [
+    "M79.1",
+    "Mialgia"
+  ],
+  [
+    "M79.2",
+    "Neuralgia y neuritis no especificadas"
+  ],
+  [
+    "N23",
+    "Cólico renal"
+  ],
+  [
+    "N30",
+    "Cistitis"
+  ],
+  [
+    "N39.0",
+    "Infección de vías urinarias"
+  ],
+  [
+    "O26",
+    "Atención a la madre por complicaciones del embarazo"
+  ],
+  [
+    "R10",
+    "Dolor abdominal y pélvico"
+  ],
+  [
+    "R10.4",
+    "Dolor abdominal no especificado"
+  ],
+  [
+    "R50",
+    "Fiebre de origen desconocido"
+  ],
+  [
+    "R51",
+    "Cefalea"
+  ],
+  [
+    "S40",
+    "Traumatismo superficial del hombro y del brazo"
+  ],
+  [
+    "S50",
+    "Traumatismo superficial del antebrazo"
+  ],
+  [
+    "S60",
+    "Traumatismo superficial de la muñeca y de la mano"
+  ],
+  [
+    "S70",
+    "Traumatismo superficial de la cadera y del muslo"
+  ],
+  [
+    "S80",
+    "Traumatismo superficial de la pierna"
+  ],
+  [
+    "S90",
+    "Traumatismo superficial del tobillo y del pie"
+  ],
+  [
+    "T14.0",
+    "Herida de región no especificada del cuerpo"
+  ],
+  [
+    "Z03",
+    "Observación médica sin diagnóstico confirmado"
+  ]
+]
