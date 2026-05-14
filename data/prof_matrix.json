@@ -1,0 +1,197 @@
+{
+  "operativo_quimico": {
+    "label": "Riesgo Químico (BTX) — Operativos",
+    "examenes": [
+      {
+        "nom": "Hemograma Tipo IV",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Vigilancia médula ósea — Exposición Benceno"
+      },
+      {
+        "nom": "Extendido de sangre periférica (Frotis)",
+        "freq": "Periódico",
+        "nota": "Detección temprana displasias"
+      },
+      {
+        "nom": "Reticulocitos",
+        "freq": "Periódico",
+        "nota": "Vigilancia Benceno — efecto"
+      },
+      {
+        "nom": "Test síntomas neurotóxicos (Q16)",
+        "freq": "Periódico",
+        "nota": "Neurotoxicidad por solventes"
+      },
+      {
+        "nom": "Espirometría",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Función pulmonar"
+      },
+      {
+        "nom": "TGP / TGO / Bilirrubinas / Fosfatasa",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Función hepática — Tolueno/Xileno"
+      },
+      {
+        "nom": "BUN / Creatinina / Parcial orina",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Función renal"
+      },
+      {
+        "nom": "Audiometría vía aérea",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Ruido industrial"
+      },
+      {
+        "nom": "Optometría (test color y profundidad)",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Riesgo visual"
+      },
+      {
+        "nom": "Sistema Osteomuscular (columna/MMSS)",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Riesgo biomecánico"
+      },
+      {
+        "nom": "Perfil Lipídico + Glicemia Basal",
+        "freq": "Ingreso/Periódico",
+        "nota": "Riesgo cardiovascular — Alturas/Confinados"
+      },
+      {
+        "nom": "EKG (>45 años)",
+        "freq": "Ingreso/Periódico",
+        "nota": "Alturas / Confinados"
+      },
+      {
+        "nom": "Test Psicológico Alturas",
+        "freq": "Ingreso/Periódico",
+        "nota": "Acrofobia"
+      },
+      {
+        "nom": "Test Psicológico Confinados",
+        "freq": "Ingreso/Periódico",
+        "nota": "Claustrofobia"
+      }
+    ]
+  },
+  "operativo_btx": {
+    "label": "Perfil BTX — Biomarcadores (exposición directa)",
+    "examenes": [
+      {
+        "nom": "Ácido S-Fenilmercaptúrico (Benceno)",
+        "freq": "Semestral / Post-turno",
+        "nota": "Vigilancia exposición Benceno"
+      },
+      {
+        "nom": "Ácido t,t-Mucónico (Benceno)",
+        "freq": "Semestral / Post-turno",
+        "nota": "Marcador exposición Benceno"
+      },
+      {
+        "nom": "Fenol en orina (Benceno)",
+        "freq": "Periódico",
+        "nota": "Solo periódico — muestra final jornada"
+      },
+      {
+        "nom": "Ácido Hipúrico (Tolueno)",
+        "freq": "Semestral / Post-turno",
+        "nota": "Vida media corta — muestra inmediata"
+      },
+      {
+        "nom": "Ácido Metil Hipúrico (Xileno)",
+        "freq": "Semestral / Post-turno",
+        "nota": "Vigilancia Xileno"
+      }
+    ]
+  },
+  "metalista": {
+    "label": "Metalista / Soldador",
+    "examenes": [
+      {
+        "nom": "Rx Tórax con Lectura OIT (ILO)",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Neumoconiosis — humos metálicos"
+      },
+      {
+        "nom": "Espirometría",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Función pulmonar"
+      },
+      {
+        "nom": "Optometría (test color y profundidad)",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Radiaciones no ionizantes — soldadura"
+      },
+      {
+        "nom": "Audiometría vía aérea",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Ruido"
+      },
+      {
+        "nom": "Sistema Osteomuscular",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Riesgo biomecánico"
+      },
+      {
+        "nom": "Perfil BTX / Hemograma",
+        "freq": "Periódico",
+        "nota": "Exposición humos + BTX si aplica"
+      }
+    ]
+  },
+  "jardinero": {
+    "label": "Jardinero (Herbicidas)",
+    "examenes": [
+      {
+        "nom": "TGP / TGO (hepáticas)",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Hepatotoxicidad Paraquat/2,4-D"
+      },
+      {
+        "nom": "BUN / Creatinina",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Nefrotoxicidad"
+      },
+      {
+        "nom": "Espirometría",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Fibrosis pulmonar — Paraquat"
+      },
+      {
+        "nom": "Sistema Osteomuscular",
+        "freq": "Ingreso/Periódico/Egreso",
+        "nota": "Riesgo biomecánico"
+      }
+    ]
+  },
+  "administrativo": {
+    "label": "Personal Administrativo / Oficina",
+    "examenes": [
+      {
+        "nom": "Sistema Osteomuscular (columna/MMSS)",
+        "freq": "Bienal",
+        "nota": "Riesgo biomecánico — trabajo sedentario"
+      },
+      {
+        "nom": "Optometría (test color y profundidad)",
+        "freq": "Bienal",
+        "nota": "Uso de pantallas / iluminación"
+      },
+      {
+        "nom": "Audiometría vía aérea",
+        "freq": "Bienal",
+        "nota": "Línea base"
+      },
+      {
+        "nom": "Perfil Lipídico + Glicemia Basal",
+        "freq": "Bienal",
+        "nota": "Riesgo cardiovascular"
+      },
+      {
+        "nom": "Hemograma Tipo IV",
+        "freq": "Bienal",
+        "nota": "Línea base general"
+      }
+    ]
+  }
+}
