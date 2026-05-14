@@ -1,0 +1,245 @@
+[
+  {
+    "orden": 1,
+    "tema": "Inducción HSE",
+    "objetivo": "Presentar el SG-HSE a personal nuevo",
+    "dirigido": "Todo el personal nuevo",
+    "facilitador": "Coordinador HSE",
+    "horas": 4,
+    "frec": "Por requisito"
+  },
+  {
+    "orden": 2,
+    "tema": "Reinducción SST",
+    "objetivo": "Actualizar políticas y procedimientos",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 4,
+    "frec": "Anual"
+  },
+  {
+    "orden": 3,
+    "tema": "Política y objetivos SST",
+    "objetivo": "Divulgar política del SG-HSE",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 1,
+    "frec": "Anual"
+  },
+  {
+    "orden": 4,
+    "tema": "Reglamento higiene y seguridad",
+    "objetivo": "Conocer el reglamento interno",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 1,
+    "frec": "Anual"
+  },
+  {
+    "orden": 5,
+    "tema": "Riesgo mecánico — ACST",
+    "objetivo": "Identificar peligros y riesgos",
+    "dirigido": "Mecánica · Eléctrica · Civil",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Mensual"
+  },
+  {
+    "orden": 6,
+    "tema": "Riesgo eléctrico",
+    "objetivo": "Prevenir accidentes eléctricos",
+    "dirigido": "Eléctrica · Operación",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 7,
+    "tema": "Trabajo en alturas",
+    "objetivo": "Res. 4272/2021 · trabajo seguro",
+    "dirigido": "Alturas · Civil · Mecánica",
+    "facilitador": "Externo certificado",
+    "horas": 16,
+    "frec": "Anual"
+  },
+  {
+    "orden": 8,
+    "tema": "Espacios confinados",
+    "objetivo": "Res. 0491/2020 · entrada segura",
+    "dirigido": "Operación · Mecánica",
+    "facilitador": "Externo certificado",
+    "horas": 8,
+    "frec": "Anual"
+  },
+  {
+    "orden": 9,
+    "tema": "Manejo de productos químicos",
+    "objetivo": "Seguridad con sustancias químicas",
+    "dirigido": "Almacén · Operación · Mecánica",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 10,
+    "tema": "Manejo y disposición de residuos",
+    "objetivo": "PGIR · gestión ambiental",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 11,
+    "tema": "EPP — uso y mantenimiento",
+    "objetivo": "Uso correcto de EPP por cargo",
+    "dirigido": "Todo el personal operativo",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 12,
+    "tema": "Primeros auxilios",
+    "objetivo": "Respuesta inicial ante emergencias médicas",
+    "dirigido": "Brigada · Todo el personal",
+    "facilitador": "ARL / Externo",
+    "horas": 8,
+    "frec": "Anual"
+  },
+  {
+    "orden": 13,
+    "tema": "Control de incendios y extintores",
+    "objetivo": "Uso de extintores",
+    "dirigido": "Brigada · Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 14,
+    "tema": "Plan de emergencias y evacuación",
+    "objetivo": "Rutas y puntos de encuentro",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 15,
+    "tema": "Investigación de incidentes",
+    "objetivo": "Metodología de investigación",
+    "dirigido": "HSE · Supervisores · COPASST",
+    "facilitador": "Coordinador HSE",
+    "horas": 4,
+    "frec": "Anual"
+  },
+  {
+    "orden": 16,
+    "tema": "Riesgo psicosocial",
+    "objetivo": "Factores de riesgo psicosocial",
+    "dirigido": "Todo el personal",
+    "facilitador": "ARL / Externo",
+    "horas": 4,
+    "frec": "Anual"
+  },
+  {
+    "orden": 17,
+    "tema": "Riesgo biomecánico — higiene postural",
+    "objetivo": "Prevención osteomuscular",
+    "dirigido": "Administrativo · Operación",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 18,
+    "tema": "Riesgo físico — ruido y vibración",
+    "objetivo": "Controles ruido",
+    "dirigido": "Mecánica · Eléctrica · Operación",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 19,
+    "tema": "Riesgo biológico",
+    "objetivo": "Vectores, COVID y patógenos",
+    "dirigido": "Todo el personal",
+    "facilitador": "EPS / ARL",
+    "horas": 2,
+    "frec": "Anual"
+  },
+  {
+    "orden": 20,
+    "tema": "Observaciones de seguridad",
+    "objetivo": "Formato y reporte de condiciones",
+    "dirigido": "Todo el personal",
+    "facilitador": "Coordinador HSE",
+    "horas": 1,
+    "frec": "Mensual"
+  },
+  {
+    "orden": 21,
+    "tema": "COPASST — funciones y reuniones",
+    "objetivo": "Rol del comité paritario",
+    "dirigido": "COPASST · Supervisores",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Trimestral"
+  },
+  {
+    "orden": 22,
+    "tema": "Manejo defensivo",
+    "objetivo": "Conducción segura",
+    "dirigido": "Conductores · Logística",
+    "facilitador": "Externo / ARL",
+    "horas": 8,
+    "frec": "Anual"
+  },
+  {
+    "orden": 23,
+    "tema": "Gestión ambiental ISO 14001",
+    "objetivo": "Aspectos e impactos ambientales",
+    "dirigido": "HSE · Coordinación · Operación",
+    "facilitador": "Coordinador HSE",
+    "horas": 4,
+    "frec": "Anual"
+  },
+  {
+    "orden": 24,
+    "tema": "Bloqueo y etiquetado (LOTO)",
+    "objetivo": "Control de energías peligrosas",
+    "dirigido": "Mecánica · Eléctrica",
+    "facilitador": "Coordinador HSE",
+    "horas": 4,
+    "frec": "Anual"
+  },
+  {
+    "orden": 25,
+    "tema": "Gestión del cambio",
+    "objetivo": "Procedimiento cambio seguro",
+    "dirigido": "HSE · Supervisores · Coordinación",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Anual"
+  },
+  {
+    "orden": 26,
+    "tema": "Metalistería y trabajos en caliente",
+    "objetivo": "Riesgos soldadura / corte",
+    "dirigido": "Metalistería · Mecánica",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  },
+  {
+    "orden": 27,
+    "tema": "Pintura — exposición a solventes",
+    "objetivo": "Riesgo químico en pintura",
+    "dirigido": "Pintura · Metalistería",
+    "facilitador": "Coordinador HSE",
+    "horas": 2,
+    "frec": "Semestral"
+  }
+]
