@@ -1,245 +1,35 @@
 [
-  {
-    "orden": 1,
-    "tema": "Inducción HSE",
-    "objetivo": "Presentar el SG-HSE a personal nuevo",
-    "dirigido": "Todo el personal nuevo",
-    "facilitador": "Coordinador HSE",
-    "horas": 4,
-    "frec": "Por requisito"
-  },
-  {
-    "orden": 2,
-    "tema": "Reinducción SST",
-    "objetivo": "Actualizar políticas y procedimientos",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 4,
-    "frec": "Anual"
-  },
-  {
-    "orden": 3,
-    "tema": "Política y objetivos SST",
-    "objetivo": "Divulgar política del SG-HSE",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 1,
-    "frec": "Anual"
-  },
-  {
-    "orden": 4,
-    "tema": "Reglamento higiene y seguridad",
-    "objetivo": "Conocer el reglamento interno",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 1,
-    "frec": "Anual"
-  },
-  {
-    "orden": 5,
-    "tema": "Riesgo mecánico — ACST",
-    "objetivo": "Identificar peligros y riesgos",
-    "dirigido": "Mecánica · Eléctrica · Civil",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Mensual"
-  },
-  {
-    "orden": 6,
-    "tema": "Riesgo eléctrico",
-    "objetivo": "Prevenir accidentes eléctricos",
-    "dirigido": "Eléctrica · Operación",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 7,
-    "tema": "Trabajo en alturas",
-    "objetivo": "Res. 4272/2021 · trabajo seguro",
-    "dirigido": "Alturas · Civil · Mecánica",
-    "facilitador": "Externo certificado",
-    "horas": 16,
-    "frec": "Anual"
-  },
-  {
-    "orden": 8,
-    "tema": "Espacios confinados",
-    "objetivo": "Res. 0491/2020 · entrada segura",
-    "dirigido": "Operación · Mecánica",
-    "facilitador": "Externo certificado",
-    "horas": 8,
-    "frec": "Anual"
-  },
-  {
-    "orden": 9,
-    "tema": "Manejo de productos químicos",
-    "objetivo": "Seguridad con sustancias químicas",
-    "dirigido": "Almacén · Operación · Mecánica",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 10,
-    "tema": "Manejo y disposición de residuos",
-    "objetivo": "PGIR · gestión ambiental",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 11,
-    "tema": "EPP — uso y mantenimiento",
-    "objetivo": "Uso correcto de EPP por cargo",
-    "dirigido": "Todo el personal operativo",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 12,
-    "tema": "Primeros auxilios",
-    "objetivo": "Respuesta inicial ante emergencias médicas",
-    "dirigido": "Brigada · Todo el personal",
-    "facilitador": "ARL / Externo",
-    "horas": 8,
-    "frec": "Anual"
-  },
-  {
-    "orden": 13,
-    "tema": "Control de incendios y extintores",
-    "objetivo": "Uso de extintores",
-    "dirigido": "Brigada · Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 14,
-    "tema": "Plan de emergencias y evacuación",
-    "objetivo": "Rutas y puntos de encuentro",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 15,
-    "tema": "Investigación de incidentes",
-    "objetivo": "Metodología de investigación",
-    "dirigido": "HSE · Supervisores · COPASST",
-    "facilitador": "Coordinador HSE",
-    "horas": 4,
-    "frec": "Anual"
-  },
-  {
-    "orden": 16,
-    "tema": "Riesgo psicosocial",
-    "objetivo": "Factores de riesgo psicosocial",
-    "dirigido": "Todo el personal",
-    "facilitador": "ARL / Externo",
-    "horas": 4,
-    "frec": "Anual"
-  },
-  {
-    "orden": 17,
-    "tema": "Riesgo biomecánico — higiene postural",
-    "objetivo": "Prevención osteomuscular",
-    "dirigido": "Administrativo · Operación",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 18,
-    "tema": "Riesgo físico — ruido y vibración",
-    "objetivo": "Controles ruido",
-    "dirigido": "Mecánica · Eléctrica · Operación",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 19,
-    "tema": "Riesgo biológico",
-    "objetivo": "Vectores, COVID y patógenos",
-    "dirigido": "Todo el personal",
-    "facilitador": "EPS / ARL",
-    "horas": 2,
-    "frec": "Anual"
-  },
-  {
-    "orden": 20,
-    "tema": "Observaciones de seguridad",
-    "objetivo": "Formato y reporte de condiciones",
-    "dirigido": "Todo el personal",
-    "facilitador": "Coordinador HSE",
-    "horas": 1,
-    "frec": "Mensual"
-  },
-  {
-    "orden": 21,
-    "tema": "COPASST — funciones y reuniones",
-    "objetivo": "Rol del comité paritario",
-    "dirigido": "COPASST · Supervisores",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Trimestral"
-  },
-  {
-    "orden": 22,
-    "tema": "Manejo defensivo",
-    "objetivo": "Conducción segura",
-    "dirigido": "Conductores · Logística",
-    "facilitador": "Externo / ARL",
-    "horas": 8,
-    "frec": "Anual"
-  },
-  {
-    "orden": 23,
-    "tema": "Gestión ambiental ISO 14001",
-    "objetivo": "Aspectos e impactos ambientales",
-    "dirigido": "HSE · Coordinación · Operación",
-    "facilitador": "Coordinador HSE",
-    "horas": 4,
-    "frec": "Anual"
-  },
-  {
-    "orden": 24,
-    "tema": "Bloqueo y etiquetado (LOTO)",
-    "objetivo": "Control de energías peligrosas",
-    "dirigido": "Mecánica · Eléctrica",
-    "facilitador": "Coordinador HSE",
-    "horas": 4,
-    "frec": "Anual"
-  },
-  {
-    "orden": 25,
-    "tema": "Gestión del cambio",
-    "objetivo": "Procedimiento cambio seguro",
-    "dirigido": "HSE · Supervisores · Coordinación",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Anual"
-  },
-  {
-    "orden": 26,
-    "tema": "Metalistería y trabajos en caliente",
-    "objetivo": "Riesgos soldadura / corte",
-    "dirigido": "Metalistería · Mecánica",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  },
-  {
-    "orden": 27,
-    "tema": "Pintura — exposición a solventes",
-    "objetivo": "Riesgo químico en pintura",
-    "dirigido": "Pintura · Metalistería",
-    "facilitador": "Coordinador HSE",
-    "horas": 2,
-    "frec": "Semestral"
-  }
+  {"orden":1,"categoria":"obligatorio","tema":"Inducción HSE","objetivo":"Informar a nuevos colaboradores sobre normas, reglamentos, peligros y riesgos de la planta y cargo.","contenido":"SG-HSE, políticas, derechos/deberes ARL, roles, reglamentos, plan anual, planes y programas, emergencias, COPASST, COCOLA.","dirigido":"Todo personal","facilitador":"Coordinador HSE, Inspector HSE","horas":4,"frec":"Por requisito","cargosAplicables":[]},
+  {"orden":2,"categoria":"obligatorio","tema":"Reinducción HSE","objetivo":"Fortalecer conocimientos en HSE, normas y directrices.","contenido":"SG-HSE, políticas, derechos/deberes ARL, roles, reglamentos, plan anual, planes y programas, emergencias, COPASST, COCOLA.","dirigido":"Todo personal","facilitador":"Coordinador HSE, Inspector HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":3,"categoria":"obligatorio","tema":"Manejo Seguro de Benceno","objetivo":"Comunicar peligros del benceno e indicar medidas de control para manejo seguro y emergencias.","contenido":"Propiedades, fuentes, límites de exposición, rutas de exposición, efectos en salud, protección, almacenamiento, derrames, monitoreo, vigilancia médica, áreas reguladas, disposición de residuos, plan respuesta emergencias.","dirigido":"Personal expuesto","facilitador":"Coordinador HSE","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":4,"categoria":"obligatorio","tema":"Identificación de Peligros, Evaluación de Riesgos y Controles","objetivo":"Comunicar riesgos y controles; identificar factores de riesgo; conocer metodología de análisis de tareas.","contenido":"Metodología y matriz de riesgos ESQUIVENSA, AST (Análisis de Seguridad para la Tarea), Línea de fuego.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":5,"categoria":"obligatorio","tema":"Plan de Emergencias: Capacitación General","objetivo":"Divulgar plan de emergencia; conocer procedimientos básicos.","contenido":"Emergencias posibles, amenazas, vulnerabilidad, notificación, teoría del fuego, operación de extintores, PONs.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":6,"categoria":"obligatorio","tema":"Requisitos Legales Aplicables: Novedades Normativas","objetivo":"Divulgar requisitos legales y novedades normativas en HSE.","contenido":"Requisitos legales HSE aplicables a la organización, novedades normativas.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":7,"categoria":"obligatorio","tema":"Programas de Vigilancia Epidemiológica (PVE)","objetivo":"Comunicar PVE existentes en ESQUIVENSA para prevención de enfermedades; divulgar riesgos, consecuencias y actividades de prevención.","contenido":"Generalidades PVE, aspectos relevantes, PVE químico/auditivo/osteomuscular/psicosocial, actividades de los PVE.","dirigido":"Personal expuesto","facilitador":"Coordinador HSE, Asesor ARL","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":8,"categoria":"obligatorio","tema":"Manejo Seguro de Productos Químicos","objetivo":"Comunicar medidas de seguridad para manejo seguro de sustancias químicas; explicar peligros en salud, impacto ambiental y sistemas de identificación.","contenido":"Definición, sistemas de comunicación de peligros (SGA/NFPA), SDS, rotulación, control de derrames, protección respiratoria.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":9,"categoria":"obligatorio","tema":"Elementos de Protección Personal (EPP)","objetivo":"Comunicar criterios mínimos para selección, uso y mantenimiento del EPP; promover su uso y cuidado.","contenido":"Definición, selección de EPP, normas, certificaciones, uso, mantenimiento, limitaciones, matriz EPP.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":10,"categoria":"obligatorio","tema":"Riesgo Mecánico","objetivo":"Concientizar sobre la importancia de prevenir lesiones en manos asociadas a herramientas y equipos mecánicos.","contenido":"Cuidado de manos, prevención de lesiones, manejo seguro de herramientas manuales, estándares de uso, operación segura de equipos y herramientas rotativas.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":11,"categoria":"obligatorio","tema":"Riesgo Eléctrico","objetivo":"Dar a conocer normas y protocolos de seguridad para prevención de accidentes eléctricos.","contenido":"RETIE, estándar de trabajo eléctrico, bloqueo y etiquetado, estática.","dirigido":"Todo personal","facilitador":"Ing. Eléctrico, Coordinador HSE","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":12,"categoria":"obligatorio","tema":"Riesgo Biomecánico","objetivo":"Concientizar sobre la importancia de la higiene postural para prevenir enfermedades musculo-esqueléticas; promover técnicas de movilización y manejo manual.","contenido":"Higiene corporal, manejo de cargas.","dirigido":"Todo personal","facilitador":"Coordinador HSE, Asesor ARL","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":13,"categoria":"obligatorio","tema":"Trabajo en Caliente (NFPA 51B)","objetivo":"Comunicar peligros y riesgos por tareas con llama abierta; indicar medidas de prevención de accidentes en soldadura y corte.","contenido":"Definición de trabajo en caliente, requisitos de seguridad, programa empresa, permiso de trabajo en caliente, proceso de decisión, spark watcher, requisitos de entrenamiento empleados y contratistas, pérdidas por trabajo en caliente.","dirigido":"Personal de metalistería, supervisores","facilitador":"Coordinador HSE, Asesor ARL","horas":3,"frec":"Anual","cargosAplicables":[]},
+  {"orden":14,"categoria":"obligatorio","tema":"Trabajo en Espacios Confinados (NFPA 350)","objetivo":"Brindar conocimientos teórico-prácticos para realización segura en espacios confinados; peligros, riesgos y medidas de prevención.","contenido":"Definición de espacio confinado, tipos, ejemplos, referencia normativa, riesgos, evaluación, medidas de prevención, técnicas de control, procedimiento de trabajo, protocolos de verificación entrada/salida, control de accesos, equipos de detección y escape, formación y vigilancia en salud, señalización.","dirigido":"Operadores, personal expuesto","facilitador":"Coordinador HSE, Asesor ARL","horas":4,"frec":"Anual","cargosAplicables":[]},
+  {"orden":15,"categoria":"obligatorio","tema":"Trabajo en Alturas e Izaje (Programa PPCC)","objetivo":"Brindar conocimientos teórico-prácticos para realización segura en alturas e izaje; peligros, riesgos y medidas de prevención.","contenido":"Definición de trabajo en alturas e izaje, referencia normativa, riesgos TA e izaje, medidas de prevención, técnicas de control, PPCC, procedimiento de trabajo, protocolos de verificación, control de accesos, equipos de protección, formación y vigilancia en salud, señalización.","dirigido":"Operadores, personal expuesto","facilitador":"Coordinador HSE, Asesor ARL","horas":4,"frec":"Anual","cargosAplicables":[]},
+  {"orden":16,"categoria":"obligatorio","tema":"Seguridad de Procesos (Básico)","objetivo":"Comunicar aspectos relevantes de seguridad de proceso para prevenir incidentes con impacto en personas y ambiente.","contenido":"Aspectos relevantes de seguridad de proceso.","dirigido":"Todo personal","facilitador":"Coordinador de Procesos, Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":17,"categoria":"obligatorio","tema":"Identificación de Aspectos e Impactos Ambientales","objetivo":"Comunicar aspectos e impactos ambientales de las operaciones; medidas de intervención para control y mitigación.","contenido":"Definición de aspecto e impacto ambiental, metodología, impactos significativos, programas de gestión ambiental (agua, energía, residuos, orden y aseo).","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":18,"categoria":"obligatorio","tema":"Gestión Integral de Residuos","objetivo":"Prevenir generación de residuos peligrosos; regular manejo para proteger salud humana y ambiente.","contenido":"Definición de residuo, clasificación, disposición.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":19,"categoria":"obligatorio","tema":"Plan de Manejo Ambiental y Permisos","objetivo":"Socializar medidas tomadas para prevenir, mitigar, corregir o compensar impactos ambientales.","contenido":"Fichas ambientales, permisos de vertimientos, permisos de emisiones.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":20,"categoria":"obligatorio","tema":"Programas de Gestión Ambiental","objetivo":"Promover uso eficiente de agua, energía y papel mediante estrategias para hábitos responsables.","contenido":"Uso y ahorro de agua, uso eficiente de energía, reducción de papel.","dirigido":"Todo personal","facilitador":"Coordinador HSE","horas":2,"frec":"Anual","cargosAplicables":[]},
+  {"orden":21,"categoria":"complementario","tema":"Curso SG-SST (Decreto 1072/2015)","objetivo":"Formar al personal clave en el Sistema de Gestión de Seguridad y Salud en el Trabajo.","contenido":"Decreto 1072/2015, Resolución 0312/2019, estándares mínimos, ciclo PHVA, planificación, organización, evaluación y mejora del SG-SST.","dirigido":"Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores","facilitador":"SENA / ARL","horas":50,"frec":"Única","cargosAplicables":[]},
+  {"orden":22,"categoria":"complementario","tema":"Reentrenamiento SG-SST","objetivo":"Actualizar y reforzar conocimientos en el SG-SST.","contenido":"Actualizaciones normativas, repaso del ciclo PHVA, casos prácticos del SG-SST en ESQUIVENSA.","dirigido":"Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores","facilitador":"SENA / ARL","horas":20,"frec":"Trianual","cargosAplicables":[]},
+  {"orden":23,"categoria":"complementario","tema":"Entrenamiento Nivel Avanzado Trabajo en Alturas (TSA)","objetivo":"Certificar al personal operativo en trabajo seguro en alturas conforme a normativa vigente.","contenido":"Resolución 4272/2021, equipos de protección contra caídas, sistemas de acceso, rescate, ATS, permisos.","dirigido":"Personal operativo TSA","facilitador":"Entidad autorizada por Ministerio del Trabajo","horas":40,"frec":"Única","cargosAplicables":[]},
+  {"orden":24,"categoria":"complementario","tema":"TSA Nivel Administrativo","objetivo":"Formar al personal administrativo en aspectos generales del trabajo en alturas.","contenido":"Normativa, identificación de peligros, responsabilidades administrativas frente al programa de trabajo en alturas.","dirigido":"Personal administrativo TSA","facilitador":"Entidad autorizada por Ministerio del Trabajo","horas":10,"frec":"Bianual","cargosAplicables":[]},
+  {"orden":25,"categoria":"complementario","tema":"TSA Nivel Coordinador","objetivo":"Certificar a los coordinadores de trabajo en alturas conforme a la normativa.","contenido":"Liderazgo del programa, planeación, supervisión, rescate, gestión de permisos, evaluación de cumplimiento.","dirigido":"Supervisores designados, Coordinador HSE, Inspector HSE","facilitador":"Entidad autorizada por Ministerio del Trabajo","horas":80,"frec":"Única","cargosAplicables":[]},
+  {"orden":26,"categoria":"complementario","tema":"Reentrenamiento TSA","objetivo":"Actualizar y reforzar competencias en trabajo seguro en alturas.","contenido":"Actualización normativa, repaso de equipos, prácticas de rescate, lecciones aprendidas.","dirigido":"Personal TSA","facilitador":"Entidad autorizada por Ministerio del Trabajo","horas":20,"frec":"Anual","cargosAplicables":[]},
+  {"orden":27,"categoria":"complementario","tema":"Certificado Armado de Andamios","objetivo":"Formar y certificar al personal en armado y desarmado seguro de andamios.","contenido":"Tipos de andamios, componentes, criterios de seguridad, inspección, normativa OSHA aplicable.","dirigido":"Operadores/técnicos, Coordinador HSE, Inspector HSE","facilitador":"Persona certificada OSHA","horas":20,"frec":"Única","cargosAplicables":[]},
+  {"orden":28,"categoria":"complementario","tema":"Investigación de Accidentes","objetivo":"Capacitar al personal clave en metodologías de investigación de incidentes y accidentes.","contenido":"Causalidad, análisis de causa raíz, técnicas de investigación, reporte y seguimiento.","dirigido":"Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores","facilitador":"ARL","horas":4,"frec":"Única","cargosAplicables":[]},
+  {"orden":29,"categoria":"complementario","tema":"Inspecciones de Seguridad","objetivo":"Capacitar al personal en metodología y ejecución de inspecciones de seguridad.","contenido":"Tipos de inspección, planeación, ejecución, registro y seguimiento de hallazgos.","dirigido":"Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores","facilitador":"ARL","horas":4,"frec":"Única","cargosAplicables":[]},
+  {"orden":30,"categoria":"complementario","tema":"Auditor Interno Integral (ISO 9001/14001/45001)","objetivo":"Formar auditores internos para los sistemas de gestión integrados.","contenido":"Requisitos ISO 9001, 14001 y 45001, planeación y ejecución de auditorías, evidencias, informes.","dirigido":"Coordinadores, COPASST","facilitador":"Entidad certificadora","horas":40,"frec":"Bianual","cargosAplicables":[]},
+  {"orden":31,"categoria":"complementario","tema":"Seguridad de Procesos Avanzado","objetivo":"Profundizar en gestión de seguridad de procesos para prevención de incidentes mayores.","contenido":"Elementos de seguridad de procesos, análisis de riesgos de proceso, gestión de cambios, integridad mecánica.","dirigido":"Coordinador HSE, Coordinador de procesos","facilitador":"Facilitador externo","horas":40,"frec":"Única","cargosAplicables":[]},
+  {"orden":32,"categoria":"complementario","tema":"Emisor de Permisos de Trabajo","objetivo":"Habilitar al personal para emitir permisos de trabajo bajo los estándares de la empresa.","contenido":"Tipos de permisos, requisitos, evaluación de riesgos previa, controles, cierre del permiso.","dirigido":"Personal de mantenimiento, inspectores HSE","facilitador":"ESQUIVENSA","horas":8,"frec":"Bianual","cargosAplicables":[]},
+  {"orden":33,"categoria":"complementario","tema":"Receptor de Permiso de Trabajo","objetivo":"Habilitar al personal para recibir y ejecutar trabajos bajo permiso conforme a los estándares.","contenido":"Responsabilidades del receptor, verificación de controles, ejecución segura, cierre del permiso.","dirigido":"Personal de mantenimiento, inspectores HSE","facilitador":"ESQUIVENSA","horas":8,"frec":"Bianual","cargosAplicables":[]}
 ]
