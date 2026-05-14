@@ -1337,7 +1337,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
       <div>
         <div style="font-size:20px;font-weight:800;color:var(--dark)">📋 Programa Anual de Capacitaciones</div>
-        <div style="font-size:12px;color:var(--text-2);margin-top:3px">FM-HSE-011 · Training Plan · Matriz cargo × tema · 27 temas SST</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:3px">FM-HSE-011 · Training Plan · Matriz cargo × tema · 33 temas SST (20 obligatorios + 13 complementarios)</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <select class="form-sel" id="prog-sel-year" style="font-size:13px" onchange="renderProgramaAnual()">
@@ -1353,7 +1353,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div id="prog-banner-nuevo" style="display:none;background:var(--amber-lt);border:1.5px solid var(--amber);border-radius:var(--r);padding:16px 20px;margin-bottom:18px">
       <div style="font-size:14px;font-weight:800;color:var(--amber);margin-bottom:10px">⚠️ No existe un programa para este año</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm admin-only-block" onclick="crearPrograma('plantilla')">📋 Crear con 27 temas SST</button>
+        <button class="btn btn-primary btn-sm admin-only-block" onclick="crearPrograma('plantilla')">📋 Crear con 33 temas SST</button>
         <button class="btn btn-ghost btn-sm admin-only-block" onclick="crearPrograma('copiar')">📄 Copiar año anterior</button>
         <button class="btn btn-ghost btn-sm admin-only-block" onclick="crearPrograma('vacio')">🆕 Programa vacío</button>
       </div>
@@ -1374,21 +1374,23 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <!-- Training Plan -->
     <div id="pview-plan">
       <div style="overflow-x:auto">
-        <table class="admin-table" style="min-width:900px;font-size:12px">
+        <table class="admin-table" style="min-width:1100px;font-size:12px">
           <thead><tr>
             <th style="width:40px">#</th>
-            <th>Tema / Contenido</th>
+            <th style="width:90px">Categoría</th>
+            <th>Tema</th>
             <th>Objetivo</th>
-            <th>Dirigido a</th>
+            <th style="width:90px">Cargos</th>
             <th>Facilitador</th>
             <th style="width:60px">Horas</th>
             <th style="width:80px">Frec.</th>
-            <th style="width:100px">F. Ejecución</th>
+            <th style="width:100px">F. Prog.</th>
+            <th style="width:100px">F. Ejec.</th>
             <th style="width:90px">Estado</th>
             <th style="width:100px">Acciones</th>
           </tr></thead>
           <tbody id="prog-plan-tbody">
-            <tr><td colspan="10" style="text-align:center;padding:24px;color:var(--text-3)">Cargando…</td></tr>
+            <tr><td colspan="12" style="text-align:center;padding:24px;color:var(--text-3)">Cargando…</td></tr>
           </tbody>
         </table>
       </div>
@@ -1678,7 +1680,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <div class="modal-body">
       <input type="hidden" id="cap_edit_id">
 
-      <!-- SECCIÓN 1: Trabajador y Tema -->
+      <!-- SECCIÓN 1: Trabajador -->
       <div style="background:linear-gradient(135deg,rgba(11,28,61,.04),rgba(245,200,0,.06));border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-blue);margin-bottom:10px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-blue);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">1</span>
@@ -1686,16 +1688,48 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </div>
         <div class="fgrid g2">
           <div class="fld s2"><div class="flabel">👤 Trabajador *</div>
-            <select id="cap_trabajador" style="width:100%"><option value="">— Seleccione —</option></select></div>
+            <select id="cap_trabajador" onchange="capOnTrabChange()" style="width:100%"><option value="">— Seleccione —</option></select>
+            <div id="cap_trab_info" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 2: Origen del tema (S31) -->
+      <div style="background:linear-gradient(135deg,rgba(245,200,0,.06),rgba(232,78,27,.04));border:1.5px solid var(--esq-blue-lt);border-radius:10px;padding:14px 16px;margin-bottom:14px">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-blue);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-blue);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">2</span>
+          Tema · ¿Del programa anual o externo?
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+          <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1.5px solid var(--esq-blue);border-radius:8px;cursor:pointer;font-weight:600">
+            <input type="radio" name="cap_origen" value="programa" checked onchange="capSwitchOrigen()" style="cursor:pointer">
+            <span style="font-size:12.5px">📋 Tema del Programa Anual</span>
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600">
+            <input type="radio" name="cap_origen" value="externo" onchange="capSwitchOrigen()" style="cursor:pointer">
+            <span style="font-size:12.5px">📚 Capacitación externa / libre</span>
+          </label>
+        </div>
+        <!-- Modo programa -->
+        <div id="cap_origen_programa">
+          <div class="fld s2"><div class="flabel">🎯 Tema asignado *</div>
+            <select id="cap_tema_prog" onchange="capOnTemaProgChange()" style="width:100%">
+              <option value="">— Seleccione un trabajador primero —</option>
+            </select>
+            <div id="cap_tema_prog_info" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
+          </div>
+        </div>
+        <!-- Modo externo -->
+        <div id="cap_origen_externo" style="display:none">
           <div class="fld s2"><div class="flabel">📚 Tema / Nombre del curso *</div>
             <input id="cap_tema" type="text" placeholder="Ej: Uso y manejo de EPP…" style="width:100%"></div>
         </div>
       </div>
 
-      <!-- SECCIÓN 2: Detalles del Curso -->
+      <!-- SECCIÓN 3: Detalles del Curso -->
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-blue);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-blue);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">2</span>
+          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-blue);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">3</span>
           Detalles del curso
         </div>
         <div class="fgrid g2">
@@ -1707,7 +1741,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
           <div class="fld"><div class="flabel">🎯 Modalidad</div>
             <select id="cap_modalidad" style="width:100%"><option value="">Seleccione…</option>
               <option>Presencial</option><option>Virtual</option><option>Mixta</option></select></div>
-          <div class="fld"><div class="flabel">📅 Fecha de realización *</div>
+          <div class="fld"><div class="flabel">📅 Fecha de ejecución *</div>
             <input id="cap_fecha" type="date" onchange="capCalcVenc()"></div>
           <div class="fld"><div class="flabel">⏱ Duración (horas)</div>
             <input id="cap_horas" type="number" min="0.5" step="0.5" placeholder="Ej: 4"></div>
@@ -1718,10 +1752,33 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </div>
       </div>
 
-      <!-- SECCIÓN 3: Vigencia -->
+      <!-- SECCIÓN 4: Asistencia y Evaluación (S31) -->
+      <div style="background:linear-gradient(135deg,rgba(22,163,74,.05),rgba(11,28,61,.03));border:1.5px solid var(--green-lt);border-radius:10px;padding:16px;margin-bottom:14px">
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#16a34a;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">4</span>
+          Asistencia y evaluación
+        </div>
+        <div class="fgrid g2">
+          <div class="fld"><div class="flabel">✅ ¿Asistió? *</div>
+            <select id="cap_asistio" style="width:100%" onchange="capOnAsistioChange()">
+              <option value="">—</option>
+              <option value="SI">✅ Sí asistió</option>
+              <option value="NO">❌ No asistió</option>
+            </select></div>
+          <div class="fld"><div class="flabel">🎯 Calificación (0–100)</div>
+            <input id="cap_calificacion" type="number" min="0" max="100" step="1" placeholder="Ej: 85" oninput="capOnCalifChange()"></div>
+          <div class="fld"><div class="flabel">✓ ¿Aprobado? (auto)</div>
+            <select id="cap_aprobado" style="width:100%">
+              <option value="">—</option><option value="SI">✅ Sí (≥70)</option><option value="NO">❌ No (&lt;70)</option></select></div>
+          <div class="fld"><div class="flabel">📝 Nota / Observación corta</div>
+            <input id="cap_nota" type="text" placeholder="Ej: Sobresaliente, dudas en módulo 3…"></div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 5: Vigencia -->
       <div style="background:linear-gradient(135deg,rgba(232,78,27,.03),rgba(245,200,0,.05));border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-orange);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-orange);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">3</span>
+          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-orange);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">5</span>
           Vigencia y renovación
         </div>
         <label style="display:flex;align-items:center;gap:10px;font-size:12.5px;cursor:pointer;padding:10px 12px;background:var(--card);border-radius:8px;border:1.5px solid var(--border);transition:all .15s">
@@ -1738,18 +1795,13 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </div>
       </div>
 
-      <!-- SECCIÓN 4: Resultado -->
+      <!-- SECCIÓN 6: Soportes -->
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px">
-        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:#16a34a;margin-bottom:10px;display:flex;align-items:center;gap:6px">
-          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:#16a34a;color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">4</span>
-          Resultado y soportes
+        <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-2);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+          <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--text-2);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">6</span>
+          Soportes y observaciones
         </div>
         <div class="fgrid g2">
-          <div class="fld"><div class="flabel">✅ ¿Aprobado?</div>
-            <select id="cap_aprobado" style="width:100%">
-              <option value="">—</option><option value="SI">✅ Sí</option><option value="NO">❌ No</option></select></div>
-          <div class="fld"><div class="flabel">🎯 Nota / Calificación</div>
-            <input id="cap_nota" type="text" placeholder="Ej: 4.5, Sobresaliente…"></div>
           <div class="fld s2"><div class="flabel">🔗 Link soporte / certificado</div>
             <input id="cap_soporte" type="text" placeholder="https://… o referencia del archivo físico"></div>
           <div class="fld s2"><div class="flabel">📝 Observaciones</div>
@@ -6681,19 +6733,41 @@ function renderCAP(){
 // B19 s30: async + guard _trabList para edición correcta desde cualquier flujo
 async function abrirModalCAP(fid){
   if(!_trabList||!_trabList.length){ try{ await fbTrabCargar(); }catch(e){ console.warn('abrirModalCAP fbTrabCargar:',e); } }
+  // S31 — cargar matriz_cap y temas del año actual para "Del programa"
+  var year = new Date().getFullYear();
+  try {
+    if (!_catalogosLoaded) await fbCargarCatalogos();
+    if (!_matrizLoaded) await fbMatrizCargar(year);
+    if (!_progTemas.length) await fbProgCargarTemas(year);
+  } catch(e){ console.warn('abrirModalCAP S31 prep:', e); }
+
   var sel=document.getElementById('cap_trabajador');
   sel.innerHTML='<option value="">— Seleccione —</option>';
   (_trabList||[]).filter(function(w){return w.estado!=='Inactivo';}).forEach(function(w){
     var nom=[w.nombre1,w.nombre2,w.apellido1,w.apellido2].filter(Boolean).join(' ');
     var opt=document.createElement('option');opt.value=w.cedula;
-    opt.textContent=nom+' · '+w.cedula;opt.dataset.nombre=nom;sel.appendChild(opt);
+    opt.textContent=nom+' · '+w.cedula;
+    opt.dataset.nombre=nom;
+    opt.dataset.cargo=w.cargo||'';
+    opt.dataset.area=w.area||'';
+    opt.dataset.empresa=w.empresa||'';
+    sel.appendChild(opt);
   });
   document.getElementById('cap_edit_id').value='';
-  ['cap_tema','cap_horas','cap_entidad','cap_facilitador','cap_nota','cap_soporte','cap_obs','cap_vig_meses','cap_vencimiento'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
-  ['cap_tipo','cap_modalidad','cap_aprobado'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['cap_tema','cap_horas','cap_entidad','cap_facilitador','cap_nota','cap_soporte','cap_obs','cap_vig_meses','cap_vencimiento','cap_calificacion'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['cap_tipo','cap_modalidad','cap_aprobado','cap_asistio'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   var chkV=document.getElementById('cap_tiene_venc');if(chkV)chkV.checked=false;
   capToggleVenc();
   var fEl=document.getElementById('cap_fecha');if(fEl)fEl.value='';
+  // S31 — reset origen a "programa"
+  var radProg = document.querySelector('input[name="cap_origen"][value="programa"]');
+  if (radProg) radProg.checked = true;
+  capSwitchOrigen();
+  var infoT = document.getElementById('cap_trab_info');     if(infoT) infoT.textContent='';
+  var infoP = document.getElementById('cap_tema_prog_info');if(infoP) infoP.textContent='';
+  var selProg = document.getElementById('cap_tema_prog');
+  if(selProg) selProg.innerHTML = '<option value="">— Seleccione un trabajador primero —</option>';
+
   document.getElementById('modalCAPTitle').textContent='Registrar capacitación';
   if(fid){
     var r=CAP_DATA.find(function(x){return x._fid===fid;});
@@ -6701,8 +6775,31 @@ async function abrirModalCAP(fid){
       document.getElementById('cap_edit_id').value=fid;
       document.getElementById('modalCAPTitle').textContent='Editar capacitación';
       Array.from(sel.options).forEach(function(o){if(o.value===String(r.cedula))o.selected=true;});
-      ['tema','tipo','modalidad','fecha','horas','entidad','facilitador','aprobado','nota','soporte','obs'].forEach(function(k){
-        var el=document.getElementById('cap_'+k);if(el)el.value=r[k]||'';
+      capOnTrabChange();
+      // Si la capacitación venía con temaId del programa, marcar modo programa
+      if (r.temaId) {
+        var radP = document.querySelector('input[name="cap_origen"][value="programa"]');
+        if (radP) radP.checked = true;
+        capSwitchOrigen();
+        var spOpt = document.getElementById('cap_tema_prog');
+        if (spOpt) {
+          // si el option no existe (cargo del trabajador no aplica), añadirlo
+          if (!Array.from(spOpt.options).some(function(o){return o.value===r.temaId;})) {
+            var op = document.createElement('option');
+            op.value = r.temaId; op.textContent = r.tema || r.temaId;
+            spOpt.appendChild(op);
+          }
+          spOpt.value = r.temaId;
+        }
+      } else {
+        var radE = document.querySelector('input[name="cap_origen"][value="externo"]');
+        if (radE) radE.checked = true;
+        capSwitchOrigen();
+        var inpTema = document.getElementById('cap_tema');
+        if (inpTema) inpTema.value = r.tema || '';
+      }
+      ['tipo','modalidad','fecha','horas','entidad','facilitador','aprobado','asistio','calificacion','nota','soporte','obs'].forEach(function(k){
+        var el=document.getElementById('cap_'+k); if(el && r[k]!==undefined && r[k]!==null) el.value=r[k];
       });
       if(r.tieneVenc==='SI'){
         document.getElementById('cap_tiene_venc').checked=true;capToggleVenc();
@@ -6715,33 +6812,171 @@ async function abrirModalCAP(fid){
 }
 function cerrarModalCAP(){closeOv('ov-cap');}
 
+// S31 — Cambio de origen (programa vs externo)
+function capSwitchOrigen(){
+  var modo = (document.querySelector('input[name="cap_origen"]:checked')||{}).value || 'programa';
+  var dvP = document.getElementById('cap_origen_programa');
+  var dvE = document.getElementById('cap_origen_externo');
+  if (dvP) dvP.style.display = (modo==='programa') ? 'block' : 'none';
+  if (dvE) dvE.style.display = (modo==='externo')  ? 'block' : 'none';
+  // visual feedback en los radios
+  document.querySelectorAll('input[name="cap_origen"]').forEach(function(r){
+    var lbl = r.parentElement;
+    if (lbl) lbl.style.borderColor = r.checked ? 'var(--esq-blue)' : 'var(--border)';
+  });
+}
+
+// S31 — Cuando se elige trabajador → llenar select de temas del programa filtrados por cargo
+function capOnTrabChange(){
+  var sel = document.getElementById('cap_trabajador');
+  var opt = sel ? sel.options[sel.selectedIndex] : null;
+  var info = document.getElementById('cap_trab_info');
+  var selProg = document.getElementById('cap_tema_prog');
+  if (!opt || !opt.value) {
+    if (info) info.textContent = '';
+    if (selProg) selProg.innerHTML = '<option value="">— Seleccione un trabajador primero —</option>';
+    return;
+  }
+  var cargo = opt.dataset.cargo || '';
+  var area  = opt.dataset.area  || '';
+  var empresa = opt.dataset.empresa || '';
+  var parts = [];
+  if (cargo)   parts.push('💼 '+cargo);
+  if (area)    parts.push('📍 '+area);
+  if (empresa) parts.push('🏢 '+empresa);
+  if (info) info.textContent = parts.join('  ·  ') || '(sin cargo asignado)';
+  // Filtrar temas del programa por cargo del trabajador
+  if (!selProg) return;
+  var cargoId = cargo.replace(/[^a-zA-Z0-9]/g,'_');
+  var checks  = _matrizCap[cargoId] || {};
+  var asignados = []; var otros = [];
+  (_progTemas||[]).forEach(function(t){
+    var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
+    var aplica = !!checks[tid] || (Array.isArray(t.cargosAplicables) && t.cargosAplicables.indexOf(cargo)>=0);
+    if (aplica) asignados.push(t); else otros.push(t);
+  });
+  var opts = ['<option value="">— Seleccionar tema —</option>'];
+  if (asignados.length) {
+    opts.push('<optgroup label="🎯 Asignados al cargo \''+cargo.replace(/"/g,'&quot;')+'\' ('+asignados.length+')">');
+    asignados.forEach(function(t){
+      var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
+      opts.push('<option value="'+tid+'">'+(t.orden||'?')+'. '+(t.tema||'').replace(/"/g,'&quot;')+'</option>');
+    });
+    opts.push('</optgroup>');
+  }
+  if (otros.length) {
+    opts.push('<optgroup label="📋 Otros temas del programa ('+otros.length+')">');
+    otros.forEach(function(t){
+      var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
+      opts.push('<option value="'+tid+'">'+(t.orden||'?')+'. '+(t.tema||'').replace(/"/g,'&quot;')+'</option>');
+    });
+    opts.push('</optgroup>');
+  }
+  if (!asignados.length && !otros.length) {
+    opts = ['<option value="">⚠️ No hay temas en el Programa Anual del año actual</option>'];
+  }
+  selProg.innerHTML = opts.join('');
+  var infoP = document.getElementById('cap_tema_prog_info');
+  if (infoP) infoP.textContent = asignados.length
+    ? '✅ ' + asignados.length + ' tema(s) asignado(s) al cargo "'+cargo+'"'
+    : (cargo ? '⚠️ Ningún tema del programa aplica al cargo "'+cargo+'" — puedes elegir uno de "Otros temas" o usar modo externo' : '⚠️ Trabajador sin cargo definido');
+}
+
+// S31 — Cuando se elige un tema del programa → autocompletar campos
+function capOnTemaProgChange(){
+  var sel = document.getElementById('cap_tema_prog');
+  if (!sel || !sel.value) return;
+  var t = (_progTemas||[]).find(function(x){ return (x._id||('tema_'+String(x.orden).padStart(3,'0'))) === sel.value; });
+  if (!t) return;
+  // autocompletar campos
+  var fHoras = document.getElementById('cap_horas');     if (fHoras && !fHoras.value) fHoras.value = t.horas || '';
+  var fFac   = document.getElementById('cap_facilitador');if (fFac && !fFac.value)   fFac.value   = t.facilitador || '';
+  var fTipo  = document.getElementById('cap_tipo');      if (fTipo && !fTipo.value)  fTipo.value  = 'SST';
+}
+
+// S31 — Si NO asistió, limpiar/desactivar calificación
+function capOnAsistioChange(){
+  var v = document.getElementById('cap_asistio').value;
+  var cal = document.getElementById('cap_calificacion');
+  var apr = document.getElementById('cap_aprobado');
+  if (v === 'NO') {
+    if (cal) { cal.value = ''; cal.disabled = true; }
+    if (apr) { apr.value = 'NO'; }
+  } else {
+    if (cal) cal.disabled = false;
+    capOnCalifChange();
+  }
+}
+
+// S31 — Auto-calcular aprobado según calificación (≥70 = aprobado)
+function capOnCalifChange(){
+  var cal = document.getElementById('cap_calificacion');
+  var apr = document.getElementById('cap_aprobado');
+  if (!cal || !apr) return;
+  var v = cal.value;
+  if (v === '' || v === null) return;
+  var n = parseFloat(v);
+  if (isNaN(n)) return;
+  apr.value = (n >= 70) ? 'SI' : 'NO';
+}
+
 async function guardarCAP(){
   var sel=document.getElementById('cap_trabajador');
   var cedula=sel.value;
   var opt=sel.options[sel.selectedIndex];
   var nombre=opt?opt.dataset.nombre||opt.textContent:'';
-  var tema=document.getElementById('cap_tema').value.trim();
+  var cargo = opt ? (opt.dataset.cargo||'') : '';
+
+  // S31 — origen del tema: programa o externo
+  var origen = (document.querySelector('input[name="cap_origen"]:checked')||{}).value || 'externo';
+  var temaId = null;
+  var tema = '';
+  var temaCategoria = '';
+  if (origen === 'programa') {
+    var selProg = document.getElementById('cap_tema_prog');
+    temaId = selProg ? selProg.value : '';
+    if (!cedula){ showToast('Seleccione un trabajador'); return; }
+    if (!temaId){ showToast('Seleccione un tema del programa'); return; }
+    var tObj = (_progTemas||[]).find(function(x){ return (x._id||('tema_'+String(x.orden).padStart(3,'0'))) === temaId; });
+    if (tObj) { tema = tObj.tema || ''; temaCategoria = tObj.categoria || ''; }
+  } else {
+    tema = (document.getElementById('cap_tema').value||'').trim();
+    if (!cedula){ showToast('Seleccione un trabajador'); return; }
+    if (!tema){ showToast('Ingrese el tema / nombre del curso'); return; }
+  }
+
   var tipo=document.getElementById('cap_tipo').value;
   var fecha=document.getElementById('cap_fecha').value;
-  if(!cedula){showToast('Seleccione un trabajador');return;}
-  if(!tema){showToast('Ingrese el tema / nombre del curso');return;}
+  var asistio=document.getElementById('cap_asistio').value;
   if(!tipo){showToast('Seleccione el tipo');return;}
-  if(!fecha){showToast('Ingrese la fecha de realización');return;}
+  if(!fecha){showToast('Ingrese la fecha de ejecución');return;}
+  if(!asistio){showToast('Indique si asistió (SI/NO)');return;}
+
+  var calRaw = document.getElementById('cap_calificacion').value;
+  var calificacion = (asistio==='SI' && calRaw!=='' && calRaw!==null) ? parseFloat(calRaw) : null;
   var chkV=document.getElementById('cap_tiene_venc');
   var tieneVenc=(chkV&&chkV.checked)?'SI':'NO';
-  var reg={cedula:cedula,nombre:nombre,tema:tema,tipo:tipo,
-    modalidad:document.getElementById('cap_modalidad').value,fecha:fecha,
+
+  var reg={cedula:cedula,nombre:nombre,cargo:cargo,
+    origen:origen, temaId:temaId||null, tema:tema, temaCategoria:temaCategoria,
+    tipo:tipo,
+    modalidad:document.getElementById('cap_modalidad').value,
+    fecha:fecha,
+    fechaEjec:fecha,
     horas:document.getElementById('cap_horas').value,
     entidad:document.getElementById('cap_entidad').value,
     facilitador:document.getElementById('cap_facilitador').value,
     tieneVenc:tieneVenc,
     vigMeses:tieneVenc==='SI'?document.getElementById('cap_vig_meses').value||'':'',
     vencimiento:tieneVenc==='SI'?document.getElementById('cap_vencimiento').value||'':'',
+    asistio:asistio,
+    calificacion:calificacion,
     aprobado:document.getElementById('cap_aprobado').value,
     nota:document.getElementById('cap_nota').value,
     soporte:document.getElementById('cap_soporte').value,
     obs:document.getElementById('cap_obs').value,
-    fechaRegistro:new Date().toISOString()};
+    fechaRegistro:new Date().toISOString(),
+    registradoPor:(window.currentUser&&window.currentUser.name)||'admin'};
   try{
     var fb=window._fb;
     var fid=document.getElementById('cap_edit_id').value;
@@ -6794,10 +7029,10 @@ function mostrarHistorialCAP(cedula){
 
 function exportCAPCSV(){
   if(!CAP_DATA.length){showToast('Sin datos para exportar');return;}
-  var hdr='Cedula;Nombre;Tema;Tipo;Modalidad;Fecha;Horas;Entidad;Facilitador;TieneVenc;VigMeses;Vencimiento;Aprobado;Nota;Soporte;Obs;FechaRegistro';
+  var hdr='Cedula;Nombre;Cargo;Origen;TemaId;Tema;Categoria;Tipo;Modalidad;Fecha;Horas;Entidad;Facilitador;TieneVenc;VigMeses;Vencimiento;Asistio;Calificacion;Aprobado;Nota;Soporte;Obs;RegistradoPor;FechaRegistro';
   var rows=CAP_DATA.map(function(r){
-    return ['cedula','nombre','tema','tipo','modalidad','fecha','horas','entidad','facilitador','tieneVenc','vigMeses','vencimiento','aprobado','nota','soporte','obs','fechaRegistro']
-      .map(function(k){return '"'+(r[k]||'').toString().replace(/"/g,'""')+'"';}).join(';');
+    return ['cedula','nombre','cargo','origen','temaId','tema','temaCategoria','tipo','modalidad','fecha','horas','entidad','facilitador','tieneVenc','vigMeses','vencimiento','asistio','calificacion','aprobado','nota','soporte','obs','registradoPor','fechaRegistro']
+      .map(function(k){var v=r[k];if(v===null||v===undefined)v='';return '"'+v.toString().replace(/"/g,'""')+'"';}).join(';');
   });
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['\uFEFF'+hdr+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));
@@ -10274,34 +10509,177 @@ function _actualizarSelectoresCatalogos() {
 }
 
 // ── Catálogo de los 27 temas base (plantilla) ────────────────
+// S31 — Programa Anual: 33 temas SST (20 obligatorios + 13 complementarios)
+// Estructura por tema: orden, categoria, tema, objetivo, contenido, dirigido,
+// facilitador, horas, frec, cargosAplicables[], fechaProg, fechaEjec, fechaReprog
 var PROG_TEMAS_BASE = [
-  {orden:1,  tema:'Inducción HSE',                    objetivo:'Presentar el SG-HSE a personal nuevo',           dirigido:'Todo el personal nuevo',            facilitador:'Coordinador HSE',       horas:4,  frec:'Por requisito'},
-  {orden:2,  tema:'Reinducción SST',                   objetivo:'Actualizar políticas y procedimientos',           dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
-  {orden:3,  tema:'Política y objetivos SST',          objetivo:'Divulgar política del SG-HSE',                   dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Anual'},
-  {orden:4,  tema:'Reglamento higiene y seguridad',    objetivo:'Conocer el reglamento interno',                  dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Anual'},
-  {orden:5,  tema:'Riesgo mecánico — ACST',            objetivo:'Identificar peligros y riesgos',                 dirigido:'Mecánica · Eléctrica · Civil',       facilitador:'Coordinador HSE',       horas:2,  frec:'Mensual'},
-  {orden:6,  tema:'Riesgo eléctrico',                  objetivo:'Prevenir accidentes eléctricos',                 dirigido:'Eléctrica · Operación',              facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:7,  tema:'Trabajo en alturas',                objetivo:'Res. 4272/2021 · trabajo seguro',                dirigido:'Alturas · Civil · Mecánica',         facilitador:'Externo certificado',   horas:16, frec:'Anual'},
-  {orden:8,  tema:'Espacios confinados',               objetivo:'Res. 0491/2020 · entrada segura',                dirigido:'Operación · Mecánica',               facilitador:'Externo certificado',   horas:8,  frec:'Anual'},
-  {orden:9,  tema:'Manejo de productos químicos',      objetivo:'Seguridad con sustancias químicas',              dirigido:'Almacén · Operación · Mecánica',     facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:10, tema:'Manejo y disposición de residuos',  objetivo:'PGIR · gestión ambiental',                       dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:11, tema:'EPP — uso y mantenimiento',         objetivo:'Uso correcto de EPP por cargo',                  dirigido:'Todo el personal operativo',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:12, tema:'Primeros auxilios',                 objetivo:'Respuesta inicial ante emergencias médicas',      dirigido:'Brigada · Todo el personal',         facilitador:'ARL / Externo',         horas:8,  frec:'Anual'},
-  {orden:13, tema:'Control de incendios y extintores', objetivo:'Uso de extintores',                              dirigido:'Brigada · Todo el personal',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:14, tema:'Plan de emergencias y evacuación',  objetivo:'Rutas y puntos de encuentro',                    dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:15, tema:'Investigación de incidentes',       objetivo:'Metodología de investigación',                   dirigido:'HSE · Supervisores · COPASST',       facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
-  {orden:16, tema:'Riesgo psicosocial',                objetivo:'Factores de riesgo psicosocial',                 dirigido:'Todo el personal',                  facilitador:'ARL / Externo',         horas:4,  frec:'Anual'},
-  {orden:17, tema:'Riesgo biomecánico — higiene postural',objetivo:'Prevención osteomuscular',                    dirigido:'Administrativo · Operación',         facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:18, tema:'Riesgo físico — ruido y vibración', objetivo:'Controles ruido',                                dirigido:'Mecánica · Eléctrica · Operación',   facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:19, tema:'Riesgo biológico',                  objetivo:'Vectores, COVID y patógenos',                    dirigido:'Todo el personal',                  facilitador:'EPS / ARL',             horas:2,  frec:'Anual'},
-  {orden:20, tema:'Observaciones de seguridad',        objetivo:'Formato y reporte de condiciones',               dirigido:'Todo el personal',                  facilitador:'Coordinador HSE',       horas:1,  frec:'Mensual'},
-  {orden:21, tema:'COPASST — funciones y reuniones',   objetivo:'Rol del comité paritario',                       dirigido:'COPASST · Supervisores',             facilitador:'Coordinador HSE',       horas:2,  frec:'Trimestral'},
-  {orden:22, tema:'Manejo defensivo',                  objetivo:'Conducción segura',                              dirigido:'Conductores · Logística',            facilitador:'Externo / ARL',         horas:8,  frec:'Anual'},
-  {orden:23, tema:'Gestión ambiental ISO 14001',       objetivo:'Aspectos e impactos ambientales',                dirigido:'HSE · Coordinación · Operación',     facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
-  {orden:24, tema:'Bloqueo y etiquetado (LOTO)',       objetivo:'Control de energías peligrosas',                 dirigido:'Mecánica · Eléctrica',               facilitador:'Coordinador HSE',       horas:4,  frec:'Anual'},
-  {orden:25, tema:'Gestión del cambio',                objetivo:'Procedimiento cambio seguro',                    dirigido:'HSE · Supervisores · Coordinación',  facilitador:'Coordinador HSE',       horas:2,  frec:'Anual'},
-  {orden:26, tema:'Metalistería y trabajos en caliente',objetivo:'Riesgos soldadura / corte',                     dirigido:'Metalistería · Mecánica',            facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'},
-  {orden:27, tema:'Pintura — exposición a solventes',  objetivo:'Riesgo químico en pintura',                      dirigido:'Pintura · Metalistería',             facilitador:'Coordinador HSE',       horas:2,  frec:'Semestral'}
+  // ── OBLIGATORIOS (1-20) ─────────────────────────────────────
+  {orden:1, categoria:'obligatorio', tema:'Inducción HSE',
+   objetivo:'Informar a nuevos colaboradores sobre normas, reglamentos, peligros y riesgos de la planta y cargo.',
+   contenido:'SG-HSE, políticas, derechos/deberes ARL, roles, reglamentos, plan anual, planes y programas, emergencias, COPASST, COCOLA.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE, Inspector HSE',
+   horas:4, frec:'Por requisito', cargosAplicables:[]},
+  {orden:2, categoria:'obligatorio', tema:'Reinducción HSE',
+   objetivo:'Fortalecer conocimientos en HSE, normas y directrices.',
+   contenido:'SG-HSE, políticas, derechos/deberes ARL, roles, reglamentos, plan anual, planes y programas, emergencias, COPASST, COCOLA.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE, Inspector HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:3, categoria:'obligatorio', tema:'Manejo Seguro de Benceno',
+   objetivo:'Comunicar peligros del benceno e indicar medidas de control para manejo seguro y emergencias.',
+   contenido:'Propiedades, fuentes, límites de exposición, rutas de exposición, efectos en salud, protección, almacenamiento, derrames, monitoreo, vigilancia médica, áreas reguladas, disposición de residuos, plan respuesta emergencias.',
+   dirigido:'Personal expuesto', facilitador:'Coordinador HSE',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:4, categoria:'obligatorio', tema:'Identificación de Peligros, Evaluación de Riesgos y Controles',
+   objetivo:'Comunicar riesgos y controles; identificar factores de riesgo; conocer metodología de análisis de tareas.',
+   contenido:'Metodología y matriz de riesgos ESQUIVENSA, AST (Análisis de Seguridad para la Tarea), Línea de fuego.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:5, categoria:'obligatorio', tema:'Plan de Emergencias: Capacitación General',
+   objetivo:'Divulgar plan de emergencia; conocer procedimientos básicos.',
+   contenido:'Emergencias posibles, amenazas, vulnerabilidad, notificación, teoría del fuego, operación de extintores, PONs.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:6, categoria:'obligatorio', tema:'Requisitos Legales Aplicables: Novedades Normativas',
+   objetivo:'Divulgar requisitos legales y novedades normativas en HSE.',
+   contenido:'Requisitos legales HSE aplicables a la organización, novedades normativas.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:7, categoria:'obligatorio', tema:'Programas de Vigilancia Epidemiológica (PVE)',
+   objetivo:'Comunicar PVE existentes en ESQUIVENSA para prevención de enfermedades; divulgar riesgos, consecuencias y actividades de prevención.',
+   contenido:'Generalidades PVE, aspectos relevantes, PVE químico/auditivo/osteomuscular/psicosocial, actividades de los PVE.',
+   dirigido:'Personal expuesto', facilitador:'Coordinador HSE, Asesor ARL',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:8, categoria:'obligatorio', tema:'Manejo Seguro de Productos Químicos',
+   objetivo:'Comunicar medidas de seguridad para manejo seguro de sustancias químicas; explicar peligros en salud, impacto ambiental y sistemas de identificación.',
+   contenido:'Definición, sistemas de comunicación de peligros (SGA/NFPA), SDS, rotulación, control de derrames, protección respiratoria.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:9, categoria:'obligatorio', tema:'Elementos de Protección Personal (EPP)',
+   objetivo:'Comunicar criterios mínimos para selección, uso y mantenimiento del EPP; promover su uso y cuidado.',
+   contenido:'Definición, selección de EPP, normas, certificaciones, uso, mantenimiento, limitaciones, matriz EPP.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:10, categoria:'obligatorio', tema:'Riesgo Mecánico',
+   objetivo:'Concientizar sobre la importancia de prevenir lesiones en manos asociadas a herramientas y equipos mecánicos.',
+   contenido:'Cuidado de manos, prevención de lesiones, manejo seguro de herramientas manuales, estándares de uso, operación segura de equipos y herramientas rotativas.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:11, categoria:'obligatorio', tema:'Riesgo Eléctrico',
+   objetivo:'Dar a conocer normas y protocolos de seguridad para prevención de accidentes eléctricos.',
+   contenido:'RETIE, estándar de trabajo eléctrico, bloqueo y etiquetado, estática.',
+   dirigido:'Todo personal', facilitador:'Ing. Eléctrico, Coordinador HSE',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:12, categoria:'obligatorio', tema:'Riesgo Biomecánico',
+   objetivo:'Concientizar sobre la importancia de la higiene postural para prevenir enfermedades musculo-esqueléticas; promover técnicas de movilización y manejo manual.',
+   contenido:'Higiene corporal, manejo de cargas.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE, Asesor ARL',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:13, categoria:'obligatorio', tema:'Trabajo en Caliente (NFPA 51B)',
+   objetivo:'Comunicar peligros y riesgos por tareas con llama abierta; indicar medidas de prevención de accidentes en soldadura y corte.',
+   contenido:'Definición de trabajo en caliente, requisitos de seguridad, programa empresa, permiso de trabajo en caliente, proceso de decisión, spark watcher, requisitos de entrenamiento empleados y contratistas, pérdidas por trabajo en caliente.',
+   dirigido:'Personal de metalistería, supervisores', facilitador:'Coordinador HSE, Asesor ARL',
+   horas:3, frec:'Anual', cargosAplicables:[]},
+  {orden:14, categoria:'obligatorio', tema:'Trabajo en Espacios Confinados (NFPA 350)',
+   objetivo:'Brindar conocimientos teórico-prácticos para realización segura en espacios confinados; peligros, riesgos y medidas de prevención.',
+   contenido:'Definición de espacio confinado, tipos, ejemplos, referencia normativa, riesgos, evaluación, medidas de prevención, técnicas de control, procedimiento de trabajo, protocolos de verificación entrada/salida, control de accesos, equipos de detección y escape, formación y vigilancia en salud, señalización.',
+   dirigido:'Operadores, personal expuesto', facilitador:'Coordinador HSE, Asesor ARL',
+   horas:4, frec:'Anual', cargosAplicables:[]},
+  {orden:15, categoria:'obligatorio', tema:'Trabajo en Alturas e Izaje (Programa PPCC)',
+   objetivo:'Brindar conocimientos teórico-prácticos para realización segura en alturas e izaje; peligros, riesgos y medidas de prevención.',
+   contenido:'Definición de trabajo en alturas e izaje, referencia normativa, riesgos TA e izaje, medidas de prevención, técnicas de control, PPCC, procedimiento de trabajo, protocolos de verificación, control de accesos, equipos de protección, formación y vigilancia en salud, señalización.',
+   dirigido:'Operadores, personal expuesto', facilitador:'Coordinador HSE, Asesor ARL',
+   horas:4, frec:'Anual', cargosAplicables:[]},
+  {orden:16, categoria:'obligatorio', tema:'Seguridad de Procesos (Básico)',
+   objetivo:'Comunicar aspectos relevantes de seguridad de proceso para prevenir incidentes con impacto en personas y ambiente.',
+   contenido:'Aspectos relevantes de seguridad de proceso.',
+   dirigido:'Todo personal', facilitador:'Coordinador de Procesos, Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:17, categoria:'obligatorio', tema:'Identificación de Aspectos e Impactos Ambientales',
+   objetivo:'Comunicar aspectos e impactos ambientales de las operaciones; medidas de intervención para control y mitigación.',
+   contenido:'Definición de aspecto e impacto ambiental, metodología, impactos significativos, programas de gestión ambiental (agua, energía, residuos, orden y aseo).',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:18, categoria:'obligatorio', tema:'Gestión Integral de Residuos',
+   objetivo:'Prevenir generación de residuos peligrosos; regular manejo para proteger salud humana y ambiente.',
+   contenido:'Definición de residuo, clasificación, disposición.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:19, categoria:'obligatorio', tema:'Plan de Manejo Ambiental y Permisos',
+   objetivo:'Socializar medidas tomadas para prevenir, mitigar, corregir o compensar impactos ambientales.',
+   contenido:'Fichas ambientales, permisos de vertimientos, permisos de emisiones.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  {orden:20, categoria:'obligatorio', tema:'Programas de Gestión Ambiental',
+   objetivo:'Promover uso eficiente de agua, energía y papel mediante estrategias para hábitos responsables.',
+   contenido:'Uso y ahorro de agua, uso eficiente de energía, reducción de papel.',
+   dirigido:'Todo personal', facilitador:'Coordinador HSE',
+   horas:2, frec:'Anual', cargosAplicables:[]},
+  // ── COMPLEMENTARIOS (21-33) ─────────────────────────────────
+  {orden:21, categoria:'complementario', tema:'Curso SG-SST (Decreto 1072/2015)',
+   objetivo:'Formar al personal clave en el Sistema de Gestión de Seguridad y Salud en el Trabajo.',
+   contenido:'Decreto 1072/2015, Resolución 0312/2019, estándares mínimos, ciclo PHVA, planificación, organización, evaluación y mejora del SG-SST.',
+   dirigido:'Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores',
+   facilitador:'SENA / ARL', horas:50, frec:'Única', cargosAplicables:[]},
+  {orden:22, categoria:'complementario', tema:'Reentrenamiento SG-SST',
+   objetivo:'Actualizar y reforzar conocimientos en el SG-SST.',
+   contenido:'Actualizaciones normativas, repaso del ciclo PHVA, casos prácticos del SG-SST en ESQUIVENSA.',
+   dirigido:'Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores',
+   facilitador:'SENA / ARL', horas:20, frec:'Trianual', cargosAplicables:[]},
+  {orden:23, categoria:'complementario', tema:'Entrenamiento Nivel Avanzado Trabajo en Alturas (TSA)',
+   objetivo:'Certificar al personal operativo en trabajo seguro en alturas conforme a normativa vigente.',
+   contenido:'Resolución 4272/2021, equipos de protección contra caídas, sistemas de acceso, rescate, ATS, permisos.',
+   dirigido:'Personal operativo TSA', facilitador:'Entidad autorizada por Ministerio del Trabajo',
+   horas:40, frec:'Única', cargosAplicables:[]},
+  {orden:24, categoria:'complementario', tema:'TSA Nivel Administrativo',
+   objetivo:'Formar al personal administrativo en aspectos generales del trabajo en alturas.',
+   contenido:'Normativa, identificación de peligros, responsabilidades administrativas frente al programa de trabajo en alturas.',
+   dirigido:'Personal administrativo TSA', facilitador:'Entidad autorizada por Ministerio del Trabajo',
+   horas:10, frec:'Bianual', cargosAplicables:[]},
+  {orden:25, categoria:'complementario', tema:'TSA Nivel Coordinador',
+   objetivo:'Certificar a los coordinadores de trabajo en alturas conforme a la normativa.',
+   contenido:'Liderazgo del programa, planeación, supervisión, rescate, gestión de permisos, evaluación de cumplimiento.',
+   dirigido:'Supervisores designados, Coordinador HSE, Inspector HSE',
+   facilitador:'Entidad autorizada por Ministerio del Trabajo', horas:80, frec:'Única', cargosAplicables:[]},
+  {orden:26, categoria:'complementario', tema:'Reentrenamiento TSA',
+   objetivo:'Actualizar y reforzar competencias en trabajo seguro en alturas.',
+   contenido:'Actualización normativa, repaso de equipos, prácticas de rescate, lecciones aprendidas.',
+   dirigido:'Personal TSA', facilitador:'Entidad autorizada por Ministerio del Trabajo',
+   horas:20, frec:'Anual', cargosAplicables:[]},
+  {orden:27, categoria:'complementario', tema:'Certificado Armado de Andamios',
+   objetivo:'Formar y certificar al personal en armado y desarmado seguro de andamios.',
+   contenido:'Tipos de andamios, componentes, criterios de seguridad, inspección, normativa OSHA aplicable.',
+   dirigido:'Operadores/técnicos, Coordinador HSE, Inspector HSE',
+   facilitador:'Persona certificada OSHA', horas:20, frec:'Única', cargosAplicables:[]},
+  {orden:28, categoria:'complementario', tema:'Investigación de Accidentes',
+   objetivo:'Capacitar al personal clave en metodologías de investigación de incidentes y accidentes.',
+   contenido:'Causalidad, análisis de causa raíz, técnicas de investigación, reporte y seguimiento.',
+   dirigido:'Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores',
+   facilitador:'ARL', horas:4, frec:'Única', cargosAplicables:[]},
+  {orden:29, categoria:'complementario', tema:'Inspecciones de Seguridad',
+   objetivo:'Capacitar al personal en metodología y ejecución de inspecciones de seguridad.',
+   contenido:'Tipos de inspección, planeación, ejecución, registro y seguimiento de hallazgos.',
+   dirigido:'Coordinador HSE, Inspector HSE, COPASST, coordinadores, supervisores',
+   facilitador:'ARL', horas:4, frec:'Única', cargosAplicables:[]},
+  {orden:30, categoria:'complementario', tema:'Auditor Interno Integral (ISO 9001/14001/45001)',
+   objetivo:'Formar auditores internos para los sistemas de gestión integrados.',
+   contenido:'Requisitos ISO 9001, 14001 y 45001, planeación y ejecución de auditorías, evidencias, informes.',
+   dirigido:'Coordinadores, COPASST', facilitador:'Entidad certificadora',
+   horas:40, frec:'Bianual', cargosAplicables:[]},
+  {orden:31, categoria:'complementario', tema:'Seguridad de Procesos Avanzado',
+   objetivo:'Profundizar en gestión de seguridad de procesos para prevención de incidentes mayores.',
+   contenido:'Elementos de seguridad de procesos, análisis de riesgos de proceso, gestión de cambios, integridad mecánica.',
+   dirigido:'Coordinador HSE, Coordinador de procesos', facilitador:'Facilitador externo',
+   horas:40, frec:'Única', cargosAplicables:[]},
+  {orden:32, categoria:'complementario', tema:'Emisor de Permisos de Trabajo',
+   objetivo:'Habilitar al personal para emitir permisos de trabajo bajo los estándares de la empresa.',
+   contenido:'Tipos de permisos, requisitos, evaluación de riesgos previa, controles, cierre del permiso.',
+   dirigido:'Personal de mantenimiento, inspectores HSE', facilitador:'ESQUIVENSA',
+   horas:8, frec:'Bianual', cargosAplicables:[]},
+  {orden:33, categoria:'complementario', tema:'Receptor de Permiso de Trabajo',
+   objetivo:'Habilitar al personal para recibir y ejecutar trabajos bajo permiso conforme a los estándares.',
+   contenido:'Responsabilidades del receptor, verificación de controles, ejecución segura, cierre del permiso.',
+   dirigido:'Personal de mantenimiento, inspectores HSE', facilitador:'ESQUIVENSA',
+   horas:8, frec:'Bianual', cargosAplicables:[]}
 ];
 
 // Keep PROG_TEMAS as alias for matriz rendering (legacy support)
@@ -10409,12 +10787,26 @@ async function crearPrograma(modo) {
       var t = temasACrear[i];
       var docId = 'tema_' + String(t.orden || i+1).padStart(3,'0');
       await setDoc(doc(window._db, 'planes_cap', String(year), 'temas', docId), {
-        orden: t.orden || i+1, tema: t.tema || '', objetivo: t.objetivo || '',
-        dirigido: t.dirigido || '', facilitador: t.facilitador || '',
-        horas: t.horas || 0, frec: t.frec || '', estado: '', fechaEjec: null,
-        calificacion: null, observaciones: ''
+        orden: t.orden || i+1,
+        categoria: t.categoria || 'obligatorio',
+        tema: t.tema || '',
+        objetivo: t.objetivo || '',
+        contenido: t.contenido || '',
+        dirigido: t.dirigido || '',
+        facilitador: t.facilitador || '',
+        horas: t.horas || 0,
+        frec: t.frec || '',
+        cargosAplicables: Array.isArray(t.cargosAplicables) ? t.cargosAplicables : [],
+        estado: '',
+        fechaProg: t.fechaProg || null,
+        fechaEjec: t.fechaEjec || null,
+        fechaReprog: t.fechaReprog || null,
+        calificacion: null,
+        observaciones: ''
       });
     }
+    // S31 — Sincronizar matriz_cap a partir de cargosAplicables de cada tema
+    try { await _sincronizarMatrizDesdeTemas(year, temasACrear); } catch(e){ console.warn('sincMatriz:', e); }
     showToast('✅ Programa ' + year + ' creado con ' + (temasACrear.length||0) + ' temas');
     await renderProgramaAnual();
   } catch(e) { showToast('❌ Error: ' + e.message); }
@@ -10496,7 +10888,7 @@ function _estadoBadge(est) {
 function _renderProgPlan() {
   var temas = _progAnioExiste ? _progTemas : PROG_TEMAS_BASE.map(function(t){ return Object.assign({}, t, {_ejec:{}, _id: null}); });
   if (!temas.length) {
-    document.getElementById('prog-plan-tbody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:32px;color:var(--text-3)">Selecciona un año y crea el programa para empezar.</td></tr>';
+    document.getElementById('prog-plan-tbody').innerHTML = '<tr><td colspan="12" style="text-align:center;padding:32px;color:var(--text-3)">Selecciona un año y crea el programa para empezar.</td></tr>';
     return;
   }
   var isAdmin = (window.currentUser && window.currentUser.role === 'admin');
@@ -10507,18 +10899,32 @@ function _renderProgPlan() {
     if (!isCerrado) {
       acciones += '<button class="btn btn-ghost btn-xs" onclick="abrirModalProg(\'' + (t._id||t.orden) + '\')" title="Registrar ejecución">📝</button> ';
       if (isAdmin && _progAnioExiste) {
-        acciones += '<button class="btn btn-ghost btn-xs" onclick="editarTema(\'' + (t._id||'') + '\')" title="Editar tema">✏️</button> ' +
+        acciones += '<button class="btn btn-ghost btn-xs" onclick="editarTema(\'' + (t._id||'') + '\')" title="Editar tema (cargos, contenido…)">✏️</button> ' +
                     '<button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="eliminarTema(\'' + (t._id||'') + '\')" title="Eliminar tema">🗑</button>';
       }
     }
+    var catBadge = (t.categoria === 'complementario')
+      ? '<span style="font-size:10px;font-weight:700;color:var(--esq-orange);background:var(--amber-lt);padding:2px 6px;border-radius:99px">Complem.</span>'
+      : '<span style="font-size:10px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 6px;border-radius:99px">Obligat.</span>';
+    var nCargos = Array.isArray(t.cargosAplicables) ? t.cargosAplicables.length : 0;
+    var cargosBadge = nCargos
+      ? '<span title="' + (t.cargosAplicables||[]).join(', ').replace(/"/g,'&quot;') + '" style="font-size:11px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px;cursor:help">👥 ' + nCargos + '</span>'
+      : '<span style="font-size:11px;color:var(--text-3)">—</span>';
+    var temaCell = '<div style="font-weight:600;font-size:12px">' + (t.tema||'') + '</div>';
+    if (t.contenido) {
+      var resumen = (t.contenido||'').slice(0,90);
+      temaCell += '<div title="' + (t.contenido||'').replace(/"/g,'&quot;') + '" style="font-size:10.5px;color:var(--text-3);margin-top:2px;cursor:help">' + resumen + (t.contenido.length>90?'…':'') + '</div>';
+    }
     return '<tr>' +
       '<td style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-3)">' + (t.orden||'') + '</td>' +
-      '<td style="font-weight:600;font-size:12px">' + (t.tema||'') + '</td>' +
+      '<td style="text-align:center">' + catBadge + '</td>' +
+      '<td>' + temaCell + '</td>' +
       '<td style="font-size:11px;color:var(--text-2)">' + (t.objetivo||'') + '</td>' +
-      '<td style="font-size:11px">' + (t.dirigido||'') + '</td>' +
+      '<td style="text-align:center">' + cargosBadge + '</td>' +
       '<td style="font-size:11px">' + (t.facilitador||'') + '</td>' +
       '<td style="text-align:center;font-size:11px">' + (t.horas||0) + 'h</td>' +
       '<td style="font-size:11px">' + (t.frec||'') + '</td>' +
+      '<td style="font-size:11px;font-family:var(--mono)">' + (t.fechaProg || '—') + (t.fechaReprog?'<div style="font-size:10px;color:var(--amber)">🔄 '+t.fechaReprog+'</div>':'') + '</td>' +
       '<td style="font-size:11px;font-family:var(--mono)">' + (d.fechaEjec || '—') + '</td>' +
       '<td>' + _estadoBadge(d.estado) + '</td>' +
       '<td style="white-space:nowrap">' + acciones + '</td>' +
@@ -10869,25 +11275,63 @@ function _abrirModalTema(docId) {
   var year = document.getElementById('prog-sel-year')?.value || new Date().getFullYear();
   var t = docId ? (_progTemas.find(function(x){ return x._id === docId; }) || {}) : {};
   var maxOrden = _progTemas.length ? Math.max.apply(null, _progTemas.map(function(x){ return x.orden||0; })) : 0;
+  var cargosCat = (_catalogos && _catalogos.cargos && _catalogos.cargos.length) ? _catalogos.cargos.slice().sort() : [];
+  var cargosSel = Array.isArray(t.cargosAplicables) ? t.cargosAplicables : [];
+
+  var cargosChk = cargosCat.length
+    ? cargosCat.map(function(c){
+        var checked = cargosSel.indexOf(c)>=0 ? ' checked' : '';
+        var safe = c.replace(/"/g,'&quot;');
+        return '<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:4px 8px;background:var(--card);border:1px solid var(--border);border-radius:6px;cursor:pointer">'+
+                 '<input type="checkbox" class="mt-cargo-chk" value="'+safe+'"'+checked+'> '+c+
+               '</label>';
+      }).join('')
+    : '<div style="color:var(--text-3);font-size:12px;padding:8px">⚠️ No hay cargos en el catálogo. Agrégalos en Trabajadores → ⚙️ Configuración.</div>';
+
+  var fOpts = ['Por requisito','Mensual','Trimestral','Semestral','Anual','Bianual','Trianual','Única']
+    .map(function(f){ return '<option value="'+f+'"'+(t.frec===f?' selected':'')+'>'+f+'</option>'; }).join('');
+
   var html = '<div id="modal-tema-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:flex;align-items:center;justify-content:center;padding:16px" onclick="if(event.target.id===\'modal-tema-overlay\')cerrarModalTema()">' +
-    '<div style="background:var(--card);border-radius:16px;padding:28px;width:100%;max-width:520px;box-shadow:var(--sh-xl);max-height:90vh;overflow-y:auto">' +
+    '<div style="background:var(--card);border-radius:16px;padding:24px;width:100%;max-width:680px;box-shadow:var(--sh-xl);max-height:90vh;overflow-y:auto">' +
     '<div style="font-size:16px;font-weight:800;margin-bottom:18px;color:var(--dark)">' + (docId ? '✏️ Editar Tema' : '＋ Nuevo Tema') + '</div>' +
-    '<div style="display:grid;grid-template-columns:80px 1fr;gap:12px;margin-bottom:12px">' +
-    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Orden</label><input type="number" id="mt-orden" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.orden||maxOrden+1) + '" min="1"></div>' +
-    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Nombre del tema</label><input type="text" id="mt-tema" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.tema||'') + '" placeholder="Ej: Riesgo eléctrico"></div>' +
+    '<div style="display:grid;grid-template-columns:80px 1fr 140px;gap:10px;margin-bottom:12px">' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">Orden</label><input type="number" id="mt-orden" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.orden||maxOrden+1) + '" min="1"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">Nombre del tema</label><input type="text" id="mt-tema" class="form-inp" style="width:100%;margin-top:4px" value="' + ((t.tema||'').replace(/"/g,'&quot;')) + '" placeholder="Ej: Riesgo eléctrico"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">Categoría</label>' +
+        '<select id="mt-categoria" class="form-sel" style="width:100%;margin-top:4px">' +
+          '<option value="obligatorio"'+(t.categoria!=='complementario'?' selected':'')+'>Obligatorio</option>' +
+          '<option value="complementario"'+(t.categoria==='complementario'?' selected':'')+'>Complementario</option>' +
+        '</select></div>' +
     '</div>' +
-    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Objetivo</label><input type="text" id="mt-objetivo" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.objetivo||'') + '" placeholder="Objetivo de la capacitación"></div>' +
-    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Dirigido a</label><input type="text" id="mt-dirigido" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.dirigido||'') + '" placeholder="Ej: Todo el personal"></div>' +
-    '<div style="margin-bottom:12px"><label style="font-size:12px;font-weight:700;color:var(--text-2)">Facilitador</label><input type="text" id="mt-facilitador" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.facilitador||'') + '" placeholder="Ej: Coordinador HSE"></div>' +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">' +
-    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Horas</label><input type="number" id="mt-horas" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.horas||2) + '" min="1"></div>' +
-    '<div><label style="font-size:12px;font-weight:700;color:var(--text-2)">Frecuencia</label><select id="mt-frec" class="form-sel" style="width:100%;margin-top:4px"><option value="Mensual"' + (t.frec==='Mensual'?' selected':'') + '>Mensual</option><option value="Trimestral"' + (t.frec==='Trimestral'?' selected':'') + '>Trimestral</option><option value="Semestral"' + (t.frec==='Semestral'?' selected':'') + '>Semestral</option><option value="Anual"' + (t.frec==='Anual'?' selected':'') + '>Anual</option><option value="Por requisito"' + (t.frec==='Por requisito'?' selected':'') + '>Por requisito</option></select></div>' +
+    '<div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--text-2)">Objetivo</label><input type="text" id="mt-objetivo" class="form-inp" style="width:100%;margin-top:4px" value="' + ((t.objetivo||'').replace(/"/g,'&quot;')) + '" placeholder="Objetivo de la capacitación"></div>' +
+    '<div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--text-2)">📖 Contenido</label><textarea id="mt-contenido" class="form-inp" style="width:100%;margin-top:4px;min-height:64px;font-family:inherit" placeholder="Detalle de los temas a tratar...">' + (t.contenido||'') + '</textarea></div>' +
+    '<div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--text-2)">Dirigido a (texto)</label><input type="text" id="mt-dirigido" class="form-inp" style="width:100%;margin-top:4px" value="' + ((t.dirigido||'').replace(/"/g,'&quot;')) + '" placeholder="Ej: Todo el personal"></div>' +
+    '<div style="margin-bottom:10px"><label style="font-size:11px;font-weight:700;color:var(--text-2)">Facilitador</label><input type="text" id="mt-facilitador" class="form-inp" style="width:100%;margin-top:4px" value="' + ((t.facilitador||'').replace(/"/g,'&quot;')) + '" placeholder="Ej: Coordinador HSE"></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">Horas</label><input type="number" id="mt-horas" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.horas||2) + '" min="0" step="0.5"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">Frecuencia</label><select id="mt-frec" class="form-sel" style="width:100%;margin-top:4px">' + fOpts + '</select></div>' +
+    '</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">📅 Fecha programada</label><input type="date" id="mt-fechaProg" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.fechaProg||'') + '"></div>' +
+      '<div><label style="font-size:11px;font-weight:700;color:var(--text-2)">🔄 Fecha reprogramada</label><input type="date" id="mt-fechaReprog" class="form-inp" style="width:100%;margin-top:4px" value="' + (t.fechaReprog||'') + '"></div>' +
+    '</div>' +
+    '<div style="margin-bottom:14px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">' +
+      '<div style="font-size:11px;font-weight:800;color:var(--esq-blue);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">🎯 Cargos aplicables ('+cargosSel.length+' de '+cargosCat.length+')</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;max-height:160px;overflow-y:auto">'+cargosChk+'</div>' +
+      '<div style="margin-top:8px;display:flex;gap:6px">' +
+        '<button type="button" class="btn btn-ghost btn-xs" onclick="_mtToggleCargos(true)">✓ Todos</button>' +
+        '<button type="button" class="btn btn-ghost btn-xs" onclick="_mtToggleCargos(false)">✗ Ninguno</button>' +
+      '</div>' +
     '</div>' +
     '<div style="display:flex;gap:8px;justify-content:flex-end">' +
-    '<button class="btn btn-ghost" onclick="cerrarModalTema()">Cancelar</button>' +
-    '<button class="btn btn-primary" onclick="guardarTema(\'' + year + '\',\'' + (docId||'') + '\')">💾 Guardar</button>' +
+      '<button class="btn btn-ghost" onclick="cerrarModalTema()">Cancelar</button>' +
+      '<button class="btn btn-primary" onclick="guardarTema(\'' + year + '\',\'' + (docId||'') + '\')">💾 Guardar</button>' +
     '</div></div></div>';
   var div = document.createElement('div'); div.innerHTML = html; document.body.appendChild(div.firstChild);
+}
+
+function _mtToggleCargos(val) {
+  document.querySelectorAll('.mt-cargo-chk').forEach(function(c){ c.checked = !!val; });
 }
 
 function cerrarModalTema() { var el = document.getElementById('modal-tema-overlay'); if (el) el.remove(); }
@@ -10895,25 +11339,84 @@ function cerrarModalTema() { var el = document.getElementById('modal-tema-overla
 async function guardarTema(year, docId) {
   var orden = parseInt(document.getElementById('mt-orden').value) || 1;
   var tema  = (document.getElementById('mt-tema').value||'').trim();
+  var cat   = (document.getElementById('mt-categoria').value||'obligatorio').trim();
   var obj   = (document.getElementById('mt-objetivo').value||'').trim();
+  var cont  = (document.getElementById('mt-contenido').value||'').trim();
   var dir   = (document.getElementById('mt-dirigido').value||'').trim();
   var fac   = (document.getElementById('mt-facilitador').value||'').trim();
-  var horas = parseInt(document.getElementById('mt-horas').value) || 2;
+  var horas = parseFloat(document.getElementById('mt-horas').value) || 0;
   var frec  = document.getElementById('mt-frec').value || 'Anual';
+  var fProg = (document.getElementById('mt-fechaProg').value||'').trim() || null;
+  var fRepr = (document.getElementById('mt-fechaReprog').value||'').trim() || null;
+  var cargos = Array.prototype.slice.call(document.querySelectorAll('.mt-cargo-chk:checked')).map(function(c){ return c.value; });
   if (!tema) { showToast('⚠️ El nombre del tema es obligatorio'); return; }
   if (!window._db || !window._fb) { showToast('⚠️ Firebase no disponible'); return; }
   var setDoc = window._fb.setDoc, doc = window._fb.doc;
   var id = docId || ('tema_' + String(orden).padStart(3,'0') + '_' + Date.now());
   try {
     await setDoc(doc(window._db, 'planes_cap', String(year), 'temas', id), {
-      orden: orden, tema: tema, objetivo: obj, dirigido: dir,
-      facilitador: fac, horas: horas, frec: frec,
-      estado: '', fechaEjec: null, calificacion: null, observaciones: ''
-    });
+      orden: orden, categoria: cat, tema: tema, objetivo: obj, contenido: cont,
+      dirigido: dir, facilitador: fac, horas: horas, frec: frec,
+      cargosAplicables: cargos,
+      estado: '', fechaProg: fProg, fechaEjec: null, fechaReprog: fRepr,
+      calificacion: null, observaciones: ''
+    }, { merge: true });
+    // S31 — Sincronizar matriz_cap con cargosAplicables del tema
+    try { await _sincronizarMatrizTema(year, id, cargos); } catch(e){ console.warn('sincMatrizTema:', e); }
     cerrarModalTema();
     await renderProgramaAnual();
-    showToast('✅ Tema guardado');
+    showToast('✅ Tema guardado · ' + cargos.length + ' cargos asignados');
   } catch(e) { showToast('❌ Error: ' + e.message); }
+}
+
+// S31 — Sincroniza la matriz_cap a partir de cargosAplicables[] de un solo tema
+async function _sincronizarMatrizTema(year, temaId, cargosAplicables) {
+  if (!window._db || !window._fb) return;
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  var cargosCat = (_catalogos && _catalogos.cargos) ? _catalogos.cargos : [];
+  var aplica = {};
+  (cargosAplicables||[]).forEach(function(c){ aplica[c.replace(/[^a-zA-Z0-9]/g,'_')] = true; });
+  for (var i=0; i<cargosCat.length; i++) {
+    var cargoNombre = cargosCat[i];
+    var cargoId = cargoNombre.replace(/[^a-zA-Z0-9]/g,'_');
+    if (!_matrizCap[cargoId]) _matrizCap[cargoId] = {};
+    _matrizCap[cargoId][temaId] = !!aplica[cargoId];
+    try {
+      await setDoc(doc(window._db, 'matriz_cap', String(year), 'cargos', cargoId), {
+        checks: _matrizCap[cargoId],
+        year: parseInt(year),
+        updatedAt: new Date().toISOString()
+      });
+    } catch(e) { console.warn('matriz '+cargoId+':', e); }
+  }
+}
+
+// S31 — Sincroniza matriz_cap a partir de un array de temas (usado en crearPrograma)
+async function _sincronizarMatrizDesdeTemas(year, temas) {
+  if (!window._db || !window._fb) return;
+  var setDoc = window._fb.setDoc, doc = window._fb.doc;
+  var cargosCat = (_catalogos && _catalogos.cargos) ? _catalogos.cargos : [];
+  // Construir matriz {cargoId: {temaId: bool}}
+  var nueva = {};
+  cargosCat.forEach(function(c){ nueva[c.replace(/[^a-zA-Z0-9]/g,'_')] = {}; });
+  temas.forEach(function(t, idx){
+    var temaId = 'tema_' + String(t.orden || idx+1).padStart(3,'0');
+    (t.cargosAplicables||[]).forEach(function(cargoNombre){
+      var cargoId = cargoNombre.replace(/[^a-zA-Z0-9]/g,'_');
+      if (!nueva[cargoId]) nueva[cargoId] = {};
+      nueva[cargoId][temaId] = true;
+    });
+  });
+  // Persistir
+  for (var cid in nueva) {
+    if (!Object.prototype.hasOwnProperty.call(nueva, cid)) continue;
+    _matrizCap[cid] = nueva[cid];
+    try {
+      await setDoc(doc(window._db, 'matriz_cap', String(year), 'cargos', cid), {
+        checks: nueva[cid], year: parseInt(year), updatedAt: new Date().toISOString()
+      });
+    } catch(e) { console.warn('matriz '+cid+':', e); }
+  }
 }
 
 async function eliminarTema(docId) {
@@ -10941,6 +11444,9 @@ window.editarTema        = editarTema;
 window.eliminarTema      = eliminarTema;
 window.cerrarModalTema   = cerrarModalTema;
 window.guardarTema       = guardarTema;
+window._mtToggleCargos   = _mtToggleCargos;
+window._sincronizarMatrizTema = _sincronizarMatrizTema;
+window._sincronizarMatrizDesdeTemas = _sincronizarMatrizDesdeTemas;
 window.catAgregar        = catAgregar;
 window.catEditar         = catEditar;
 window.catEliminar       = catEliminar;
