@@ -668,6 +668,25 @@ body.is-admin .admin-only-block:not(.view){display:block}
 .sem-prox90{background:#FEF9C3;color:#713F12}
 .sem-vencido{background:var(--red-lt);color:var(--red)}
 .sem-sin{background:var(--surface);color:var(--text-3);border:1px solid var(--border)}
+/* ── F1: Password visibility toggle ─────────────────── */
+.pwd-wrap{position:relative;margin-bottom:14px}
+.pwd-wrap .login-inp{margin-bottom:0;padding-right:46px}
+.pwd-wrap .form-inp{padding-right:40px}
+.pwd-toggle{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:16px;
+  color:rgba(255,255,255,.4);padding:4px;line-height:1;
+  transition:color .15s;
+}
+.pwd-toggle:hover{color:rgba(255,255,255,.8)}
+.pwd-toggle-dark{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;font-size:15px;
+  color:var(--text-3);padding:4px;line-height:1;
+  transition:color .15s;
+}
+.pwd-toggle-dark:hover{color:var(--text)}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -685,7 +704,10 @@ body.is-admin .admin-only-block:not(.view){display:block}
     <label class="login-lbl">Usuario o Cédula</label>
     <input class="login-inp" id="l-user" type="text" placeholder="cédula / usuario" autocomplete="username">
     <label class="login-lbl">Contraseña</label>
-    <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="pwd-wrap">
+      <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button type="button" class="pwd-toggle" onclick="togglePwd('l-pass',this)" tabindex="-1" title="Ver/ocultar">👁</button>
+    </div>
     <button class="login-btn" onclick="doLogin()">INGRESAR →</button>
     <div class="login-err" id="login-err">⚠️ Usuario o contraseña incorrectos</div>
     <div class="login-footer">ESQUIVENSA · Acceso solo para personal autorizado</div>
@@ -1054,7 +1076,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <div id="tview-config" class="cview" style="display:none">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
           <div>
-            <div style="font-size:20px;font-weight:800;color:var(--dark)">⚙️ Catálogos del Sistema</div>
+            <div style="font-size:20px;font-weight:800;color:var(--dark)">⚙️ Configuración del Sistema</div>
             <div style="font-size:12px;color:var(--text-2);margin-top:3px">Gestiona cargos, áreas y empresas — estos valores se usan en todos los módulos</div>
           </div>
         </div>
@@ -1791,10 +1813,12 @@ body.is-admin .admin-only-block:not(.view){display:block}
               <option>Licencia no remunerada</option>
               <option>Otro</option>
             </select></div>
-          <div class="fld"><div class="flabel">🏥 Código CIE-10</div>
-            <input id="aus_cie10" type="text" placeholder="Ej: M54.5" style="width:100%;text-transform:uppercase"></div>
+          <div class="fld" style="position:relative"><div class="flabel">🏥 Código CIE-10</div>
+            <input id="aus_cie10" type="text" placeholder="Ej: M54.5" style="width:100%;text-transform:uppercase" oninput="cie10Buscar(this.value)" onblur="setTimeout(function(){var d=document.getElementById('cie10_drop');if(d)d.style.display='none';},200)" autocomplete="off">
+            <div id="cie10_drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);border:1.5px solid var(--esq-blue);border-radius:var(--r-sm);box-shadow:var(--sh-lg);z-index:999;max-height:200px;overflow-y:auto"></div>
+          </div>
           <div class="fld s2"><div class="flabel">📋 Diagnóstico</div>
-            <input id="aus_diagnostico" type="text" placeholder="Lumbago no especificado…" style="width:100%"></div>
+            <input id="aus_diagnostico" type="text" placeholder="Se autocompleta con el código CIE-10…" style="width:100%"></div>
         </div>
       </div>
 
@@ -3146,6 +3170,15 @@ function showTab(name){
 }
 
 function _doShowTab(name){
+  // B13: al salir del módulo Trabajadores, resetear siempre la sub-pestaña a Lista
+  if (name !== 'trabajadores') {
+    ['lista','dash','config'].forEach(function(t){
+      var el = document.getElementById('tview-'+t); if(el) el.style.display='none';
+      var bt = document.getElementById('ttab-'+t);  if(bt) bt.classList.remove('active');
+    });
+    var vL = document.getElementById('tview-lista'); if(vL) vL.style.display='block';
+    var tL = document.getElementById('ttab-lista');  if(tL) tL.classList.add('active');
+  }
   VIEWS.forEach(v=>document.getElementById('view-'+v)?.classList.remove('active'));
   document.getElementById('view-'+name)?.classList.add('active');
   const builders={
@@ -3157,20 +3190,8 @@ function _doShowTab(name){
     admin     : ()=>{if(!builtViews.admin_init){initAdmin();builtViews.admin_init=true;}renderAdmin();},
     responsables: ()=>renderResponsables(),
     notificar : ()=>{renderResponsables();buildNotifPreview();},
-    trabajadores: ()=>{
-      // B13: si la pestaña Configuración estaba activa, resetear a Lista al volver al módulo
-      var cfgView = document.getElementById('tview-config');
-      if (cfgView && cfgView.style.display !== 'none') {
-        ['lista','dash','config'].forEach(function(t){
-          var el=document.getElementById('tview-'+t); if(el) el.style.display='none';
-          var bt=document.getElementById('ttab-'+t);  if(bt) bt.classList.remove('active');
-        });
-        var vL=document.getElementById('tview-lista'); if(vL) vL.style.display='block';
-        var tL=document.getElementById('ttab-lista');  if(tL) tL.classList.add('active');
-      }
-      renderTabTrabajadores();
-    },
-    examenes  : ()=>{renderTabExamenes(); if(typeof renderEMODashboard==='function') setTimeout(function(){renderEMODashboard();},300); },
+    trabajadores: ()=>{renderTabTrabajadores();},
+    examenes  : ()=>{ showMTab('emo'); },
     capacitaciones: ()=>renderTabCapacitaciones(),
     sociodem  : ()=>renderTabSociodem(),
   };
@@ -3673,8 +3694,19 @@ async function initApp() {
   populateRespFilters();
   migrateRespIds();
   setTimeout(checkAutoAlerts, 1500);
-  // Cargar catálogos en background
-  if (window._db) fbCargarCatalogos();
+  // Cargar catálogos y sincronizar con trabajadores reales en background
+  if (window._db) {
+    fbCargarCatalogos().then(function() {
+      _actualizarSelectoresCatalogos();
+      if (!_trabList.length) {
+        fbTrabCargar().then(function() {
+          _sincronizarCatalogosDesdeTrabajadores();
+        });
+      } else {
+        _sincronizarCatalogosDesdeTrabajadores();
+      }
+    });
+  }
   showTab('dashboard');
   refreshAll();
 }
@@ -4536,15 +4568,15 @@ function checkAutoEmail() {
       <div class="form-grid">
         <div class="form-group form-full">
           <label class="form-lbl">Contraseña actual</label>
-          <input class="form-inp" type="password" id="cp-current" placeholder="Contraseña actual">
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-current" placeholder="Contraseña actual"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-current',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
         </div>
         <div class="form-group form-full">
           <label class="form-lbl">Nueva contraseña</label>
-          <input class="form-inp" type="password" id="cp-new" placeholder="Mínimo 8 caracteres">
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-new" placeholder="Mínimo 8 caracteres"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-new',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
         </div>
         <div class="form-group form-full">
           <label class="form-lbl">Confirmar nueva contraseña</label>
-          <input class="form-inp" type="password" id="cp-confirm" placeholder="Repite la nueva contraseña">
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-confirm" placeholder="Repite la nueva contraseña"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-confirm',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
         </div>
       </div>
       <div class="alert-msg" id="cp-alert" style="margin-top:10px"></div>
@@ -4654,11 +4686,15 @@ function checkAutoEmail() {
         </div>
         <div class="form-group">
           <label class="form-lbl">Cargo *</label>
-          <input class="form-inp" id="ft-cargo" placeholder="Ej: Operario de planta">
+          <select class="form-sel" id="ft-cargo">
+            <option value="">— Seleccione cargo —</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-lbl">Área</label>
-          <input class="form-inp" id="ft-area" placeholder="Ej: Operaciones">
+          <select class="form-sel" id="ft-area">
+            <option value="">— Seleccione área —</option>
+          </select>
         </div>
         <div class="form-group">
           <label class="form-lbl">Empresa</label>
@@ -5088,8 +5124,28 @@ function abrirFormTrab(cedula){
     document.getElementById('ft-nom2').value     = t.nombre2||'';
     document.getElementById('ft-ape1').value     = t.apellido1||'';
     document.getElementById('ft-ape2').value     = t.apellido2||'';
-    document.getElementById('ft-cargo').value    = t.cargo||'';
-    document.getElementById('ft-area').value     = t.area||'';
+    // Cargo: seleccionar del catálogo; si no existe, añadir opción temporal
+    (function() {
+      var selC = document.getElementById('ft-cargo');
+      var cargo = t.cargo||'';
+      if (cargo && !_catalogos.cargos.includes(cargo)) {
+        var opt = document.createElement('option');
+        opt.value = cargo; opt.textContent = cargo + ' ⚠️ (no en catálogo)';
+        selC.appendChild(opt);
+      }
+      selC.value = cargo;
+    })();
+    // Área: seleccionar del catálogo; si no existe, añadir opción temporal
+    (function() {
+      var selA = document.getElementById('ft-area');
+      var area = t.area||'';
+      if (area && !_catalogos.areas.includes(area)) {
+        var opt = document.createElement('option');
+        opt.value = area; opt.textContent = area + ' ⚠️ (no en catálogo)';
+        selA.appendChild(opt);
+      }
+      selA.value = area;
+    })();
     document.getElementById('ft-empresa').value  = t.empresa||'ESQUIVENSA';
     document.getElementById('ft-celular').value  = t.celular||'';
     document.getElementById('ft-email').value    = t.email||'';
@@ -5100,11 +5156,13 @@ function abrirFormTrab(cedula){
     document.getElementById('ft-estado').value   = t.estado||'Activo';
   } else {
     document.getElementById('ft-cedula').readOnly = false;
-    campos.forEach(id => document.getElementById(id).value = '');
-    document.getElementById('ft-tipodoc').value = 'C.C.';
-    document.getElementById('ft-empresa').value = 'ESQUIVENSA';
-    document.getElementById('ft-estado').value  = 'Activo';
-    document.getElementById('ft-riesgo').value  = '';
+    ['ft-cedula','ft-nom1','ft-nom2','ft-ape1','ft-ape2','ft-celular','ft-email','ft-ingreso','ft-arl','ft-eps'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('ft-cargo').value    = '';
+    document.getElementById('ft-area').value     = '';
+    document.getElementById('ft-tipodoc').value  = 'C.C.';
+    document.getElementById('ft-empresa').value  = 'ESQUIVENSA';
+    document.getElementById('ft-estado').value   = 'Activo';
+    document.getElementById('ft-riesgo').value   = '';
   }
   openOv('ov-form-trab');
 }
@@ -6223,23 +6281,37 @@ var CERT_CONFIG = {
 };
 var ALT_DATA=[], CON_DATA=[], CAP_DATA=[], _capLoaded=false;
 
-function showCTab(id){
-  document.querySelectorAll('.cview').forEach(function(v){v.style.display='none';});
-  document.querySelectorAll('.ctab').forEach(function(t){t.classList.remove('active');});
-  var cv=document.getElementById('cview-'+id);
-  var ct=document.getElementById('ctab-'+id);
-  if(cv) cv.style.display='block';
-  if(ct) ct.classList.add('active');
-  if(id==='alturas') renderAlturas();
-  if(id==='confinados') renderConfinados();
-  if(id==='cap') renderCAP();
+// ── F1: Contraseña visible/oculta ──────────────────────────
+function togglePwd(id, btn) {
+  var inp = document.getElementById(id);
+  if (!inp) return;
+  var show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  btn.textContent = show ? '🙈' : '👁';
 }
 
+// ── Arquitectura s30: fetchJSON con caché ───────────────────
+// Carga datos pesados desde /data/ del repo GitHub bajo demanda.
+var _cacheJSON = {};
+async function fetchJSON(nombre) {
+  if (_cacheJSON[nombre]) return _cacheJSON[nombre];
+  try {
+    var url = 'https://raw.githubusercontent.com/AlCal83/HSE-ESQ-APP/main/data/' + nombre;
+    var res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    _cacheJSON[nombre] = await res.json();
+    return _cacheJSON[nombre];
+  } catch(e) {
+    console.warn('fetchJSON(' + nombre + '):', e.message);
+    return null;
+  }
+}
+
+// showCTab (legacy) eliminado s30 — reemplazado por showCTab2
+// ── renderTabCapacitaciones: entry-point del módulo Capacitaciones
 async function renderTabCapacitaciones(){
   if(!_capLoaded){await cargarTodosCap();_capLoaded=true;}
-  var activo=document.querySelector('.ctab.active');
-  var id=activo?activo.id.replace('ctab-',''):'alturas';
-  showCTab(id);
+  showCTab2('cap-dashboard');
 }
 
 async function cargarTodosCap(){
@@ -6606,7 +6678,9 @@ function renderCAP(){
   }).join('');
 }
 
-function abrirModalCAP(fid){
+// B19 s30: async + guard _trabList para edición correcta desde cualquier flujo
+async function abrirModalCAP(fid){
+  if(!_trabList||!_trabList.length){ try{ await fbTrabCargar(); }catch(e){ console.warn('abrirModalCAP fbTrabCargar:',e); } }
   var sel=document.getElementById('cap_trabajador');
   sel.innerHTML='<option value="">— Seleccione —</option>';
   (_trabList||[]).filter(function(w){return w.estado!=='Inactivo';}).forEach(function(w){
@@ -6761,45 +6835,48 @@ async function showMTab(id){
     renderTabExamenes();
     _afterLayout(renderEMODashboard);
   }
-  if(id==='profesiograma'){poblarSelectTrabajadoresProfesiograma();}
+  if(id==='profesiograma'){
+    poblarSelectTrabajadoresProfesiograma();
+    // F3 s30: lazy-upgrade CARGO_MAP + PROF_MATRIX desde JSON externo
+    Promise.all([fetchJSON('cargo_map.json'), fetchJSON('prof_matrix.json')]).then(function(res){
+      if(res[0]) window.CARGO_MAP    = res[0];
+      if(res[1]) window.PROF_MATRIX  = res[1];
+    });
+  }
   if(id==='trabajador'){poblarSelectTrabajadoresTW();}
   if(id==='ausentismo'){
-    if(typeof initAusentismo==='function'){
-      // initAusentismo es async — esperamos su resolución, luego renderizamos
-      // gráficos en el siguiente frame (cuando ya hay layout)
-      initAusentismo();
-    }
+    // F2 s30: lazy-load CIE10 desde JSON externo (fallback a inline si falla)
+    fetchJSON('cie10.json').then(function(data){
+      if(data && Array.isArray(data)) window.CIE10_DB = data;
+    });
+    if(typeof initAusentismo==='function'){ initAusentismo(); }
   }
 }
 
 // ── Sub-tabs Capacitaciones con Dashboard ─────────────
+// B20 s30: showCTab2 unificado — incluye 'programa'
 function showCTab2(id){
-  var ids=['cap-dashboard','alturas','confinados','cap'];
+  var ids=['cap-dashboard','alturas','confinados','cap','programa'];
   ids.forEach(function(i){
     var v=document.getElementById('cview-'+i);
     if(v) v.style.display='none';
   });
-  document.querySelectorAll('[id^="ctab-dashboard-cap"],[id="ctab-alturas"],[id="ctab-confinados"],[id="ctab-cap"]').forEach(function(t){
+  document.querySelectorAll('[id^="ctab-dashboard-cap"],[id="ctab-alturas"],[id="ctab-confinados"],[id="ctab-cap"],[id="ctab-programa"]').forEach(function(t){
     t.classList.remove('active');
   });
   var cv=document.getElementById('cview-'+id);
   if(cv) cv.style.display='block';
-  var tabMap={'cap-dashboard':'ctab-dashboard-cap','alturas':'ctab-alturas','confinados':'ctab-confinados','cap':'ctab-cap'};
+  var tabMap={'cap-dashboard':'ctab-dashboard-cap','alturas':'ctab-alturas','confinados':'ctab-confinados','cap':'ctab-cap','programa':'ctab-programa'};
   var ct=document.getElementById(tabMap[id]);
   if(ct) ct.classList.add('active');
   if(id==='cap-dashboard') renderCapDashboard();
   if(id==='alturas') renderAlturas();
   if(id==='confinados') renderConfinados();
   if(id==='cap') renderCAP();
+  if(id==='programa') renderProgramaAnual();
 }
 
-// ── Actualizar renderTabCapacitaciones para usar showCTab2 ─
-// (override para que el tab externo funcione con el nuevo sistema)
-var _origRenderTabCap=renderTabCapacitaciones;
-renderTabCapacitaciones=async function(){
-  if(!_capLoaded){await cargarTodosCap();_capLoaded=true;}
-  showCTab2('cap-dashboard');
-};
+// s30: override renderTabCapacitaciones eliminado — función ya corregida arriba
 
 // ═══════════════════════════════════════════
 // DASHBOARD CAPACITACIONES
@@ -6866,13 +6943,16 @@ function renderCapDashboard(){
     ['#22c55e','#f59e0b','#ef4444','#94a3b8']
   );
 
-  // Tipos capacitaciones
+  // Tipos capacitaciones — B17: filtrar undefined/vacío
   var tipos={};
   CAP_DATA.forEach(function(r){
-    var t=(r.tipo && r.tipo !== 'undefined') ? r.tipo : 'Otro';
+    var t=(r.tipo && r.tipo !== 'undefined' && r.tipo.trim()) ? r.tipo.trim() : 'Otro';
     tipos[t]=(tipos[t]||0)+1;
   });
-  _renderCapChart('cap-chart-tipos','bar',Object.keys(tipos),Object.values(tipos),
+  // Filtrar entradas con label vacío o undefined
+  var tiposKeys=Object.keys(tipos).filter(function(k){return k&&k!=='undefined'&&k.trim();});
+  var tiposVals=tiposKeys.map(function(k){return tipos[k];});
+  _renderCapChart('cap-chart-tipos','bar',tiposKeys,tiposVals,
     ['#0B1C3D','#F5C800','#E84E1B','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6']
   );
 
@@ -7019,7 +7099,7 @@ function renderEMODashboard(_retry){
       else vigente++;
     }
     // Tipos
-    var t=(r.tipo && r.tipo !== 'undefined') ? r.tipo : 'Otro';
+    var t=(r.tipo && r.tipo !== 'undefined' && r.tipo.trim()) ? r.tipo.trim() : 'Otro';
     tipos[t]=(tipos[t]||0)+1;
     // Aptitud
     var a=r.concepto||'Sin concepto';
@@ -10087,6 +10167,37 @@ async function fbGuardarCatalogos() {
   await setDoc(doc(window._db, 'config', 'catalogos'), _catalogos);
 }
 
+// ── Sincroniza cargos y áreas reales de trabajadores → catálogo ──
+// Se ejecuta una vez al arrancar. Agrega los que faltan sin borrar
+// los que ya existen. Guarda en Firestore si hubo cambios.
+async function _sincronizarCatalogosDesdeTrabajadores() {
+  if (!_trabList || !_trabList.length) return;
+  var cambiado = false;
+  _trabList.forEach(function(t) {
+    if (t.cargo && t.cargo.trim() && _catalogos.cargos.indexOf(t.cargo.trim()) < 0) {
+      _catalogos.cargos.push(t.cargo.trim());
+      cambiado = true;
+    }
+    if (t.area && t.area.trim() && _catalogos.areas.indexOf(t.area.trim()) < 0) {
+      _catalogos.areas.push(t.area.trim());
+      cambiado = true;
+    }
+    if (t.empresa && t.empresa.trim() && _catalogos.empresas.indexOf(t.empresa.trim()) < 0) {
+      _catalogos.empresas.push(t.empresa.trim());
+      cambiado = true;
+    }
+  });
+  if (cambiado) {
+    _catalogos.cargos.sort();
+    _catalogos.areas.sort();
+    _catalogos.empresas.sort();
+    await fbGuardarCatalogos();
+    renderCatalogos();
+    console.info('✅ Catálogos sincronizados desde trabajadores');
+  }
+  _actualizarSelectoresCatalogos();
+}
+
 function renderCatalogos() {
   ['cargos','areas','empresas'].forEach(function(tipo) {
     var lista = _catalogos[tipo] || [];
@@ -10143,8 +10254,8 @@ function catEliminar(tipo, idx) {
 
 function _actualizarSelectoresCatalogos() {
   // Actualizar todos los <select> de cargo, área y empresa en la app
-  var selCargo  = ['prof-cargo-sel', 'form-cargo', 'trab-f-cargo', 'prog-tema-modal-cargo'];
-  var selArea   = ['form-area', 'trab-f-area'];
+  var selCargo  = ['prof-cargo-sel', 'form-cargo', 'trab-f-cargo', 'prog-tema-modal-cargo', 'ft-cargo'];
+  var selArea   = ['form-area', 'trab-f-area', 'ft-area'];
   var selEmpresa= ['form-empresa', 'trab-f-empresa'];
   function _llenar(ids, lista, placeholder) {
     ids.forEach(function(id) {
@@ -10153,6 +10264,8 @@ function _actualizarSelectoresCatalogos() {
       var cur = el.value;
       var opts = '<option value="">' + placeholder + '</option>' + lista.map(function(v){ return '<option value="' + v + '"' + (v===cur?' selected':'') + '>' + v + '</option>'; }).join('');
       el.innerHTML = opts;
+      // Restaurar valor si existe en la nueva lista
+      if (cur && lista.indexOf(cur) >= 0) el.value = cur;
     });
   }
   _llenar(selCargo,   _catalogos.cargos,   '— Cargo —');
@@ -10337,6 +10450,10 @@ async function renderProgramaAnual() {
   if (!_trabList.length) { try { await fbTrabCargar(); } catch(e){ console.warn('fbTrabCargar:', e); } }
   if (!_capLoaded) { try { await cargarTodosCap(); _capLoaded = true; } catch(e){ console.warn('cargarTodosCap:', e); } }
 
+  // F4 s30: lazy-upgrade PROG_TEMAS_BASE desde JSON externo
+  fetchJSON('prog_temas_base.json').then(function(data){
+    if(data && Array.isArray(data)) window.PROG_TEMAS_BASE = data;
+  });
   _progLoaded = true;
   _renderProgKPIs(year);
   showProgTab('plan');
@@ -10432,7 +10549,7 @@ function _renderProgMatriz() {
     return;
   }
 
-  var isAdmin = (window.currentUser && window.currentUser.role === 'admin');
+  var isAdmin = (window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'supervisor'));
   var editable = isAdmin && !_progAnioCerrado;
   if (status) status.textContent = editable ? '✏️ Modo edición — click en celda para marcar/desmarcar' : (_progAnioCerrado ? '🔒 Año cerrado — solo lectura' : '👁 Solo lectura');
 
@@ -10828,25 +10945,7 @@ window.catAgregar        = catAgregar;
 window.catEditar         = catEditar;
 window.catEliminar       = catEliminar;
 
-// ── Override showCTab2 para incluir 'programa' ────────────────
-(function(){
-  var _orig = window.showCTab2 || function(){};
-  window.showCTab2 = function(id) {
-    if (id === 'programa') {
-      ['cap-dashboard','alturas','confinados','cap','programa'].forEach(function(i){
-        var v = document.getElementById('cview-'+i); if(v) v.style.display='none';
-      });
-      document.querySelectorAll('[id^="ctab-dashboard-cap"],[id="ctab-alturas"],[id="ctab-confinados"],[id="ctab-cap"],[id="ctab-programa"]').forEach(function(t){ t.classList.remove('active'); });
-      var cv = document.getElementById('cview-programa'); if(cv) cv.style.display='block';
-      var ct = document.getElementById('ctab-programa'); if(ct) ct.classList.add('active');
-      if (!_progLoaded) renderProgramaAnual();
-      return;
-    }
-    _orig(id);
-    var ct = document.getElementById('ctab-programa'); if(ct) ct.classList.remove('active');
-    var cv = document.getElementById('cview-programa'); if(cv) cv.style.display='none';
-  };
-})();
+// s30: override showCTab2 (s29) eliminado — función ya unificada en s30
 
 // ── Reporte Hijos Navidad ─────────────────────────────────
 function _calcEdadHijo(fnac) {
@@ -10952,6 +11051,78 @@ function exportarHijosTrabCSV() {
 
 window.exportarHijosTrabCSV = exportarHijosTrabCSV;
 window.fbCargarCatalogos    = fbCargarCatalogos;
+window._sincronizarCatalogosDesdeTrabajadores = _sincronizarCatalogosDesdeTrabajadores;
+
+// ── CIE-10: tabla de diagnósticos frecuentes en incapacidades laborales Colombia ──
+var CIE10_DB = [
+  ['A09','Diarrea y gastroenteritis de presunto origen infeccioso'],
+  ['A90','Dengue clásico'],['A91','Dengue hemorrágico'],
+  ['B34.9','Infección viral no especificada'],
+  ['F32','Episodio depresivo'],['F32.0','Episodio depresivo leve'],['F32.1','Episodio depresivo moderado'],
+  ['F41.1','Trastorno de ansiedad generalizada'],['F43.1','Trastorno de estrés postraumático'],
+  ['G43','Migraña'],['G43.0','Migraña sin aura'],['G43.1','Migraña con aura'],
+  ['H10','Conjuntivitis'],['H10.3','Conjuntivitis aguda no especificada'],
+  ['I10','Hipertensión esencial'],
+  ['J00','Rinofaringitis aguda (resfriado común)'],
+  ['J01','Sinusitis aguda'],['J06','Infección aguda de vías respiratorias superiores'],
+  ['J11','Influenza por virus no identificado'],
+  ['J18','Neumonía no especificada'],['J20','Bronquitis aguda'],['J45','Asma'],
+  ['K29','Gastritis y duodenitis'],['K29.7','Gastritis no especificada'],
+  ['L02','Absceso cutáneo'],
+  ['M10','Gota'],['M17','Gonarthrosis (artrosis de rodilla)'],['M25.5','Dolor articular'],
+  ['M47','Espondiloartrosis'],['M48.0','Estenosis del canal vertebral'],
+  ['M51','Trastornos de discos intervertebrales lumbares'],['M51.1','Radiculopatía lumbar'],
+  ['M54','Dorsalgia'],['M54.2','Cervicalgia'],['M54.4','Lumbago con ciática'],
+  ['M54.5','Lumbago no especificado'],['M54.9','Dorsalgia no especificada'],
+  ['M62.4','Contractura muscular'],['M65','Sinovitis y tenosinovitis'],
+  ['M75','Lesiones del hombro'],['M75.1','Síndrome del manguito rotador'],
+  ['M77.0','Epicondilitis medial'],['M77.1','Epicondilitis lateral'],
+  ['M79.1','Mialgia'],['M79.2','Neuralgia y neuritis no especificadas'],
+  ['N23','Cólico renal'],['N30','Cistitis'],['N39.0','Infección de vías urinarias'],
+  ['O26','Atención a la madre por complicaciones del embarazo'],
+  ['R10','Dolor abdominal y pélvico'],['R10.4','Dolor abdominal no especificado'],
+  ['R50','Fiebre de origen desconocido'],['R51','Cefalea'],
+  ['S40','Traumatismo superficial del hombro y del brazo'],
+  ['S50','Traumatismo superficial del antebrazo'],
+  ['S60','Traumatismo superficial de la muñeca y de la mano'],
+  ['S70','Traumatismo superficial de la cadera y del muslo'],
+  ['S80','Traumatismo superficial de la pierna'],
+  ['S90','Traumatismo superficial del tobillo y del pie'],
+  ['T14.0','Herida de región no especificada del cuerpo'],
+  ['Z03','Observación médica sin diagnóstico confirmado'],
+];
+
+function cie10Buscar(val) {
+  var drop = document.getElementById('cie10_drop');
+  if (!drop) return;
+  var q = (val||'').trim().toUpperCase();
+  if (q.length < 2) { drop.style.display = 'none'; return; }
+  var res = CIE10_DB.filter(function(r) {
+    return r[0].toUpperCase().startsWith(q) || r[1].toUpperCase().indexOf(q) >= 0;
+  }).slice(0, 8);
+  if (!res.length) { drop.style.display = 'none'; return; }
+  drop.innerHTML = res.map(function(r) {
+    return '<div style="padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center" ' +
+      'onmousedown="cie10Seleccionar(this)"' +
+      ' data-code="' + r[0] + '" data-diag="' + r[1].replace(/"/g,"&quot;") + '">' +
+      '<span style="font-family:var(--mono);font-weight:700;color:var(--esq-blue);min-width:52px">' + r[0] + '</span>' +
+      '<span style="color:var(--text)">' + r[1] + '</span></div>';
+  }).join('');
+  drop.style.display = 'block';
+}
+
+function cie10Seleccionar(el) {
+  var codigo = el.getAttribute('data-code');
+  var diagnostico = el.getAttribute('data-diag');
+  var inp = document.getElementById('aus_cie10');
+  var diag = document.getElementById('aus_diagnostico');
+  if (inp) inp.value = codigo;
+  if (diag) diag.value = diagnostico;
+  var drop = document.getElementById('cie10_drop');
+  if (drop) drop.style.display = 'none';
+}
+window.cie10Buscar = cie10Buscar;
+window.cie10Seleccionar = cie10Seleccionar;
 window.renderCatalogos      = renderCatalogos;
 window.showTrabTab          = showTrabTab;
 
