@@ -1339,7 +1339,7 @@ body.is-admin .admin-only-block:not(.view){display:block}
         <div style="font-size:12px;color:var(--text-2);margin-top:3px">7 categorías · Fuente maestra del sistema de formación · CRUD completo</div>
       </div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-primary btn-sm" id="btn-nueva-formacion" onclick="abrirModalFormacion(null)">＋ Nueva formación</button>
+        <button class="btn btn-primary btn-sm admin-only-block" id="btn-nueva-formacion" onclick="abrirModalFormacion(null)">＋ Nueva formación</button>
       </div>
     </div>
     <!-- 7 category tabs -->
@@ -1733,11 +1733,18 @@ body.is-admin .admin-only-block:not(.view){display:block}
           Detalles del curso
         </div>
         <div class="fgrid g2">
-          <div class="fld"><div class="flabel">📌 Tipo *</div>
-            <select id="cap_tipo" style="width:100%"><option value="">Seleccione…</option>
-              <option>Inducción</option><option>Reinducción</option><option>SST</option>
-              <option>Brigadas</option><option>Manejo de residuos</option>
-              <option>EPP</option><option>Emergencias</option><option>Otro</option></select></div>
+          <div class="fld"><div class="flabel">📌 Categoría / Tipo *</div>
+            <select id="cap_tipo" style="width:100%">
+              <option value="">— Se autocompleta al elegir formación —</option>
+              <option value="hseq">🛡 HSEQ</option>
+              <option value="alturas">🧗 Alturas</option>
+              <option value="confinados">⚠️ Espacios Confinados</option>
+              <option value="brigadista">🚒 Brigadista</option>
+              <option value="procesos">⚙️ Seguridad de Procesos</option>
+              <option value="tecnicos">🔧 Técnicos</option>
+              <option value="complementarios">📎 Complementarios</option>
+              <option value="externo">📚 Externo / Libre</option>
+            </select></div>
           <div class="fld"><div class="flabel">🎯 Modalidad</div>
             <select id="cap_modalidad" style="width:100%"><option value="">Seleccione…</option>
               <option>Presencial</option><option>Virtual</option><option>Mixta</option></select></div>
@@ -2302,7 +2309,7 @@ async function doLogin(){
       await fbLoadData();
       // Buscar responsable para obtener nombre y rol
       const resp = responsables.find(r=>r.id===u);
-      const rolFb = resp?.rol || 'usuario';
+      const rolFb = (resp?.rol || resp?.role || 'usuario').toLowerCase().trim();
       let mappedRole = rolFb==='admin'?'admin': rolFb==='supervisor'?'supervisor':'usuario';
       currentUser={name: resp?.name||u, role: mappedRole, cedula:u, email:cred.user.email};
       await enterApp();
@@ -6943,6 +6950,10 @@ function capSwitchOrigen(){
     var lbl = r.parentElement;
     if (lbl) lbl.style.borderColor = r.checked ? 'var(--esq-blue)' : 'var(--border)';
   });
+  // Al cambiar a externo, limpiar tipo para que el usuario lo elija
+  var fTipo = document.getElementById('cap_tipo');
+  if (fTipo && modo === 'externo') fTipo.value = 'externo';
+  if (fTipo && modo === 'programa') fTipo.value = '';
 }
 
 // S32 — Cuando se elige trabajador → filtrar select de Matriz por cargo
@@ -6970,7 +6981,7 @@ function capOnTrabChange(){
     : '⚠️ Trabajador sin cargo — se muestran todas las formaciones';
 }
 
-// S32 — Al elegir formación de la Matriz → autocompletar horas, facilitador, vigencia
+// S32 — Al elegir formación de la Matriz → autocompletar horas, facilitador, vigencia, tipo
 function capOnTemaProgChange(){
   var sel = document.getElementById('cap_tema_prog');
   if (!sel || !sel.value) return;
@@ -6979,8 +6990,12 @@ function capOnTemaProgChange(){
   var horas = opt.dataset.horas || '';
   var fac   = opt.dataset.fac   || '';
   var frec  = opt.dataset.frec  || '';
-  var fHoras = document.getElementById('cap_horas');     if (fHoras && !fHoras.value) fHoras.value = horas;
-  var fFac   = document.getElementById('cap_facilitador');if (fFac && !fFac.value)   fFac.value   = fac;
+  var cat   = opt.dataset.cat   || '';
+  var fHoras = document.getElementById('cap_horas');      if (fHoras && !fHoras.value) fHoras.value = horas;
+  var fFac   = document.getElementById('cap_facilitador'); if (fFac && !fFac.value)   fFac.value   = fac;
+  // Autocomplete tipo con la categoría de la formación
+  var fTipo  = document.getElementById('cap_tipo');
+  if (fTipo && cat) { fTipo.value = cat; }
   // Auto-calcular vigencia desde frecuencia
   var mesesMap = {'Trimestral':3,'Semestral':6,'Anual':12,'Cada 18 meses':18,'Bianual':24,'Trianual':36};
   var meses = mesesMap[frec] || 0;
@@ -7322,22 +7337,18 @@ async function renderBiblioteca() {
   var data = await _bibCargarCat(cat);
   if(cnt) cnt.textContent = data.length + ' formaciones';
 
-  // Permisos S32: admin y supervisor pueden crear/editar; solo admin puede eliminar
+  // Permisos S32: admin y supervisor pueden editar; solo admin elimina — controlado por CSS is-admin / is-supervisor
   var isAdmin      = window.currentUser && window.currentUser.role === 'admin';
   var puedeEditar  = window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'supervisor');
-
-  // Control visibilidad botón Nueva formación
-  var btnNueva = document.getElementById('btn-nueva-formacion');
-  if (btnNueva) btnNueva.style.display = puedeEditar ? '' : 'none';
 
   var rows = data.map(function(f, i) {
     var cargosN = Array.isArray(f.cargosAplicables) ? f.cargosAplicables.length : 0;
     var cargosCell = cargosN
       ? '<span title="'+((f.cargosAplicables||[]).join(', '))+'" style="font-size:10px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px;cursor:help">👥 '+cargosN+'</span>'
       : '<span style="font-size:10px;color:var(--text-3)">—</span>';
-    var accCell = '';
-    if (puedeEditar) accCell += '<button class="btn btn-ghost btn-xs" onclick="abrirModalFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Editar">✏️</button> ';
-    if (isAdmin)     accCell += '<button class="btn btn-danger btn-xs" onclick="eliminarFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Eliminar">🗑</button>';
+    // Botones siempre en DOM — CSS admin-only-block / admin-only-inline los muestra/oculta
+    var accCell = '<button class="btn btn-ghost btn-xs admin-only-block" onclick="abrirModalFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Editar">✏️</button> '+
+                  '<button class="btn btn-danger btn-xs admin-only-block" onclick="eliminarFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Eliminar">🗑</button>';
     return '<tr style="border-bottom:1px solid var(--border)">' +
       '<td style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-3);padding:8px 6px">'+(f.orden||i+1)+'</td>'+
       '<td style="padding:8px 10px"><div style="font-weight:600;font-size:12px">'+(f.nombre||'')+'</div>'+
@@ -7347,7 +7358,7 @@ async function renderBiblioteca() {
       '<td style="font-size:11px;padding:8px 6px">'+(f.modalidad||'—')+'</td>'+
       '<td style="font-size:10.5px;padding:8px 6px;color:var(--text-2)">'+(f.normativa||'—')+'</td>'+
       '<td style="text-align:center;padding:8px 6px">'+cargosCell+'</td>'+
-      '<td style="padding:8px 6px;white-space:nowrap">'+(accCell||'')+'</td>'+
+      '<td style="padding:8px 6px;white-space:nowrap">'+accCell+'</td>'+
     '</tr>';
   }).join('');
 
