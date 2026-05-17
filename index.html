@@ -1323,16 +1323,101 @@ body.is-admin .admin-only-block:not(.view){display:block}
 
 
 <div class="view" id="view-capacitaciones">
-  <!-- Tabs internos de Capacitaciones -->
+  <!-- Tabs internos de Capacitaciones — S32 nueva arquitectura -->
   <div style="display:flex;gap:6px;margin-bottom:20px;border-bottom:2px solid var(--border);padding-bottom:0;flex-wrap:wrap">
-    <button id="ctab-dashboard-cap" class="ctab active" onclick="showCTab2('cap-dashboard')">📊 Dashboard</button>
-    <button id="ctab-alturas"       class="ctab"        onclick="showCTab2('alturas')">🧗 Alturas</button>
-    <button id="ctab-confinados"    class="ctab"        onclick="showCTab2('confinados')">⚠️ Confinados</button>
-    <button id="ctab-cap"           class="ctab"        onclick="showCTab2('cap')">🎓 Capacitaciones</button>
-    <button id="ctab-programa"      class="ctab"        onclick="showCTab2('programa')">📋 Programa Anual</button>
+    <button id="ctab-biblioteca"    class="ctab active" onclick="showCTab2('biblioteca')">📋 Matriz de Entrenamientos</button>
+    <button id="ctab-por-cargo"     class="ctab"        onclick="showCTab2('por-cargo')">👥 Por Cargo</button>
+    <button id="ctab-cap"           class="ctab"        onclick="showCTab2('cap')">🗂 Registro e Historial</button>
+    <button id="ctab-dash-form"     class="ctab"        onclick="showCTab2('dash-form')">📊 Dashboard</button>
   </div>
 
-  <!-- ── PROGRAMA ANUAL FM-HSE-011 ── -->
+  <!-- ══ SUBTAB 1: MATRIZ DE ENTRENAMIENTOS — S32 ══ -->
+  <div id="cview-biblioteca" class="cview" style="display:block">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">📋 Matriz de Entrenamientos</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:3px">7 categorías · Fuente maestra del sistema de formación · CRUD completo</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="btn-nueva-formacion" onclick="abrirModalFormacion(null)">＋ Nueva formación</button>
+      </div>
+    </div>
+    <!-- 7 category tabs -->
+    <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0">
+      <button class="ctab active" id="btab-hseq"        onclick="showBTab('hseq')"        style="font-size:11.5px">🛡 HSEQ</button>
+      <button class="ctab"        id="btab-alturas"      onclick="showBTab('alturas')"      style="font-size:11.5px">🧗 Alturas</button>
+      <button class="ctab"        id="btab-confinados"   onclick="showBTab('confinados')"   style="font-size:11.5px">⚠️ Confinados</button>
+      <button class="ctab"        id="btab-brigadista"   onclick="showBTab('brigadista')"   style="font-size:11.5px">🚒 Brigadista</button>
+      <button class="ctab"        id="btab-procesos"     onclick="showBTab('procesos')"     style="font-size:11.5px">⚙️ Seg. Procesos</button>
+      <button class="ctab"        id="btab-tecnicos"     onclick="showBTab('tecnicos')"     style="font-size:11.5px">🔧 Técnicos</button>
+      <button class="ctab"        id="btab-complementarios" onclick="showBTab('complementarios')" style="font-size:11.5px">📎 Complementarios</button>
+    </div>
+    <!-- Category header -->
+    <div id="bib-cat-info" style="display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:10px 14px;background:var(--esq-blue-lt);border-radius:var(--r-sm)">
+      <div id="bib-cat-label" style="font-size:13px;font-weight:800;color:var(--esq-blue)"></div>
+      <div id="bib-cat-count" style="font-size:11px;color:var(--text-2)"></div>
+    </div>
+    <!-- Table -->
+    <div style="overflow-x:auto">
+      <table class="admin-table" style="min-width:900px;font-size:12px">
+        <thead><tr>
+          <th style="width:40px">#</th>
+          <th>Nombre de la formación</th>
+          <th style="width:80px">Horas</th>
+          <th style="width:120px">Frecuencia</th>
+          <th style="width:120px">Modalidad</th>
+          <th>Normativa</th>
+          <th style="width:70px">Cargos</th>
+          <th style="width:90px" class="admin-only-block">Acciones</th>
+        </tr></thead>
+        <tbody id="bib-tbody">
+          <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-3)">Cargando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SUBTAB 2: POR CARGO — S32 ══ -->
+  <div id="cview-por-cargo" class="cview" style="display:none">
+    <div style="margin-bottom:18px">
+      <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:4px">👥 Formaciones por Cargo</div>
+      <div style="font-size:12px;color:var(--text-2)">Vista tipo profesiograma · Consulta dinámica por cargo o trabajador</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:700px;margin-bottom:20px">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Cargo</div>
+        <select class="form-sel" id="pc-sel-cargo" onchange="renderPorCargo()" style="width:100%">
+          <option value="">— Seleccione un cargo —</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">O buscar por trabajador</div>
+        <select class="form-sel" id="pc-sel-trab" onchange="renderPorCargoTrab()" style="width:100%">
+          <option value="">— Seleccione un trabajador —</option>
+        </select>
+      </div>
+    </div>
+    <div id="pc-resultado" style="display:none">
+      <div id="pc-trab-header" style="display:none;background:linear-gradient(135deg,var(--esq-blue),var(--mid));color:white;border-radius:var(--r);padding:16px 20px;margin-bottom:16px">
+        <div id="pc-trab-nombre" style="font-size:16px;font-weight:800"></div>
+        <div id="pc-trab-info" style="font-size:12px;opacity:.8;margin-top:2px"></div>
+      </div>
+      <!-- Legend -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;font-size:11.5px">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);vertical-align:middle;margin-right:4px"></span>Vigente</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--amber);vertical-align:middle;margin-right:4px"></span>Por vencer</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--red);vertical-align:middle;margin-right:4px"></span>Vencida</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--text-3);vertical-align:middle;margin-right:4px"></span>Pendiente</span>
+      </div>
+      <div id="pc-grid"></div>
+    </div>
+    <div id="pc-empty" style="text-align:center;padding:60px 20px;color:var(--text-3)">
+      <div style="font-size:36px;margin-bottom:12px">👥</div>
+      <div style="font-size:14px;font-weight:600">Seleccione un cargo o trabajador para ver sus formaciones</div>
+    </div>
+  </div>
+
+  <!-- ── PROGRAMA ANUAL FM-HSE-011 (conservado en background, usado por JS) ── -->
   <div id="cview-programa" class="cview" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
       <div>
@@ -1447,139 +1532,12 @@ body.is-admin .admin-only-block:not(.view){display:block}
     </div>
   </div>
 
-  <!-- ── DASHBOARD CAPACITACIONES ── -->
-  <div id="cview-cap-dashboard" class="cview">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px">
-      <div>
-        <div style="font-size:20px;font-weight:800;color:var(--dark)">📊 Dashboard de Capacitaciones</div>
-        <div style="font-size:12px;color:var(--text-2);margin-top:3px">Alturas · Espacios Confinados · Capacitaciones SST</div>
-      </div>
-    </div>
-    <!-- KPIs -->
-    <div class="kpi-grid" id="cap-kpi-grid" style="margin-bottom:20px"></div>
-    <!-- Gráficas fila 1 -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:16px">
-      <div class="dash-card" style="padding:18px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">🧗 Estado Alturas (18m)</div>
-        <canvas id="cap-chart-alt" height="180"></canvas>
-      </div>
-      <div class="dash-card" style="padding:18px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">⚠️ Estado Confinados (36m)</div>
-        <canvas id="cap-chart-con" height="180"></canvas>
-      </div>
-      <div class="dash-card" style="padding:18px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">🎓 Capacitaciones por tipo</div>
-        <canvas id="cap-chart-tipos" height="180"></canvas>
-      </div>
-    </div>
-    <!-- Gráficas fila 2 -->
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
-      <div class="dash-card" style="padding:18px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">📅 Vencimientos próximos (90 días)</div>
-        <div id="cap-venc-proximos" style="max-height:280px;overflow-y:auto"></div>
-      </div>
-      <div class="dash-card" style="padding:18px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">📈 Cobertura del programa</div>
-        <canvas id="cap-chart-cob" height="220"></canvas>
-      </div>
-    </div>
-    <!-- Tabla resumen por trabajador -->
-    <div class="dash-card" style="padding:18px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3)">🧑‍🏭 Resumen por trabajador</div>
-        <input class="form-inp" id="cap-dash-search" style="width:200px;font-size:12px" placeholder="🔍 Buscar…" oninput="renderCapDashTable()">
-      </div>
-      <div style="overflow-x:auto">
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-          <thead>
-            <tr style="background:var(--surface)">
-              <th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Trabajador</th>
-              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Cargo</th>
-              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">🧗 Alturas</th>
-              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">⚠️ Confinados</th>
-              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">🎓 Caps.</th>
-            </tr>
-          </thead>
-          <tbody id="cap-dash-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ── ALTURAS ── -->
-  <div id="cview-alturas" class="cview" style="display:none">
-    <div class="cap-section-hdr">
-      <div>
-        <div class="cap-title">🧗 Trabajo en Alturas</div>
-        <div class="cap-sub">Res. 4272/2021 · Vigencia 18 meses</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="exportCertCSV('alt')">⬇ CSV</button>
-        <button class="btn btn-primary btn-sm" onclick="abrirModalCert('alt')">＋ Nueva certificación</button>
-      </div>
-    </div>
-    <!-- KPI pills -->
-    <div class="cap-kpi-row">
-      <span class="cap-pill cap-pill-total">📋 Total: <span id="alt_total">0</span></span>
-      <span class="cap-pill cap-pill-green">✅ Vigentes: <span id="alt_vigentes">0</span></span>
-      <span class="cap-pill cap-pill-red">🔴 Vencidos: <span id="alt_venc">0</span></span>
-      <span class="cap-pill cap-pill-amber">🟡 Próx. 30d: <span id="alt_prox30">0</span></span>
-    </div>
-    <!-- Filtros -->
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-      <input class="form-inp" id="alt_search" style="max-width:240px;font-size:12px" placeholder="🔍 Nombre o cédula…" oninput="renderAlturas()">
-      <select class="form-sel" id="alt_estado" onchange="renderAlturas()" style="font-size:12px">
-        <option value="">Todos los estados</option><option value="vigente">✅ Vigente</option>
-        <option value="prox30">🟡 Próx. 30d</option><option value="prox90">🟠 Próx. 90d</option>
-        <option value="vencido">🔴 Vencido</option><option value="sin_fecha">⚫ Sin fecha</option>
-      </select>
-    </div>
-    <div class="cap-tbl-wrap"><table><thead><tr>
-      <th>Trabajador</th><th>Nivel</th><th>Tipo</th><th>Fecha</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
-    </tr></thead><tbody id="alt_tbody"></tbody></table></div>
-    <div id="alt_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Nueva certificación</strong>.</div>
-  </div>
-
-  <!-- ── CONFINADOS ── -->
-  <div id="cview-confinados" class="cview" style="display:none">
-    <div class="cap-section-hdr">
-      <div>
-        <div class="cap-title">⚠️ Espacios Confinados</div>
-        <div class="cap-sub">Res. 0491/2020 · Vigencia 36 meses</div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="exportCertCSV('con')">⬇ CSV</button>
-        <button class="btn btn-primary btn-sm" onclick="abrirModalCert('con')">＋ Nueva certificación</button>
-      </div>
-    </div>
-    <!-- KPI pills -->
-    <div class="cap-kpi-row">
-      <span class="cap-pill cap-pill-total">📋 Total: <span id="con_total">0</span></span>
-      <span class="cap-pill cap-pill-green">✅ Vigentes: <span id="con_vigentes">0</span></span>
-      <span class="cap-pill cap-pill-red">🔴 Vencidos: <span id="con_venc">0</span></span>
-      <span class="cap-pill cap-pill-amber">🟡 Próx. 30d: <span id="con_prox30">0</span></span>
-    </div>
-    <!-- Filtros -->
-    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-      <input class="form-inp" id="con_search" style="max-width:240px;font-size:12px" placeholder="🔍 Nombre o cédula…" oninput="renderConfinados()">
-      <select class="form-sel" id="con_estado" onchange="renderConfinados()" style="font-size:12px">
-        <option value="">Todos los estados</option><option value="vigente">✅ Vigente</option>
-        <option value="prox30">🟡 Próx. 30d</option><option value="prox90">🟠 Próx. 90d</option>
-        <option value="vencido">🔴 Vencido</option><option value="sin_fecha">⚫ Sin fecha</option>
-      </select>
-    </div>
-    <div class="cap-tbl-wrap"><table><thead><tr>
-      <th>Trabajador</th><th>Nivel</th><th>Tipo</th><th>Fecha</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Acciones</th>
-    </tr></thead><tbody id="con_tbody"></tbody></table></div>
-    <div id="con_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Nueva certificación</strong>.</div>
-  </div>
-
-  <!-- ── CAPACITACIONES GENERALES ── -->
+  <!-- ══ SUBTAB 3: REGISTRO E HISTORIAL ══ -->
   <div id="cview-cap" class="cview" style="display:none">
     <div class="cap-section-hdr">
       <div>
-        <div class="cap-title">🎓 Capacitaciones SG-SST</div>
-        <div class="cap-sub">Programa de gestión · Inducción · Reinducción · SST</div>
+        <div class="cap-title">🗂 Registro e Historial de Capacitaciones</div>
+        <div class="cap-sub">Núcleo transaccional · Todas las categorías · Retrocompatible con registros legacy</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" onclick="exportCAPCSV()">⬇ CSV</button>
@@ -1614,6 +1572,48 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <th>Trabajador</th><th>Tema / Curso</th><th>Tipo</th><th>Fecha</th><th>Horas</th><th>Entidad</th><th>Vencimiento</th><th>Estado</th><th>Aprobado</th><th>Acciones</th>
     </tr></thead><tbody id="cap_tbody"></tbody></table></div>
     <div id="cap_empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">Sin registros. Usa <strong>＋ Registrar capacitación</strong>.</div>
+  </div>
+
+  <!-- ══ SUBTAB 4: DASHBOARD INDICADORES — S32 ══ -->
+  <div id="cview-dash-form" class="cview" style="display:none">
+    <div style="margin-bottom:18px">
+      <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:4px">📊 Dashboard de Indicadores</div>
+      <div style="font-size:12px;color:var(--text-2)">KPIs automáticos · Cobertura por categoría · Cumplimiento · Vencimientos</div>
+    </div>
+    <div class="kpi-grid" id="dash-form-kpis" style="margin-bottom:20px"></div>
+    <!-- Cobertura por categoría -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:18px">
+      <div class="dash-card" style="padding:16px">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📚 Formaciones por categoría</div>
+        <div style="position:relative;height:240px"><canvas id="df-chart-categorias"></canvas></div>
+      </div>
+      <div class="dash-card" style="padding:16px">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">📋 Registros por estado</div>
+        <div style="position:relative;height:240px"><canvas id="df-chart-estados"></canvas></div>
+      </div>
+      <div class="dash-card" style="padding:16px">
+        <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:12px">🎓 Aprobación general</div>
+        <div style="position:relative;height:240px"><canvas id="df-chart-aprobacion"></canvas></div>
+      </div>
+    </div>
+    <!-- Tabla por cargo -->
+    <div class="dash-card" style="padding:18px">
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);margin-bottom:14px">📋 Cobertura por formación (peor primero)</div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:var(--surface)">
+              <th style="padding:8px 10px;text-align:left;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Formación</th>
+              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Categoría</th>
+              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Cubiertos</th>
+              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">Vencidos</th>
+              <th style="padding:8px 10px;text-align:center;font-weight:700;color:var(--text-2);border-bottom:1px solid var(--border)">% Cobertura</th>
+            </tr>
+          </thead>
+          <tbody id="df-cargo-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1694,27 +1694,27 @@ body.is-admin .admin-only-block:not(.view){display:block}
         </div>
       </div>
 
-      <!-- SECCIÓN 2: Origen del tema (S31) -->
+      <!-- SECCIÓN 2: Origen del tema — S32 fuente = Matriz de Entrenamientos -->
       <div style="background:linear-gradient(135deg,rgba(245,200,0,.06),rgba(232,78,27,.04));border:1.5px solid var(--esq-blue-lt);border-radius:10px;padding:14px 16px;margin-bottom:14px">
         <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-blue);margin-bottom:10px;display:flex;align-items:center;gap:6px">
           <span style="display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--esq-blue);color:#fff;align-items:center;justify-content:center;font-size:10px;font-weight:900">2</span>
-          Tema · ¿Del programa anual o externo?
+          Tema · ¿De la Matriz de Entrenamientos o externo?
         </div>
         <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
           <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1.5px solid var(--esq-blue);border-radius:8px;cursor:pointer;font-weight:600">
             <input type="radio" name="cap_origen" value="programa" checked onchange="capSwitchOrigen()" style="cursor:pointer">
-            <span style="font-size:12.5px">📋 Tema del Programa Anual</span>
+            <span style="font-size:12.5px">📋 De la Matriz de Entrenamientos</span>
           </label>
           <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-weight:600">
             <input type="radio" name="cap_origen" value="externo" onchange="capSwitchOrigen()" style="cursor:pointer">
             <span style="font-size:12.5px">📚 Capacitación externa / libre</span>
           </label>
         </div>
-        <!-- Modo programa -->
+        <!-- Modo Matriz -->
         <div id="cap_origen_programa">
-          <div class="fld s2"><div class="flabel">🎯 Tema asignado *</div>
+          <div class="fld s2"><div class="flabel">🎯 Formación de la Matriz *</div>
             <select id="cap_tema_prog" onchange="capOnTemaProgChange()" style="width:100%">
-              <option value="">— Seleccione un trabajador primero —</option>
+              <option value="">— Cargando formaciones… —</option>
             </select>
             <div id="cap_tema_prog_info" style="font-size:11px;color:var(--text-3);margin-top:4px"></div>
           </div>
@@ -1824,6 +1824,97 @@ body.is-admin .admin-only-block:not(.view){display:block}
       <button class="modal-close" onclick="closeOv('ov-hist-cap')">✕</button>
     </div>
     <div class="modal-body" id="histCAPBody"></div>
+  </div>
+</div>
+
+<!-- MODAL: FORMACIÓN BIBLIOTECA — S32 -->
+<div class="overlay" id="ov-formacion">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-hdr">
+      <div>
+        <div class="modal-title" id="modalFormTitle">📋 Nueva formación</div>
+        <div class="modal-hdr-sub" style="font-size:11px;color:rgba(255,255,255,.6);margin-top:2px">Matriz de Entrenamientos · Fuente maestra</div>
+      </div>
+      <button class="modal-close" onclick="cerrarModalFormacion()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="form_edit_id">
+      <input type="hidden" id="form_edit_cat">
+      <div class="fgrid g2">
+        <div class="fld s2">
+          <div class="flabel">Categoría *</div>
+          <select id="form_categoria" style="width:100%">
+            <option value="">— Seleccione —</option>
+            <option value="hseq">🛡 HSEQ</option>
+            <option value="alturas">🧗 Alturas</option>
+            <option value="confinados">⚠️ Espacios Confinados</option>
+            <option value="brigadista">🚒 Brigadista</option>
+            <option value="procesos">⚙️ Seguridad de Procesos</option>
+            <option value="tecnicos">🔧 Técnicos</option>
+            <option value="complementarios">📎 Complementarios</option>
+          </select>
+        </div>
+        <div class="fld s2">
+          <div class="flabel">Nombre de la formación *</div>
+          <input id="form_nombre" type="text" placeholder="Ej: Manejo Seguro de Benceno" style="width:100%">
+        </div>
+        <div class="fld s2">
+          <div class="flabel">Objetivo</div>
+          <input id="form_objetivo" type="text" placeholder="Objetivo general de la formación" style="width:100%">
+        </div>
+        <div class="fld s2">
+          <div class="flabel">Contenido</div>
+          <textarea id="form_contenido" rows="2" style="width:100%" placeholder="Temas, módulos o contenidos principales…"></textarea>
+        </div>
+        <div class="fld">
+          <div class="flabel">Dirigido a</div>
+          <input id="form_dirigido" type="text" placeholder="Ej: Todo el personal operativo" style="width:100%">
+        </div>
+        <div class="fld">
+          <div class="flabel">Prerrequisitos</div>
+          <input id="form_prereq" type="text" placeholder="Ej: Inducción HSE aprobada" style="width:100%">
+        </div>
+        <div class="fld">
+          <div class="flabel">Facilitador</div>
+          <input id="form_facilitador" type="text" placeholder="Ej: Coordinador HSE, ARL, SENA…" style="width:100%">
+        </div>
+        <div class="fld">
+          <div class="flabel">Horas</div>
+          <input id="form_horas" type="number" min="0.5" step="0.5" placeholder="Ej: 4" style="width:100%">
+        </div>
+        <div class="fld">
+          <div class="flabel">Modalidad</div>
+          <select id="form_modalidad" style="width:100%">
+            <option value="">Seleccione…</option>
+            <option>Presencial</option><option>Virtual</option><option>Mixta</option>
+            <option>Práctica</option><option>Teórica</option><option>Simulación</option>
+          </select>
+        </div>
+        <div class="fld">
+          <div class="flabel">Frecuencia</div>
+          <select id="form_frecuencia" style="width:100%">
+            <option value="">Seleccione…</option>
+            <option>Ingreso</option><option>Trimestral</option><option>Semestral</option>
+            <option>Anual</option><option>Cada 18 meses</option>
+            <option>Bianual</option><option>Trianual</option><option>Única</option>
+          </select>
+        </div>
+        <div class="fld">
+          <div class="flabel">Normativa / Referencia</div>
+          <input id="form_normativa" type="text" placeholder="Ej: Res. 4272/2021, NFPA 10…" style="width:100%">
+        </div>
+        <div class="fld s2">
+          <div class="flabel">Cargos aplicables</div>
+          <div id="form_cargos_wrap" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;min-height:44px;background:var(--surface)">
+            <span style="font-size:11px;color:var(--text-3)">Cargando cargos…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cerrarModalFormacion()">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarFormacion()">💾 Guardar formación</button>
+    </div>
   </div>
 </div>
 
@@ -6359,11 +6450,10 @@ async function fetchJSON(nombre) {
   }
 }
 
-// showCTab (legacy) eliminado s30 — reemplazado por showCTab2
-// ── renderTabCapacitaciones: entry-point del módulo Capacitaciones
+// ── renderTabCapacitaciones: entry-point del módulo Capacitaciones — S32
 async function renderTabCapacitaciones(){
   if(!_capLoaded){await cargarTodosCap();_capLoaded=true;}
-  showCTab2('cap-dashboard');
+  showCTab2('biblioteca');
 }
 
 async function cargarTodosCap(){
@@ -6733,13 +6823,13 @@ function renderCAP(){
 // B19 s30: async + guard _trabList para edición correcta desde cualquier flujo
 async function abrirModalCAP(fid){
   if(!_trabList||!_trabList.length){ try{ await fbTrabCargar(); }catch(e){ console.warn('abrirModalCAP fbTrabCargar:',e); } }
-  // S31 — cargar matriz_cap y temas del año actual para "Del programa"
-  var year = new Date().getFullYear();
+  // S32 — cargar todas las categorías de la Matriz de Entrenamientos
   try {
     if (!_catalogosLoaded) await fbCargarCatalogos();
-    if (!_matrizLoaded) await fbMatrizCargar(year);
-    if (!_progTemas.length) await fbProgCargarTemas(year);
-  } catch(e){ console.warn('abrirModalCAP S31 prep:', e); }
+    // Pre-cargar categorías más comunes
+    var catsPre = ['hseq','alturas','confinados','brigadista','procesos','complementarios'];
+    for (var i=0; i<catsPre.length; i++) { await _bibCargarCat(catsPre[i]); }
+  } catch(e){ console.warn('abrirModalCAP S32 prep:', e); }
 
   var sel=document.getElementById('cap_trabajador');
   sel.innerHTML='<option value="">— Seleccione —</option>';
@@ -6759,14 +6849,13 @@ async function abrirModalCAP(fid){
   var chkV=document.getElementById('cap_tiene_venc');if(chkV)chkV.checked=false;
   capToggleVenc();
   var fEl=document.getElementById('cap_fecha');if(fEl)fEl.value='';
-  // S31 — reset origen a "programa"
   var radProg = document.querySelector('input[name="cap_origen"][value="programa"]');
   if (radProg) radProg.checked = true;
   capSwitchOrigen();
-  var infoT = document.getElementById('cap_trab_info');     if(infoT) infoT.textContent='';
-  var infoP = document.getElementById('cap_tema_prog_info');if(infoP) infoP.textContent='';
-  var selProg = document.getElementById('cap_tema_prog');
-  if(selProg) selProg.innerHTML = '<option value="">— Seleccione un trabajador primero —</option>';
+  var infoT = document.getElementById('cap_trab_info'); if(infoT) infoT.textContent='';
+  var infoP = document.getElementById('cap_tema_prog_info'); if(infoP) infoP.textContent='';
+  // Poblar select de Matriz completo (sin filtrar por trabajador aún)
+  _capPoblarSelectMatriz('');
 
   document.getElementById('modalCAPTitle').textContent='Registrar capacitación';
   if(fid){
@@ -6776,14 +6865,12 @@ async function abrirModalCAP(fid){
       document.getElementById('modalCAPTitle').textContent='Editar capacitación';
       Array.from(sel.options).forEach(function(o){if(o.value===String(r.cedula))o.selected=true;});
       capOnTrabChange();
-      // Si la capacitación venía con temaId del programa, marcar modo programa
-      if (r.temaId) {
+      if (r.temaId || r.origen==='programa') {
         var radP = document.querySelector('input[name="cap_origen"][value="programa"]');
         if (radP) radP.checked = true;
         capSwitchOrigen();
         var spOpt = document.getElementById('cap_tema_prog');
-        if (spOpt) {
-          // si el option no existe (cargo del trabajador no aplica), añadirlo
+        if (spOpt && r.temaId) {
           if (!Array.from(spOpt.options).some(function(o){return o.value===r.temaId;})) {
             var op = document.createElement('option');
             op.value = r.temaId; op.textContent = r.tema || r.temaId;
@@ -6812,29 +6899,60 @@ async function abrirModalCAP(fid){
 }
 function cerrarModalCAP(){closeOv('ov-cap');}
 
-// S31 — Cambio de origen (programa vs externo)
+// S32 — Poblar select de Matriz completo agrupado por categoría, filtrado opcionalmente por cargo
+function _capPoblarSelectMatriz(cargo) {
+  var selProg = document.getElementById('cap_tema_prog');
+  if (!selProg) return;
+  var opts = ['<option value="">— Seleccionar formación de la Matriz —</option>'];
+  var cats = Object.keys(BIB_CATS);
+  cats.forEach(function(cat){
+    var arr = _bibData[cat] || [];
+    if (!arr.length) return;
+    // Si hay cargo, mostrar primero las asignadas al cargo
+    var asignadas = cargo ? arr.filter(function(f){ return Array.isArray(f.cargosAplicables) && f.cargosAplicables.indexOf(cargo)>=0; }) : [];
+    var otras = cargo ? arr.filter(function(f){ return !Array.isArray(f.cargosAplicables) || f.cargosAplicables.indexOf(cargo)<0; }) : arr;
+    var catLabel = (BIB_CATS[cat].label||cat).replace(/[🛡🧗⚠️🚒⚙️🔧📎]\s?/,'').trim();
+    if (asignadas.length) {
+      opts.push('<optgroup label="✅ '+catLabel+' — aplica al cargo ('+asignadas.length+')">');
+      asignadas.forEach(function(f){
+        var id = f._fid || (cat+'__'+f.orden);
+        opts.push('<option value="'+id+'" data-cat="'+cat+'" data-horas="'+(f.horas||'')+'" data-fac="'+(f.facilitador||'')+'" data-frec="'+(f.frecuencia||'')+'" data-nom="'+(f.nombre||'').replace(/"/g,'&quot;')+'">'+f.nombre+'</option>');
+      });
+      opts.push('</optgroup>');
+    }
+    if (otras.length) {
+      opts.push('<optgroup label="📋 '+catLabel+(cargo?' — otros':'')+(otras.length?' ('+otras.length+')':'')+'">');
+      otras.forEach(function(f){
+        var id = f._fid || (cat+'__'+f.orden);
+        opts.push('<option value="'+id+'" data-cat="'+cat+'" data-horas="'+(f.horas||'')+'" data-fac="'+(f.facilitador||'')+'" data-frec="'+(f.frecuencia||'')+'" data-nom="'+(f.nombre||'').replace(/"/g,'&quot;')+'">'+f.nombre+'</option>');
+      });
+      opts.push('</optgroup>');
+    }
+  });
+  selProg.innerHTML = opts.join('');
+}
+
+// S32 — Cambio de origen (Matriz vs externo)
 function capSwitchOrigen(){
   var modo = (document.querySelector('input[name="cap_origen"]:checked')||{}).value || 'programa';
   var dvP = document.getElementById('cap_origen_programa');
   var dvE = document.getElementById('cap_origen_externo');
   if (dvP) dvP.style.display = (modo==='programa') ? 'block' : 'none';
   if (dvE) dvE.style.display = (modo==='externo')  ? 'block' : 'none';
-  // visual feedback en los radios
   document.querySelectorAll('input[name="cap_origen"]').forEach(function(r){
     var lbl = r.parentElement;
     if (lbl) lbl.style.borderColor = r.checked ? 'var(--esq-blue)' : 'var(--border)';
   });
 }
 
-// S31 — Cuando se elige trabajador → llenar select de temas del programa filtrados por cargo
+// S32 — Cuando se elige trabajador → filtrar select de Matriz por cargo
 function capOnTrabChange(){
   var sel = document.getElementById('cap_trabajador');
   var opt = sel ? sel.options[sel.selectedIndex] : null;
   var info = document.getElementById('cap_trab_info');
-  var selProg = document.getElementById('cap_tema_prog');
   if (!opt || !opt.value) {
     if (info) info.textContent = '';
-    if (selProg) selProg.innerHTML = '<option value="">— Seleccione un trabajador primero —</option>';
+    _capPoblarSelectMatriz('');
     return;
   }
   var cargo = opt.dataset.cargo || '';
@@ -6845,53 +6963,35 @@ function capOnTrabChange(){
   if (area)    parts.push('📍 '+area);
   if (empresa) parts.push('🏢 '+empresa);
   if (info) info.textContent = parts.join('  ·  ') || '(sin cargo asignado)';
-  // Filtrar temas del programa por cargo del trabajador
-  if (!selProg) return;
-  var cargoId = cargo.replace(/[^a-zA-Z0-9]/g,'_');
-  var checks  = _matrizCap[cargoId] || {};
-  var asignados = []; var otros = [];
-  (_progTemas||[]).forEach(function(t){
-    var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
-    var aplica = !!checks[tid] || (Array.isArray(t.cargosAplicables) && t.cargosAplicables.indexOf(cargo)>=0);
-    if (aplica) asignados.push(t); else otros.push(t);
-  });
-  var opts = ['<option value="">— Seleccionar tema —</option>'];
-  if (asignados.length) {
-    opts.push('<optgroup label="🎯 Asignados al cargo \''+cargo.replace(/"/g,'&quot;')+'\' ('+asignados.length+')">');
-    asignados.forEach(function(t){
-      var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
-      opts.push('<option value="'+tid+'">'+(t.orden||'?')+'. '+(t.tema||'').replace(/"/g,'&quot;')+'</option>');
-    });
-    opts.push('</optgroup>');
-  }
-  if (otros.length) {
-    opts.push('<optgroup label="📋 Otros temas del programa ('+otros.length+')">');
-    otros.forEach(function(t){
-      var tid = t._id || ('tema_'+String(t.orden).padStart(3,'0'));
-      opts.push('<option value="'+tid+'">'+(t.orden||'?')+'. '+(t.tema||'').replace(/"/g,'&quot;')+'</option>');
-    });
-    opts.push('</optgroup>');
-  }
-  if (!asignados.length && !otros.length) {
-    opts = ['<option value="">⚠️ No hay temas en el Programa Anual del año actual</option>'];
-  }
-  selProg.innerHTML = opts.join('');
+  _capPoblarSelectMatriz(cargo);
   var infoP = document.getElementById('cap_tema_prog_info');
-  if (infoP) infoP.textContent = asignados.length
-    ? '✅ ' + asignados.length + ' tema(s) asignado(s) al cargo "'+cargo+'"'
-    : (cargo ? '⚠️ Ningún tema del programa aplica al cargo "'+cargo+'" — puedes elegir uno de "Otros temas" o usar modo externo' : '⚠️ Trabajador sin cargo definido');
+  if (infoP) infoP.textContent = cargo
+    ? '✅ Formaciones con ✅ son las asignadas al cargo "'+cargo+'" en la Matriz'
+    : '⚠️ Trabajador sin cargo — se muestran todas las formaciones';
 }
 
-// S31 — Cuando se elige un tema del programa → autocompletar campos
+// S32 — Al elegir formación de la Matriz → autocompletar horas, facilitador, vigencia
 function capOnTemaProgChange(){
   var sel = document.getElementById('cap_tema_prog');
   if (!sel || !sel.value) return;
-  var t = (_progTemas||[]).find(function(x){ return (x._id||('tema_'+String(x.orden).padStart(3,'0'))) === sel.value; });
-  if (!t) return;
-  // autocompletar campos
-  var fHoras = document.getElementById('cap_horas');     if (fHoras && !fHoras.value) fHoras.value = t.horas || '';
-  var fFac   = document.getElementById('cap_facilitador');if (fFac && !fFac.value)   fFac.value   = t.facilitador || '';
-  var fTipo  = document.getElementById('cap_tipo');      if (fTipo && !fTipo.value)  fTipo.value  = 'SST';
+  var opt = sel.options[sel.selectedIndex];
+  if (!opt) return;
+  var horas = opt.dataset.horas || '';
+  var fac   = opt.dataset.fac   || '';
+  var frec  = opt.dataset.frec  || '';
+  var fHoras = document.getElementById('cap_horas');     if (fHoras && !fHoras.value) fHoras.value = horas;
+  var fFac   = document.getElementById('cap_facilitador');if (fFac && !fFac.value)   fFac.value   = fac;
+  // Auto-calcular vigencia desde frecuencia
+  var mesesMap = {'Trimestral':3,'Semestral':6,'Anual':12,'Cada 18 meses':18,'Bianual':24,'Trianual':36};
+  var meses = mesesMap[frec] || 0;
+  if (meses > 0) {
+    var chkV = document.getElementById('cap_tiene_venc');
+    if (chkV && !chkV.checked) { chkV.checked = true; capToggleVenc(); }
+    var elMeses = document.getElementById('cap_vig_meses');
+    if (elMeses && !elMeses.value) { elMeses.value = meses; capCalcVenc(); }
+  }
+  var infoP = document.getElementById('cap_tema_prog_info');
+  if (infoP) infoP.textContent = frec ? '📅 Frecuencia: '+frec+(meses?' · Vigencia auto: '+meses+'m':'') : '';
 }
 
 // S31 — Si NO asistió, limpiar/desactivar calificación
@@ -6927,7 +7027,7 @@ async function guardarCAP(){
   var nombre=opt?opt.dataset.nombre||opt.textContent:'';
   var cargo = opt ? (opt.dataset.cargo||'') : '';
 
-  // S31 — origen del tema: programa o externo
+  // S32 — origen: Matriz de Entrenamientos o externo
   var origen = (document.querySelector('input[name="cap_origen"]:checked')||{}).value || 'externo';
   var temaId = null;
   var tema = '';
@@ -6936,9 +7036,12 @@ async function guardarCAP(){
     var selProg = document.getElementById('cap_tema_prog');
     temaId = selProg ? selProg.value : '';
     if (!cedula){ showToast('Seleccione un trabajador'); return; }
-    if (!temaId){ showToast('Seleccione un tema del programa'); return; }
-    var tObj = (_progTemas||[]).find(function(x){ return (x._id||('tema_'+String(x.orden).padStart(3,'0'))) === temaId; });
-    if (tObj) { tema = tObj.tema || ''; temaCategoria = tObj.categoria || ''; }
+    if (!temaId){ showToast('Seleccione una formación de la Matriz'); return; }
+    var selOpt = selProg ? selProg.options[selProg.selectedIndex] : null;
+    if (selOpt) {
+      tema = selOpt.dataset.nom || selOpt.textContent || temaId;
+      temaCategoria = selOpt.dataset.cat || '';
+    }
   } else {
     tema = (document.getElementById('cap_tema').value||'').trim();
     if (!cedula){ showToast('Seleccione un trabajador'); return; }
@@ -7041,6 +7144,648 @@ function exportCAPCSV(){
 }
 // ═══ FIN MÓDULO CAPACITACIONES ═══════════════
 
+// ═══════════════════════════════════════════════════════════════
+// S32 — BIBLIOTECA DE FORMACIONES
+// Colección: formaciones/{categoria}/capacitaciones/{id}
+// ═══════════════════════════════════════════════════════════════
+
+var _bibData = {}; // { categoria: [formaciones] }
+var _bibCatActual = 'hseq';
+var _bibCharts = {};
+
+var BIB_CATS = {
+  hseq:           { label:'🛡 HSEQ',                desc:'19 temas base' },
+  alturas:        { label:'🧗 Alturas',             desc:'Res. 4272/2021' },
+  confinados:     { label:'⚠️ Espacios Confinados', desc:'Res. 0491/2020' },
+  brigadista:     { label:'🚒 Brigadista',          desc:'40 entrenamientos · 4 niveles' },
+  procesos:       { label:'⚙️ Seg. Procesos',       desc:'SGSPAM' },
+  tecnicos:       { label:'🔧 Técnicos',            desc:'CRUD libre' },
+  complementarios:{ label:'📎 Complementarios',     desc:'SG-SST y auditoría' }
+};
+
+// Datos base por categoría — se usan para inicializar si no hay datos en Firestore
+var BIB_BASE = {
+  hseq: [
+    {nombre:'Inducción HSE',horas:4,frecuencia:'Ingreso',modalidad:'Presencial',normativa:'Dec. 1072/2015',dirigidoA:'Todo el personal nuevo',facilitador:'Coordinador HSE'},
+    {nombre:'Reinducción HSE',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 0312/2019',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Manejo Seguro de Benceno',horas:3,frecuencia:'Anual',modalidad:'Presencial',normativa:'NTP / OSHA',dirigidoA:'Personal exposición BTX',facilitador:'HSE / ARL'},
+    {nombre:'Identificación de Peligros, Evaluación de Riesgos y Controles',horas:3,frecuencia:'Anual',modalidad:'Presencial',normativa:'Dec. 1072/2015',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Plan de Emergencias: Capacitación General',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Dec. 1072/2015',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Requisitos Legales Aplicables: Novedades Normativas',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'Dec. 1072/2015',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Programas de Vigilancia Epidemiológica (PVE)',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 2346/2007',dirigidoA:'Personal expuesto',facilitador:'ARL / Médico'},
+    {nombre:'Manejo Seguro de Productos Químicos',horas:3,frecuencia:'Anual',modalidad:'Presencial',normativa:'Dec. 1496/2018 SGA',dirigidoA:'Personal que maneja químicos',facilitador:'HSE / ARL'},
+    {nombre:'Elementos de Protección Personal (EPP)',horas:3,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 0312/2019',dirigidoA:'Todo el personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Riesgo Mecánico',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Dec. 1072/2015',dirigidoA:'Personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Riesgo Eléctrico',horas:3,frecuencia:'Anual',modalidad:'Presencial',normativa:'RETIE',dirigidoA:'Personal técnico eléctrico',facilitador:'Coordinador Eléctrico'},
+    {nombre:'Riesgo Biomecánico',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 2844/2007',dirigidoA:'Todo el personal',facilitador:'ARL / Fisioterapeuta'},
+    {nombre:'Trabajo en Caliente (NFPA 51B)',horas:3,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 51B',dirigidoA:'Personal de soldadura y mantenimiento',facilitador:'HSE / Brigada'},
+    {nombre:'Seguridad de Procesos (Básico)',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'Res. 5492/2024',dirigidoA:'Personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Identificación de Aspectos e Impactos Ambientales',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'ISO 14001',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Gestión Integral de Residuos Sólidos',horas:2,frecuencia:'Anual',modalidad:'Presencial',normativa:'Dec. 1076/2015',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Plan de Manejo Ambiental (PMA)',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'Licencia Ambiental',dirigidoA:'Personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Programas de Gestión Ambiental',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'ISO 14001',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Trabajo en Alturas e Izaje PPCC',horas:4,frecuencia:'Anual',modalidad:'Mixta',normativa:'Res. 4272/2021',dirigidoA:'Personal que trabaja en alturas',facilitador:'Coordinador HSE'}
+  ],
+  alturas: [
+    {nombre:'Jefe de Área — Alturas',horas:8,frecuencia:'Única',modalidad:'Presencial',normativa:'Res. 4272/2021',dirigidoA:'Jefes de área',facilitador:'Entrenador certificado'},
+    {nombre:'Trabajador Autorizado para Trabajo en Alturas',horas:40,frecuencia:'Única',modalidad:'Mixta',normativa:'Res. 4272/2021',dirigidoA:'Trabajadores que laboran en alturas',facilitador:'Entrenador certificado'},
+    {nombre:'Coordinador de Trabajo en Alturas',horas:80,frecuencia:'Única',modalidad:'Mixta',normativa:'Res. 4272/2021',dirigidoA:'Coordinadores de alturas',facilitador:'Entrenador certificado'},
+    {nombre:'Entrenador de Trabajo en Alturas',horas:120,frecuencia:'Única',modalidad:'Mixta',normativa:'Res. 4272/2021',dirigidoA:'Entrenadores',facilitador:'Institución avalada SENA'},
+    {nombre:'Reentrenamiento Trabajador Autorizado',horas:20,frecuencia:'Cada 18 meses',modalidad:'Mixta',normativa:'Res. 4272/2021',dirigidoA:'Trabajadores autorizados',facilitador:'Entrenador certificado'},
+    {nombre:'Armado de Andamios',horas:16,frecuencia:'Única',modalidad:'Práctica',normativa:'Res. 4272/2021',dirigidoA:'Personal que arma andamios',facilitador:'Entrenador certificado'}
+  ],
+  confinados: [
+    {nombre:'Administrador del Programa de Gestión EC',horas:8,frecuencia:'Trianual',modalidad:'Mixta',normativa:'Res. 0491/2020',dirigidoA:'Profesional SST responsable del programa',facilitador:'Instructor certificado'},
+    {nombre:'Supervisor de Espacios Confinados',horas:16,frecuencia:'Trianual',modalidad:'Práctica',normativa:'Res. 0491/2020',dirigidoA:'Supervisores de EC',facilitador:'Instructor certificado'},
+    {nombre:'Trabajador Autorizado EC',horas:16,frecuencia:'Trianual',modalidad:'Práctica',normativa:'Res. 0491/2020',dirigidoA:'Trabajadores que ingresan a EC',prerrequisitos:'Autorizado alturas',facilitador:'Instructor certificado'},
+    {nombre:'Vigía de Espacios Confinados',horas:8,frecuencia:'Trianual',modalidad:'Práctica',normativa:'Res. 0491/2020',dirigidoA:'Vigías EC',prerrequisitos:'Autorizado alturas',facilitador:'Instructor certificado'}
+  ],
+  brigadista: [
+    {nombre:'Inducción Brigada y Plan de Emergencias',horas:8,frecuencia:'Ingreso',modalidad:'Mixta',normativa:'Dec. 1072 / Res. 0312',dirigidoA:'Nuevos brigadistas',facilitador:'Coordinador HSE'},
+    {nombre:'Roles y Responsabilidades SCI',horas:4,frecuencia:'Bianual',modalidad:'Teórica',normativa:'Ley 1523 / NFPA 1561',dirigidoA:'Brigada Nivel I',facilitador:'Coordinador HSE'},
+    {nombre:'Seguridad Brigadista Básica',horas:4,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 600',dirigidoA:'Brigada Nivel I',facilitador:'Brigada/HSE'},
+    {nombre:'Psicología de la Emergencia',horas:2,frecuencia:'Bianual',modalidad:'Teórica',normativa:'Res. 256/2014',dirigidoA:'Brigada Nivel I',facilitador:'ARL / Externo'},
+    {nombre:'Uso de Extintores Portátiles',horas:6,frecuencia:'Semestral',modalidad:'Práctica',normativa:'NFPA 10',dirigidoA:'Brigada Nivel I',facilitador:'Instructor Brigada'},
+    {nombre:'Evacuación y Control de Áreas',horas:6,frecuencia:'Semestral',modalidad:'Mixta',normativa:'NFPA 101',dirigidoA:'Brigada Nivel I',facilitador:'Brigada'},
+    {nombre:'Primer Respondiente Médico Básico',horas:16,frecuencia:'Anual',modalidad:'Mixta',normativa:'Res. 0312',dirigidoA:'Brigada Nivel I',facilitador:'ARL'},
+    {nombre:'RCP y DEA',horas:8,frecuencia:'Semestral',modalidad:'Práctica',normativa:'AHA/ERC',dirigidoA:'Brigada Nivel I',facilitador:'Instructor Certificado'},
+    {nombre:'Manejo Inicial de Derrames',horas:4,frecuencia:'Anual',modalidad:'Mixta',normativa:'Dec. 1868',dirigidoA:'Brigada Nivel I',facilitador:'HSE Ambiental'},
+    {nombre:'Simulación Operacional Básica',horas:4,frecuencia:'Trimestral',modalidad:'Práctica',normativa:'Programa Brigada',dirigidoA:'Brigada Nivel I',facilitador:'Coordinador Emergencias'},
+    {nombre:'Comportamiento del Fuego Industrial',horas:8,frecuencia:'Bianual',modalidad:'Mixta',normativa:'NFPA 600',dirigidoA:'Brigada Nivel II',facilitador:'Instructor Externo'},
+    {nombre:'Incendios Líquidos Inflamables',horas:16,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 11 / API 2001',dirigidoA:'Brigada Nivel II',facilitador:'Especialista PCI'},
+    {nombre:'Hidráulica Básica Contra Incendios',horas:6,frecuencia:'Bianual',modalidad:'Mixta',normativa:'NFPA 14',dirigidoA:'Brigada Nivel II',facilitador:'Instructor PCI'},
+    {nombre:'Despliegue de Mangueras y Monitores',horas:8,frecuencia:'Trimestral',modalidad:'Práctica',normativa:'NFPA 1962',dirigidoA:'Brigada Nivel II',facilitador:'Brigada'},
+    {nombre:'Espuma Contra Incendios Industrial',horas:12,frecuencia:'Semestral',modalidad:'Mixta',normativa:'NFPA 11',dirigidoA:'Brigada Nivel II',facilitador:'Especialista Espuma'},
+    {nombre:'Operación FireDos y Sistemas Fijos',horas:6,frecuencia:'Semestral',modalidad:'Práctica',normativa:'NFPA 25',dirigidoA:'Brigada/Mantenimiento',facilitador:'Especialista PCI'},
+    {nombre:'SCBA Básico',horas:16,frecuencia:'Trimestral',modalidad:'Práctica',normativa:'NFPA 1404',dirigidoA:'Brigada Nivel II',facilitador:'Instructor SCBA'},
+    {nombre:'Atmósferas Peligrosas y LEL',horas:6,frecuencia:'Semestral',modalidad:'Mixta',normativa:'NFPA 70 / RETIE',dirigidoA:'Brigada Nivel II',facilitador:'HSE'},
+    {nombre:'Control de Derrames HC',horas:8,frecuencia:'Semestral',modalidad:'Práctica',normativa:'Dec. 1868',dirigidoA:'Brigada Nivel II',facilitador:'Ambiental'},
+    {nombre:'Emergencias en Transferencia HC',horas:8,frecuencia:'Semestral',modalidad:'Mixta',normativa:'API 2610',dirigidoA:'Brigada/Operaciones',facilitador:'Operaciones'},
+    {nombre:'ICS-100 / SCI Básico',horas:8,frecuencia:'Bianual',modalidad:'Mixta',normativa:'NFPA 1561',dirigidoA:'Brigada Nivel II',facilitador:'Instructor SCI'},
+    {nombre:'Comunicaciones de Emergencia',horas:4,frecuencia:'Semestral',modalidad:'Práctica',normativa:'SCI',dirigidoA:'Brigada Nivel II',facilitador:'Coordinador Emergencias'},
+    {nombre:'Simulación Táctica Brigada Nivel II',horas:6,frecuencia:'Trimestral',modalidad:'Práctica',normativa:'Programa Brigada',dirigidoA:'Brigada Nivel II',facilitador:'Coordinador Emergencias'},
+    {nombre:'Tank Firefighting',horas:24,frecuencia:'Anual',modalidad:'Mixta',normativa:'API 2021 / NFPA 11',dirigidoA:'Brigada Nivel III',facilitador:'Instructor Especializado'},
+    {nombre:'Foam Operations Advanced',horas:16,frecuencia:'Semestral',modalidad:'Práctica',normativa:'NFPA 11',dirigidoA:'Brigada Nivel III',facilitador:'Especialista Espuma'},
+    {nombre:'BLEVE y Fenómenos Térmicos',horas:6,frecuencia:'Bianual',modalidad:'Mixta',normativa:'API / NFPA',dirigidoA:'Brigada Nivel III',facilitador:'Instructor Externo'},
+    {nombre:'HAZMAT Awareness',horas:8,frecuencia:'Bianual',modalidad:'Mixta',normativa:'NFPA 470',dirigidoA:'Brigada Nivel III',facilitador:'Instructor HAZMAT'},
+    {nombre:'HAZMAT Operations',horas:40,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 470',dirigidoA:'Brigada Nivel III',facilitador:'Instructor HAZMAT'},
+    {nombre:'Monitoreo Atmosférico Avanzado',horas:8,frecuencia:'Semestral',modalidad:'Práctica',normativa:'NFPA 350',dirigidoA:'Brigada Nivel III',facilitador:'HSE'},
+    {nombre:'Rescate Espacios Confinados',horas:24,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 350',dirigidoA:'Brigada Nivel III',facilitador:'Instructor Rescate'},
+    {nombre:'Rescate Industrial Básico',horas:16,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 1670',dirigidoA:'Brigada Nivel III',facilitador:'Instructor Rescate'},
+    {nombre:'Accountability y MAYDAY',horas:6,frecuencia:'Semestral',modalidad:'Práctica',normativa:'NFPA 1500',dirigidoA:'Brigada Nivel III',facilitador:'Instructor Brigada'},
+    {nombre:'ICS-200 / SCI Intermedio',horas:16,frecuencia:'Anual',modalidad:'Mixta',normativa:'NFPA 1561',dirigidoA:'Líderes Brigada',facilitador:'Instructor SCI'},
+    {nombre:'Tactical Decision Making',horas:8,frecuencia:'Anual',modalidad:'Taller',normativa:'ICS/NIMS',dirigidoA:'SCI / Líderes Brigada',facilitador:'Consultor Externo'},
+    {nombre:'Simulación Emergencia Mayor Nivel III',horas:8,frecuencia:'Semestral',modalidad:'Práctica',normativa:'Ley 1523',dirigidoA:'Brigada Nivel III',facilitador:'Coordinador Emergencias'},
+    {nombre:'SCI Avanzado / Unified Command',horas:24,frecuencia:'Anual',modalidad:'Taller',normativa:'NFPA 1561',dirigidoA:'Comandantes Incidente',facilitador:'Instructor SCI'},
+    {nombre:'Gestión de Crisis',horas:16,frecuencia:'Anual',modalidad:'Taller',normativa:'ISO 22320',dirigidoA:'SCI / Gerencia',facilitador:'Consultor'},
+    {nombre:'Comunicación en Crisis',horas:8,frecuencia:'Anual',modalidad:'Taller',normativa:'ISO 22320',dirigidoA:'SCI / Comunicaciones',facilitador:'Comunicaciones'},
+    {nombre:'Simulación Mesa SCI',horas:4,frecuencia:'Trimestral',modalidad:'Taller',normativa:'SCI',dirigidoA:'SCI / Coordinadores',facilitador:'Coordinador Emergencias'},
+    {nombre:'Simulacro Integrado Emergencia Mayor',horas:12,frecuencia:'Anual',modalidad:'Práctica',normativa:'Ley 1523 / Dec. 2157',dirigidoA:'Toda la Organización',facilitador:'HSE / Externos'}
+  ],
+  procesos: [
+    {nombre:'Introducción al SGSPAM',horas:3,frecuencia:'Ingreso',modalidad:'Teórica',normativa:'Res. 5492/2024',dirigidoA:'Personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Política de Prevención de Accidentes Mayores',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'Res. 5492/2024',dirigidoA:'Todo el personal',facilitador:'Coordinador HSE'},
+    {nombre:'Información de Seguridad del Proceso',horas:4,frecuencia:'Anual',modalidad:'Teórica',normativa:'Res. 5492/2024',dirigidoA:'Personal operativo',facilitador:'Coordinador de Procesos'},
+    {nombre:'HAZOP / WHAT-IF',horas:8,frecuencia:'Bianual',modalidad:'Taller',normativa:'Res. 5492/2024',dirigidoA:'Ingenieros y coordinadores',facilitador:'Consultor Externo'},
+    {nombre:'Procedimientos de Operación Segura',horas:4,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 5492/2024',dirigidoA:'Operadores',facilitador:'Coordinador de Procesos'},
+    {nombre:'PSSR (Pre-Startup Safety Review)',horas:4,frecuencia:'Bianual',modalidad:'Taller',normativa:'Res. 5492/2024',dirigidoA:'Personal técnico',facilitador:'Coordinador HSE'},
+    {nombre:'Integridad Mecánica',horas:4,frecuencia:'Anual',modalidad:'Mixta',normativa:'Res. 5492/2024',dirigidoA:'Personal de mantenimiento',facilitador:'Técnico Mecánico'},
+    {nombre:'Gestión del Cambio (MOC)',horas:4,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 5492/2024',dirigidoA:'Supervisores y coordinadores',facilitador:'Coordinador HSE'},
+    {nombre:'Emisor de Permisos de Trabajo',horas:8,frecuencia:'Única',modalidad:'Mixta',normativa:'Res. 5492/2024 / NTC 4116',dirigidoA:'Coordinadores y supervisores',facilitador:'Coordinador HSE'},
+    {nombre:'Receptor de Permisos de Trabajo',horas:4,frecuencia:'Anual',modalidad:'Presencial',normativa:'Res. 5492/2024',dirigidoA:'Personal operativo',facilitador:'Coordinador HSE'},
+    {nombre:'Investigación de Accidentes Mayores',horas:8,frecuencia:'Bianual',modalidad:'Taller',normativa:'Res. 5492/2024',dirigidoA:'Coordinadores',facilitador:'Consultor Externo'},
+    {nombre:'Indicadores SGSPAM',horas:2,frecuencia:'Anual',modalidad:'Teórica',normativa:'Res. 5492/2024',dirigidoA:'Coordinadores HSE',facilitador:'Coordinador HSE'},
+    {nombre:'Auditorías Internas SGSPAM',horas:8,frecuencia:'Anual',modalidad:'Taller',normativa:'Res. 5492/2024',dirigidoA:'Auditores internos',facilitador:'Consultor Externo'}
+  ],
+  tecnicos: [],
+  complementarios: [
+    {nombre:'Curso SG-SST (Decreto 1072/2015)',horas:50,frecuencia:'Única',modalidad:'Virtual',normativa:'Dec. 1072/2015',dirigidoA:'Responsables SG-SST',facilitador:'SENA / ARL'},
+    {nombre:'Reentrenamiento SG-SST',horas:20,frecuencia:'Trianual',modalidad:'Virtual',normativa:'Dec. 1072/2015',dirigidoA:'Responsables SG-SST',facilitador:'SENA / ARL'},
+    {nombre:'Investigación de Accidentes',horas:4,frecuencia:'Única',modalidad:'Presencial',normativa:'GTC 45',dirigidoA:'Coordinadores y supervisores',facilitador:'ARL'},
+    {nombre:'Inspecciones de Seguridad',horas:4,frecuencia:'Única',modalidad:'Presencial',normativa:'Dec. 1072/2015',dirigidoA:'Coordinadores HSE',facilitador:'Coordinador HSE'},
+    {nombre:'Auditor Interno Integral (ISO 9001/14001/45001)',horas:40,frecuencia:'Bianual',modalidad:'Presencial',normativa:'ISO 9001/14001/45001',dirigidoA:'Auditores internos',facilitador:'Organismo certificador'}
+  ]
+};
+
+// ── Cargar categoría desde Firestore; si vacía → inicializar automáticamente en Firestore ──
+async function _bibCargarCat(cat) {
+  if (_bibData[cat]) return _bibData[cat];
+  try {
+    var fb = window._fb, db = window._db;
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(db, 'formaciones', cat, 'capacitaciones'),
+      fb.orderBy('orden','asc')
+    ));
+    if (!snap.empty) {
+      _bibData[cat] = snap.docs.map(function(d){ return Object.assign({_fid:d.id}, d.data()); });
+    } else {
+      // Auto-inicializar en Firestore con datos base
+      var base = (BIB_BASE[cat]||[]).map(function(f,i){
+        return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true, fechaActualizacion:new Date().toISOString()});
+      });
+      var batch = [];
+      for (var i=0; i<base.length; i++) {
+        try {
+          var ref = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), base[i]);
+          base[i]._fid = ref.id;
+        } catch(ex) { /* sin permisos de escritura — continuar */ }
+      }
+      _bibData[cat] = base;
+    }
+  } catch(e) {
+    console.warn('_bibCargarCat('+cat+'):', e.message);
+    _bibData[cat] = (BIB_BASE[cat]||[]).map(function(f,i){
+      return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true});
+    });
+  }
+  return _bibData[cat];
+}
+
+function showBTab(cat) {
+  _bibCatActual = cat;
+  Object.keys(BIB_CATS).forEach(function(c){
+    var btn = document.getElementById('btab-'+c);
+    if(btn) btn.classList.toggle('active', c===cat);
+  });
+  renderBiblioteca();
+}
+
+async function renderBiblioteca() {
+  var cat = _bibCatActual;
+  var info = BIB_CATS[cat] || {};
+  var lbl = document.getElementById('bib-cat-label');
+  var cnt = document.getElementById('bib-cat-count');
+  var tbody = document.getElementById('bib-tbody');
+  if(lbl) lbl.textContent = info.label || cat;
+  if(tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-3)">Cargando…</td></tr>';
+
+  var data = await _bibCargarCat(cat);
+  if(cnt) cnt.textContent = data.length + ' formaciones';
+
+  // Permisos S32: admin y supervisor pueden crear/editar; solo admin puede eliminar
+  var isAdmin      = window.currentUser && window.currentUser.role === 'admin';
+  var puedeEditar  = window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'supervisor');
+
+  // Control visibilidad botón Nueva formación
+  var btnNueva = document.getElementById('btn-nueva-formacion');
+  if (btnNueva) btnNueva.style.display = puedeEditar ? '' : 'none';
+
+  var rows = data.map(function(f, i) {
+    var cargosN = Array.isArray(f.cargosAplicables) ? f.cargosAplicables.length : 0;
+    var cargosCell = cargosN
+      ? '<span title="'+((f.cargosAplicables||[]).join(', '))+'" style="font-size:10px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px;cursor:help">👥 '+cargosN+'</span>'
+      : '<span style="font-size:10px;color:var(--text-3)">—</span>';
+    var accCell = '';
+    if (puedeEditar) accCell += '<button class="btn btn-ghost btn-xs" onclick="abrirModalFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Editar">✏️</button> ';
+    if (isAdmin)     accCell += '<button class="btn btn-danger btn-xs" onclick="eliminarFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Eliminar">🗑</button>';
+    return '<tr style="border-bottom:1px solid var(--border)">' +
+      '<td style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-3);padding:8px 6px">'+(f.orden||i+1)+'</td>'+
+      '<td style="padding:8px 10px"><div style="font-weight:600;font-size:12px">'+(f.nombre||'')+'</div>'+
+        (f.objetivo?'<div style="font-size:10.5px;color:var(--text-3);margin-top:1px">'+(f.objetivo).slice(0,80)+(f.objetivo.length>80?'…':'')+'</div>':'')+'</td>'+
+      '<td style="text-align:center;font-size:12px;padding:8px 6px">'+(f.horas||'—')+'h</td>'+
+      '<td style="font-size:11px;padding:8px 6px">'+(f.frecuencia||'—')+'</td>'+
+      '<td style="font-size:11px;padding:8px 6px">'+(f.modalidad||'—')+'</td>'+
+      '<td style="font-size:10.5px;padding:8px 6px;color:var(--text-2)">'+(f.normativa||'—')+'</td>'+
+      '<td style="text-align:center;padding:8px 6px">'+cargosCell+'</td>'+
+      '<td style="padding:8px 6px;white-space:nowrap">'+(accCell||'')+'</td>'+
+    '</tr>';
+  }).join('');
+
+  if(tbody) tbody.innerHTML = rows || '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text-3)">Sin formaciones en esta categoría.</td></tr>';
+}
+
+function abrirModalFormacion(cat, idx) {
+  var isNew = (cat === null);
+  document.getElementById('form_edit_id').value = '';
+  document.getElementById('form_edit_cat').value = isNew ? '' : cat;
+  document.getElementById('modalFormTitle').textContent = isNew ? '📋 Nueva formación' : '✏️ Editar formación';
+  ['form_nombre','form_objetivo','form_contenido','form_dirigido','form_prereq','form_facilitador','form_normativa'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  var elH=document.getElementById('form_horas'); if(elH) elH.value='';
+  document.getElementById('form_categoria').value = isNew ? '' : cat;
+  document.getElementById('form_modalidad').value = '';
+  document.getElementById('form_frecuencia').value = '';
+
+  var wrap = document.getElementById('form_cargos_wrap');
+  var cargos = (_catalogos && _catalogos.cargos && _catalogos.cargos.length) ? _catalogos.cargos.slice().sort() : [];
+  var f = (!isNew && idx !== undefined && _bibData[cat]) ? (_bibData[cat][idx] || {}) : {};
+  if(!isNew) {
+    document.getElementById('form_edit_id').value = f._fid || ('__idx__'+idx);
+    document.getElementById('form_nombre').value = f.nombre || '';
+    document.getElementById('form_objetivo').value = f.objetivo || '';
+    document.getElementById('form_contenido').value = f.contenido || '';
+    document.getElementById('form_dirigido').value = f.dirigidoA || '';
+    document.getElementById('form_prereq').value = f.prerrequisitos || '';
+    document.getElementById('form_facilitador').value = f.facilitador || '';
+    document.getElementById('form_horas').value = f.horas || '';
+    document.getElementById('form_modalidad').value = f.modalidad || '';
+    document.getElementById('form_frecuencia').value = f.frecuencia || '';
+    document.getElementById('form_normativa').value = f.normativa || '';
+  }
+  var selCargos = Array.isArray(f.cargosAplicables) ? f.cargosAplicables : [];
+  if(wrap) {
+    if(!cargos.length){
+      wrap.innerHTML='<span style="font-size:11px;color:var(--text-3)">Sin cargos en catálogo. Agrégalos en Configuración → Trabajadores.</span>';
+    } else {
+      wrap.innerHTML = cargos.map(function(c){
+        var chk = selCargos.indexOf(c)>=0 ? 'checked' : '';
+        return '<label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--card)">'+
+          '<input type="checkbox" class="bib-cargo-chk" value="'+c+'" '+chk+' style="width:12px;height:12px">'+c+'</label>';
+      }).join('');
+    }
+  }
+  openOv('ov-formacion');
+}
+
+function cerrarModalFormacion() { closeOv('ov-formacion'); }
+
+async function guardarFormacion() {
+  var cat  = document.getElementById('form_categoria').value;
+  var nom  = (document.getElementById('form_nombre').value||'').trim();
+  if (!cat) { showToast('Seleccione una categoría'); return; }
+  if (!nom) { showToast('Ingrese el nombre de la formación'); return; }
+
+  var selCargos = [];
+  document.querySelectorAll('.bib-cargo-chk:checked').forEach(function(chk){ selCargos.push(chk.value); });
+
+  var editId = document.getElementById('form_edit_id').value;
+  var existing = _bibData[cat] || [];
+  var orden = existing.length + 1;
+  if (editId && !editId.startsWith('__idx__')) {
+    var curr = existing.find(function(x){ return x._fid === editId; });
+    if (curr) orden = curr.orden || orden;
+  } else if (editId && editId.startsWith('__idx__')) {
+    var idxN = parseInt(editId.replace('__idx__',''));
+    if (!isNaN(idxN) && existing[idxN]) orden = existing[idxN].orden || orden;
+  }
+
+  var reg = {
+    categoria: cat, orden: orden, nombre: nom,
+    objetivo: (document.getElementById('form_objetivo').value||'').trim(),
+    contenido: (document.getElementById('form_contenido').value||'').trim(),
+    dirigidoA: (document.getElementById('form_dirigido').value||'').trim(),
+    prerrequisitos: (document.getElementById('form_prereq').value||'').trim(),
+    facilitador: (document.getElementById('form_facilitador').value||'').trim(),
+    horas: parseFloat(document.getElementById('form_horas').value||0)||0,
+    modalidad: document.getElementById('form_modalidad').value,
+    frecuencia: document.getElementById('form_frecuencia').value,
+    normativa: (document.getElementById('form_normativa').value||'').trim(),
+    cargosAplicables: selCargos, activo: true,
+    fechaActualizacion: new Date().toISOString()
+  };
+
+  try {
+    var fb = window._fb, db = window._db;
+    if (editId && !editId.startsWith('__idx__')) {
+      await fb.setDoc(fb.doc(db,'formaciones',cat,'capacitaciones',editId), reg, {merge:true});
+    } else if (editId && editId.startsWith('__idx__')) {
+      // Tenía _fid de init — actualizar el doc
+      var idxU = parseInt(editId.replace('__idx__',''));
+      var fExist = existing[idxU];
+      if (fExist && fExist._fid) {
+        await fb.setDoc(fb.doc(db,'formaciones',cat,'capacitaciones',fExist._fid), reg, {merge:true});
+      } else {
+        // Si no tiene _fid, crear nuevo
+        var newRef = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), reg);
+        reg._fid = newRef.id;
+      }
+    } else {
+      var addRef = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), reg);
+      reg._fid = addRef.id;
+    }
+    delete _bibData[cat];
+    cerrarModalFormacion();
+    await renderBiblioteca();
+    showToast('✅ Formación guardada');
+  } catch(e) {
+    console.error('guardarFormacion:', e);
+    showToast('Error guardando: ' + e.message);
+  }
+}
+
+async function eliminarFormacion(cat, idx) {
+  var isAdmin = window.currentUser && window.currentUser.role === 'admin';
+  if (!isAdmin) { showToast('Solo el administrador puede eliminar formaciones'); return; }
+  if (!confirm('¿Eliminar esta formación de la Matriz? Esta acción no se puede deshacer.')) return;
+  var data = _bibData[cat] || [];
+  var f = data[idx];
+  if (!f) return;
+  try {
+    if (f._fid) {
+      var fb = window._fb, db = window._db;
+      await fb.deleteDoc(fb.doc(db,'formaciones',cat,'capacitaciones',f._fid));
+    }
+    delete _bibData[cat];
+    await renderBiblioteca();
+    showToast('Formación eliminada');
+  } catch(e) {
+    showToast('Error eliminando: ' + e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// S32 — POR CARGO (Subtab 2)
+// ═══════════════════════════════════════════════════════════════
+function renderPorCargoInit() {
+  // Poblar selects
+  var selC = document.getElementById('pc-sel-cargo');
+  var selT = document.getElementById('pc-sel-trab');
+  if (!selC || !selT) return;
+  var cargos = (_catalogos && _catalogos.cargos && _catalogos.cargos.length) ? _catalogos.cargos.slice().sort() : [];
+  selC.innerHTML = '<option value="">— Seleccione un cargo —</option>' +
+    cargos.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+  selT.innerHTML = '<option value="">— Seleccione un trabajador —</option>';
+  (_trabList||[]).slice().sort(function(a,b){return trabNombre(a).localeCompare(trabNombre(b));}).forEach(function(t){
+    var o = document.createElement('option');
+    o.value = t.cedula;
+    o.textContent = trabNombre(t) + ' — ' + (t.cargo||'Sin cargo');
+    selT.appendChild(o);
+  });
+}
+
+async function renderPorCargo() {
+  var cargo = (document.getElementById('pc-sel-cargo')||{}).value || '';
+  document.getElementById('pc-sel-trab').value = '';
+  document.getElementById('pc-trab-header').style.display='none';
+  if (!cargo) { document.getElementById('pc-resultado').style.display='none'; document.getElementById('pc-empty').style.display='block'; return; }
+  document.getElementById('pc-resultado').style.display='block';
+  document.getElementById('pc-empty').style.display='none';
+  await _renderPorCargoGrid(cargo, null);
+}
+
+async function renderPorCargoTrab() {
+  var cedula = (document.getElementById('pc-sel-trab')||{}).value || '';
+  document.getElementById('pc-sel-cargo').value = '';
+  if (!cedula) { document.getElementById('pc-resultado').style.display='none'; document.getElementById('pc-empty').style.display='block'; return; }
+  var trab = (_trabList||[]).find(function(t){ return String(t.cedula)===String(cedula); });
+  if (!trab) return;
+  document.getElementById('pc-resultado').style.display='block';
+  document.getElementById('pc-empty').style.display='none';
+  // Show worker header
+  var hdr = document.getElementById('pc-trab-header');
+  var nomEl = document.getElementById('pc-trab-nombre');
+  var infEl = document.getElementById('pc-trab-info');
+  if(hdr) hdr.style.display='block';
+  if(nomEl) nomEl.textContent = trabNombre(trab);
+  if(infEl) infEl.textContent = (trab.cargo||'') + ' · ' + (trab.empresa||'') + ' · Cédula: ' + cedula;
+  await _renderPorCargoGrid(trab.cargo||'', cedula);
+}
+
+async function _renderPorCargoGrid(cargo, cedula) {
+  var grid = document.getElementById('pc-grid');
+  if (grid) grid.innerHTML = '<div style="padding:20px;color:var(--text-3);font-size:12px">Cargando formaciones…</div>';
+
+  // Cargar todas las categorías bajo demanda
+  var todas = [];
+  var cats = Object.keys(BIB_CATS);
+  for (var i=0; i<cats.length; i++) {
+    var arr = await _bibCargarCat(cats[i]);
+    arr.forEach(function(f) {
+      if (!cargo || !Array.isArray(f.cargosAplicables) || f.cargosAplicables.length===0 ||
+          f.cargosAplicables.some(function(c){ return c===cargo; })) {
+        todas.push(Object.assign({}, f, {_cat:cats[i]}));
+      }
+    });
+  }
+
+  // Calcular estado por formación (cruzando con CAP_DATA)
+  var capsByCed = {};
+  if (cedula) {
+    (CAP_DATA||[]).filter(function(r){ return String(r.cedula)===String(cedula); }).forEach(function(r){
+      var key = (r.tema||'').toLowerCase();
+      if (!capsByCed[key]) capsByCed[key]=[];
+      capsByCed[key].push(r);
+    });
+  }
+
+  function _frecToMeses(frec) {
+    var map={'Trimestral':3,'Semestral':6,'Anual':12,'Cada 18 meses':18,'Bianual':24,'Trianual':36,'Única':9999,'Ingreso':9999};
+    return map[frec]||12;
+  }
+
+  function _estadoFormacion(f) {
+    if (!cedula) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
+    var nomLow = (f.nombre||'').toLowerCase();
+    var regs = capsByCed[nomLow] || [];
+    if (!regs.length) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
+    var ultReg = regs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
+    if (!ultReg.vencimiento && !ultReg.fecha) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
+    if (ultReg.vencimiento) {
+      var d = _diasHasta(ultReg.vencimiento);
+      return _semaforo(d);
+    }
+    // Calcular vencimiento desde frecuencia
+    var meses = _frecToMeses(f.frecuencia||'');
+    if (meses >= 9999) return {est:'vigente',label:'Vigente (única)',color:'var(--green)',bg:'var(--green-lt)'};
+    var fechaEjec = new Date(ultReg.fecha);
+    fechaEjec.setMonth(fechaEjec.getMonth() + meses);
+    return _semaforo(_diasHasta(fechaEjec.toISOString().split('T')[0]));
+  }
+
+  if (!todas.length) {
+    grid.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-3)">Sin formaciones asignadas a este cargo.<br><span style="font-size:11px">Asigna cargos en la Biblioteca de Formaciones.</span></div>';
+    return;
+  }
+
+  // Agrupar por categoría
+  var porCat = {};
+  todas.forEach(function(f){
+    if(!porCat[f._cat]) porCat[f._cat]=[];
+    porCat[f._cat].push(f);
+  });
+
+  var html = '';
+  Object.keys(porCat).forEach(function(cat){
+    var catInfo = BIB_CATS[cat]||{};
+    html += '<div style="margin-bottom:18px">';
+    html += '<div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--esq-blue);margin-bottom:8px;display:flex;align-items:center;gap:8px">'+
+      catInfo.label + '<span style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:none;letter-spacing:0">('+porCat[cat].length+')</span></div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px">';
+    porCat[cat].forEach(function(f){
+      var est = _estadoFormacion(f);
+      var dotColor = {vigente:'var(--green)',prox30:'#b45309',prox90:'var(--amber)',vencido:'var(--red)',pendiente:'var(--text-3)',sin_fecha:'var(--text-3)'}[est.est]||'var(--text-3)';
+      html += '<div style="background:var(--card);border:1px solid var(--border);border-left:4px solid '+dotColor+';border-radius:var(--r-sm);padding:10px 12px">'+
+        '<div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:3px">'+(f.nombre||'')+'</div>'+
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px">'+
+          '<div style="font-size:10.5px;color:var(--text-3)">'+(f.horas||'—')+'h · '+(f.frecuencia||'')+'</div>'+
+          '<span style="font-size:10px;font-weight:700;background:'+est.bg+';color:'+est.color+';padding:2px 7px;border-radius:99px">'+est.label+'</span>'+
+        '</div>'+
+      '</div>';
+    });
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// S32 — DASHBOARD INDICADORES FORMACIONES (Subtab 4)
+// ═══════════════════════════════════════════════════════════════
+var _dfCharts = {};
+
+async function renderDashFormaciones() {
+  var kpiEl = document.getElementById('dash-form-kpis');
+  if (kpiEl) kpiEl.innerHTML = '<div style="padding:20px;color:var(--text-3);font-size:12px">Calculando…</div>';
+
+  // ── FUENTE 1: Matriz de Entrenamientos ──
+  var totalFormaciones = 0;
+  var porCategoria = {};
+  var todasFormaciones = []; // {cat, formacion}
+  var cats = Object.keys(BIB_CATS);
+  for (var i=0; i<cats.length; i++) {
+    var arr = await _bibCargarCat(cats[i]);
+    porCategoria[cats[i]] = arr.length;
+    totalFormaciones += arr.length;
+    arr.forEach(function(f){ todasFormaciones.push({cat:cats[i], f:f}); });
+  }
+
+  // ── FUENTE 2: Trabajadores activos + cargo ──
+  var activos = (_trabList||[]).filter(function(t){ return t.estado==='Activo'; });
+  var totalActivos = activos.length;
+
+  // ── FUENTE 3: CAP_DATA (Registro e Historial) ──
+  // Índice: cedula → [registros]
+  var capByCed = {};
+  (CAP_DATA||[]).forEach(function(r){
+    var k = String(r.cedula||'');
+    if (!k) return;
+    if (!capByCed[k]) capByCed[k] = [];
+    capByCed[k].push(r);
+  });
+
+  // ── CRUCE: cobertura por formación ──
+  // Para cada formación con cargosAplicables → calcular cuántos trabajadores de ese cargo tienen registro
+  function _frecToMeses(frec) {
+    var map={'Trimestral':3,'Semestral':6,'Anual':12,'Cada 18 meses':18,'Bianual':24,'Trianual':36,'Única':9999,'Ingreso':9999};
+    return map[frec]||12;
+  }
+  function _estadoRegistro(r, mesesFrec) {
+    if (r.tieneVenc==='SI' && r.vencimiento) return _semaforo(_diasHasta(r.vencimiento)).est;
+    if (r.fecha && mesesFrec < 9999) {
+      var d = new Date(r.fecha); d.setMonth(d.getMonth()+mesesFrec);
+      return _semaforo(_diasHasta(d.toISOString().split('T')[0])).est;
+    }
+    return 'vigente';
+  }
+
+  var coberturaForm = []; // para tabla por formación
+  var totalRequeridos = 0, totalCubiertos = 0;
+  todasFormaciones.forEach(function(item){
+    var f = item.f;
+    var meses = _frecToMeses(f.frecuencia||'');
+    var nomLow = (f.nombre||'').toLowerCase().trim();
+    var cargosF = Array.isArray(f.cargosAplicables) && f.cargosAplicables.length ? f.cargosAplicables : null;
+    var trabajsReq = cargosF
+      ? activos.filter(function(t){ return cargosF.indexOf(t.cargo)>=0; })
+      : activos; // si no tiene cargos asignados, aplica a todos
+    var req = trabajsReq.length;
+    if (!req) return; // sin trabajadores requeridos → no cuenta
+    totalRequeridos += req;
+    var cubiertos = 0, vencidosF = 0, pendientesF = 0;
+    trabajsReq.forEach(function(t){
+      var regs = (capByCed[String(t.cedula)]||[]).filter(function(r){
+        var tLow = (r.tema||'').toLowerCase().trim();
+        return tLow && nomLow && (tLow===nomLow || tLow.includes(nomLow) || nomLow.includes(tLow));
+      });
+      if (!regs.length) { pendientesF++; return; }
+      var ultReg = regs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
+      var est = _estadoRegistro(ultReg, meses);
+      if (est==='vencido') vencidosF++;
+      else cubiertos++;
+    });
+    totalCubiertos += cubiertos;
+    var pct = req ? Math.round(cubiertos/req*100) : 0;
+    coberturaForm.push({
+      nombre: f.nombre, cat: item.cat, req: req,
+      cubiertos: cubiertos, vencidos: vencidosF, pendientes: pendientesF, pct: pct
+    });
+  });
+
+  var pctCobertura = totalRequeridos ? Math.round(totalCubiertos/totalRequeridos*100) : 0;
+
+  // Métricas CAP_DATA adicionales
+  var totalRegs = CAP_DATA.length;
+  var aprobados = CAP_DATA.filter(function(r){ return r.aprobado==='SI'; }).length;
+  var vencidosR = CAP_DATA.filter(function(r){ return r.tieneVenc==='SI' && _semaforo(_diasHasta(r.vencimiento)).est==='vencido'; }).length;
+  var prox30 = CAP_DATA.filter(function(r){ return r.tieneVenc==='SI' && _semaforo(_diasHasta(r.vencimiento)).est==='prox30'; }).length;
+  var pctAprobacion = totalRegs ? Math.round(aprobados/totalRegs*100) : 0;
+
+  // ── KPIs ──
+  if (kpiEl) kpiEl.innerHTML =
+    '<div class="kpi blue"><div class="kpi-ico">📋</div><div class="kpi-lbl">Formaciones en Matriz</div><div class="kpi-val">'+totalFormaciones+'</div><div class="kpi-note">en 7 categorías</div></div>'+
+    '<div class="kpi '+(pctCobertura>=80?'green':pctCobertura>=50?'yellow':'red')+'"><div class="kpi-ico">📊</div><div class="kpi-lbl">Cobertura general</div><div class="kpi-val">'+pctCobertura+'%</div><div class="kpi-note">'+totalCubiertos+' de '+totalRequeridos+' requeridos</div></div>'+
+    '<div class="kpi red"><div class="kpi-ico">⏰</div><div class="kpi-lbl">Vencidas</div><div class="kpi-val">'+vencidosR+'</div><div class="kpi-note">'+prox30+' próximas a vencer</div></div>'+
+    '<div class="kpi green"><div class="kpi-ico">✅</div><div class="kpi-lbl">Aprobación</div><div class="kpi-val">'+pctAprobacion+'%</div><div class="kpi-note">'+aprobados+' de '+totalRegs+' registros</div></div>';
+
+  // ── Gráfica 1: cobertura por categoría ──
+  var catLabels = cats.map(function(c){ return (BIB_CATS[c].label||c).replace(/[^\w\sáéíóúÁÉÍÓÚ]/g,'').trim(); });
+  var catPct = cats.map(function(cat){
+    var items = coberturaForm.filter(function(x){ return x.cat===cat; });
+    if (!items.length) return 0;
+    var sumReq = items.reduce(function(s,x){return s+x.req;},0);
+    var sumCub = items.reduce(function(s,x){return s+x.cubiertos;},0);
+    return sumReq ? Math.round(sumCub/sumReq*100) : 0;
+  });
+  _dfRenderChart('df-chart-categorias','bar', catLabels, catPct,
+    ['#0B1C3D','#1A3C8F','#E84E1B','#F5C800','#22c55e','#8b5cf6','#14b8a6']);
+
+  // ── Gráfica 2: estado registros ──
+  var vigentesR = CAP_DATA.filter(function(r){ return r.tieneVenc==='SI' && _semaforo(_diasHasta(r.vencimiento)).est==='vigente'; }).length;
+  var sinVenc = CAP_DATA.filter(function(r){ return r.tieneVenc!=='SI'; }).length;
+  _dfRenderChart('df-chart-estados','doughnut',
+    ['Vigente','Próx. 30d','Vencido','Sin venc.'],
+    [vigentesR, prox30, vencidosR, sinVenc],
+    ['#22c55e','#f59e0b','#ef4444','#94a3b8']);
+
+  // ── Gráfica 3: aprobación ──
+  _dfRenderChart('df-chart-aprobacion','doughnut',
+    ['Aprobados','No aprobados / N/A'],
+    [aprobados, totalRegs-aprobados],
+    ['#22c55e','#ef4444']);
+
+  // ── Tabla cobertura por formación (top 30) ──
+  var tbody = document.getElementById('df-cargo-tbody');
+  if (tbody) {
+    coberturaForm.sort(function(a,b){ return a.pct-b.pct; }); // peor cobertura primero
+    var rows = coberturaForm.slice(0,40).map(function(x){
+      var col = x.pct>=80?'var(--green)':x.pct>=50?'var(--amber)':'var(--red)';
+      var catLabel = (BIB_CATS[x.cat].label||x.cat).replace(/[^\w\sáéíóúÁÉÍÓÚ]/g,'').trim();
+      return '<tr style="border-bottom:1px solid var(--border)">'+
+        '<td style="padding:7px 10px;font-size:12px;font-weight:600">'+x.nombre+'</td>'+
+        '<td style="padding:7px 10px;text-align:center;font-size:11px;color:var(--text-2)">'+catLabel+'</td>'+
+        '<td style="padding:7px 10px;text-align:center;font-size:12px">'+x.cubiertos+'/'+x.req+'</td>'+
+        '<td style="padding:7px 10px;text-align:center;font-size:12px;color:var(--red)">'+x.vencidos+'</td>'+
+        '<td style="padding:7px 10px;text-align:center;font-size:12px;font-weight:700;color:'+col+'">'+x.pct+'%</td>'+
+      '</tr>';
+    }).join('');
+    tbody.innerHTML = rows || '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text-3)">Sin datos — registra capacitaciones en "Registro e Historial"</td></tr>';
+  }
+}
+
+function _dfRenderChart(canvasId, type, labels, data, colors) {
+  var ctx = document.getElementById(canvasId);
+  if (!ctx || typeof Chart === 'undefined') return;
+  if (_dfCharts[canvasId]) { try { _dfCharts[canvasId].destroy(); } catch(e){} }
+  _dfCharts[canvasId] = new Chart(ctx, {
+    type: type,
+    data: {
+      labels: labels,
+      datasets: [{
+        data: data,
+        backgroundColor: type==='bar' ? colors.slice(0,data.length) : colors,
+        borderRadius: type==='bar' ? 4 : 0,
+        borderWidth: type==='doughnut' ? 2 : 0,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: type==='doughnut'?'bottom':'top', labels: { font:{size:10}, boxWidth:10, padding:8 } } },
+      scales: type==='bar' ? { y:{beginAtZero:true,ticks:{stepSize:1,font:{size:10}}}, x:{ticks:{font:{size:9}}} } : {}
+    }
+  });
+}
+
 // ═══════════════════════════════════════════════════════
 // SESIÓN 23 — MEDICINA LABORAL + DASHBOARD CAPACITACIONES
 // ═══════════════════════════════════════════════════════
@@ -7088,27 +7833,30 @@ async function showMTab(id){
   }
 }
 
-// ── Sub-tabs Capacitaciones con Dashboard ─────────────
-// B20 s30: showCTab2 unificado — incluye 'programa'
+// ── Sub-tabs Capacitaciones — S32: 4 tabs nuevos ──────────
 function showCTab2(id){
-  var ids=['cap-dashboard','alturas','confinados','cap','programa'];
+  var ids=['biblioteca','por-cargo','cap','dash-form'];
   ids.forEach(function(i){
     var v=document.getElementById('cview-'+i);
     if(v) v.style.display='none';
   });
-  document.querySelectorAll('[id^="ctab-dashboard-cap"],[id="ctab-alturas"],[id="ctab-confinados"],[id="ctab-cap"],[id="ctab-programa"]').forEach(function(t){
+  document.querySelectorAll('[id^="ctab-biblioteca"],[id="ctab-por-cargo"],[id="ctab-cap"],[id="ctab-dash-form"]').forEach(function(t){
     t.classList.remove('active');
   });
   var cv=document.getElementById('cview-'+id);
   if(cv) cv.style.display='block';
-  var tabMap={'cap-dashboard':'ctab-dashboard-cap','alturas':'ctab-alturas','confinados':'ctab-confinados','cap':'ctab-cap','programa':'ctab-programa'};
+  var tabMap={
+    'biblioteca':'ctab-biblioteca',
+    'por-cargo':'ctab-por-cargo',
+    'cap':'ctab-cap',
+    'dash-form':'ctab-dash-form'
+  };
   var ct=document.getElementById(tabMap[id]);
   if(ct) ct.classList.add('active');
-  if(id==='cap-dashboard') renderCapDashboard();
-  if(id==='alturas') renderAlturas();
-  if(id==='confinados') renderConfinados();
-  if(id==='cap') renderCAP();
-  if(id==='programa') renderProgramaAnual();
+  if(id==='biblioteca') renderBiblioteca();
+  if(id==='por-cargo')  renderPorCargoInit();
+  if(id==='cap')        renderCAP();
+  if(id==='dash-form')  renderDashFormaciones();
 }
 
 // s30: override renderTabCapacitaciones eliminado — función ya corregida arriba
