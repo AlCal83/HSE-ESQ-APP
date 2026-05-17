@@ -7077,7 +7077,7 @@ async function guardarCAP(){
   var tieneVenc=(chkV&&chkV.checked)?'SI':'NO';
 
   var reg={cedula:cedula,nombre:nombre,cargo:cargo,
-    origen:origen, temaId:temaId||null, tema:tema, temaCategoria:temaCategoria,
+    origen:origen, temaId:temaId||null, formacionId:temaId||null, tema:tema, temaCategoria:temaCategoria,
     tipo:tipo,
     modalidad:document.getElementById('cap_modalidad').value,
     fecha:fecha,
@@ -7482,8 +7482,6 @@ async function guardarFormacion() {
 }
 
 async function eliminarFormacion(cat, idx) {
-  var isAdmin = window.currentUser && window.currentUser.role === 'admin';
-  if (!isAdmin) { showToast('Solo el administrador puede eliminar formaciones'); return; }
   if (!confirm('¿Eliminar esta formación de la Matriz? Esta acción no se puede deshacer.')) return;
   var data = _bibData[cat] || [];
   var f = data[idx];
@@ -7584,54 +7582,24 @@ async function _renderPorCargoGrid(cargo, cedula) {
   function _estadoFormacion(f) {
     if (!cedula) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
     var nomLow = (f.nombre||'').toLowerCase().trim();
-    var meses = _frecToMeses(f.frecuencia||'');
+    var fid = f._fid || null;
 
-    // Buscar todos los registros que coincidan con esta formación O con su reentrenamiento
-    var allRegs = [];
-    Object.keys(capsByCed).forEach(function(){});
-    var trabRegs = capsByCed[nomLow] || [];
-
-    // También buscar reentrenamientos relacionados (ej: "reentrenamiento autorizado" para "trabajador autorizado")
-    var palabrasClave = nomLow.split(' ').filter(function(w){ return w.length > 4; });
-    Object.keys(capsByCed).forEach(function(key){
-      if (key === nomLow) return; // ya incluido
-      var esRelacionado = palabrasClave.some(function(w){ return key.indexOf(w) >= 0; });
-      if (esRelacionado) {
-        capsByCed[key].forEach(function(r){ allRegs.push(r); });
-      }
+    // Match: primero por formacionId, luego por nombre
+    var trabRegs = (CAP_DATA||[]).filter(function(r){
+      if (String(r.cedula) !== String(cedula)) return false;
+      if (fid && (r.formacionId === fid || r.temaId === fid)) return true;
+      var tLow = (r.tema||'').toLowerCase().trim();
+      return tLow === nomLow || tLow.includes(nomLow) || nomLow.includes(tLow);
     });
-    trabRegs.forEach(function(r){ allRegs.push(r); });
 
-    if (!allRegs.length) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
+    if (!trabRegs.length) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
 
-    // Tomar el registro más reciente
-    allRegs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); });
-    var ultReg = allRegs[0];
+    var ultReg = trabRegs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
 
-    // Si tiene vencimiento explícito, usarlo
-    if (ultReg.vencimiento && ultReg.tieneVenc === 'SI') {
-      var d = _diasHasta(ultReg.vencimiento);
-      return _semaforo(d);
-    }
-
-    // Si la formación es de frecuencia Única/Ingreso (ej: certificado inicial alturas)
-    // → no vence, pero avisamos si han pasado más de 15 meses sin reentrenamiento
-    if (meses >= 9999) {
-      var fechaEjec = new Date(ultReg.fecha);
-      var mesesTranscurridos = (new Date() - fechaEjec) / (1000 * 60 * 60 * 24 * 30.44);
-      if (mesesTranscurridos > 18) {
-        return {est:'prox30', label:'Reentrenamiento requerido', color:'#b45309', bg:'var(--amber-lt)'};
-      }
-      if (mesesTranscurridos > 15) {
-        return {est:'prox90', label:'Reentrenamiento próximo', color:'var(--amber)', bg:'#fef9ec'};
-      }
+    if (ultReg.tieneVenc !== 'SI' || !ultReg.vencimiento) {
       return {est:'vigente', label:'Vigente', color:'var(--green)', bg:'var(--green-lt)'};
     }
-
-    // Calcular vencimiento desde frecuencia + fecha del registro
-    var fechaVenc = new Date(ultReg.fecha);
-    fechaVenc.setMonth(fechaVenc.getMonth() + meses);
-    return _semaforo(_diasHasta(fechaVenc.toISOString().split('T')[0]));
+    return _semaforo(_diasHasta(ultReg.vencimiento));
   }
 
   if (!todas.length) {
@@ -7711,39 +7679,29 @@ async function renderDashFormaciones() {
 
   // Dado un trabajador y una formación, encontrar el mejor registro
   // (el más reciente que coincide con la formación O con su reentrenamiento)
-  function _mejorRegistro(cedula, nomLow) {
+  function _mejorRegistro(cedula, nomLow, formacionId) {
     var regs = capByCed[String(cedula)] || [];
     if (!regs.length) return null;
-    var palabrasClave = nomLow.split(' ').filter(function(w){ return w.length > 4; });
-    var coincidentes = regs.filter(function(r){
+    // Primero: match exacto por formacionId (ID de Firestore)
+    var porId = formacionId ? regs.filter(function(r){
+      return r.formacionId === formacionId || r.temaId === formacionId;
+    }) : [];
+    // Fallback: match por nombre
+    var porNombre = regs.filter(function(r){
       var tLow = (r.tema||'').toLowerCase().trim();
-      return tLow === nomLow ||
-             tLow.includes(nomLow) ||
-             nomLow.includes(tLow) ||
-             palabrasClave.some(function(w){ return tLow.includes(w); });
+      return tLow === nomLow || tLow.includes(nomLow) || nomLow.includes(tLow);
     });
+    var coincidentes = porId.length ? porId : porNombre;
     if (!coincidentes.length) return null;
     return coincidentes.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
   }
 
-  function _estadoDesdeRegistro(ultReg, mesesFrec) {
+  function _estadoDesdeRegistro(ultReg) {
     if (!ultReg) return 'pendiente';
-    // Si tiene vencimiento explícito, usarlo
-    if (ultReg.tieneVenc === 'SI' && ultReg.vencimiento) {
-      return _semaforo(_diasHasta(ultReg.vencimiento)).est;
-    }
-    // Frecuencia única/ingreso → no vence, pero control de reentrenamiento a 18m
-    if (mesesFrec >= 9999) {
-      var mesesT = (new Date() - new Date(ultReg.fecha)) / (1000*60*60*24*30.44);
-      if (mesesT > 18) return 'vencido';
-      if (mesesT > 15) return 'prox30';
-      return 'vigente';
-    }
-    // Calcular desde fecha + frecuencia
-    if (!ultReg.fecha) return 'pendiente';
-    var fv = new Date(ultReg.fecha);
-    fv.setMonth(fv.getMonth() + mesesFrec);
-    return _semaforo(_diasHasta(fv.toISOString().split('T')[0])).est;
+    // Sin vencimiento registrado → siempre vigente (formación base que no vence)
+    if (ultReg.tieneVenc !== 'SI' || !ultReg.vencimiento) return 'vigente';
+    // Con vencimiento → semáforo normal
+    return _semaforo(_diasHasta(ultReg.vencimiento)).est;
   }
 
   var coberturaForm = [];
@@ -7761,11 +7719,11 @@ async function renderDashFormaciones() {
     totalRequeridos += req;
     var cubiertos = 0, vencidosF = 0, pendientesF = 0;
     trabajsReq.forEach(function(t){
-      var ultReg = _mejorRegistro(t.cedula, nomLow);
-      var est = _estadoDesdeRegistro(ultReg, meses);
+      var ultReg = _mejorRegistro(t.cedula, nomLow, f._fid||null);
+      var est = _estadoDesdeRegistro(ultReg);
       if (est === 'pendiente') pendientesF++;
       else if (est === 'vencido') vencidosF++;
-      else cubiertos++; // vigente, prox30, prox90
+      else cubiertos++;
     });
     totalCubiertos += cubiertos;
     var pct = req ? Math.round(cubiertos/req*100) : 0;
