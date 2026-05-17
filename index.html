@@ -701,14 +701,16 @@ body.is-admin .admin-only-block:not(.view){display:block}
   <div class="login-card">
     <div class="login-logo-wrap"><img src="https://raw.githubusercontent.com/AlCal83/HSE-ESQ-APP/main/Logo%203D_2.png" alt="ESQUIVENSA" style="height:90px;object-fit:contain"></div>
     <div class="login-divider"></div>
+    <form id="login-form" onsubmit="doLogin();return false;" autocomplete="on">
     <label class="login-lbl">Usuario o Cédula</label>
-    <input class="login-inp" id="l-user" type="text" placeholder="cédula / usuario" autocomplete="username">
+    <input class="login-inp" id="l-user" type="text" placeholder="cédula / usuario" autocomplete="username" name="username">
     <label class="login-lbl">Contraseña</label>
     <div class="pwd-wrap">
-      <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-      <button type="button" class="pwd-toggle" onclick="togglePwd('l-pass',this)" tabindex="-1" title="Ver/ocultar">👁</button>
+      <input class="login-inp" id="l-pass" type="password" placeholder="••••••••" autocomplete="current-password" name="password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button type="button" class="pwd-toggle" onclick="togglePwd('l-pass',this)" tabindex="-1" title="Ver/ocultar">○</button>
     </div>
-    <button class="login-btn" onclick="doLogin()">INGRESAR →</button>
+    <button type="submit" class="login-btn">INGRESAR →</button>
+    </form>
     <div class="login-err" id="login-err">⚠️ Usuario o contraseña incorrectos</div>
     <div class="login-footer">ESQUIVENSA · Acceso solo para personal autorizado</div>
   </div>
@@ -2245,9 +2247,8 @@ const INIT_RESPS = [
 ];
 
 // ── USERS: solo admin local — todos los demás usan Firebase Auth ─
-const USERS = {
-  'admin': {pass:'Esq2025#HSE', role:'admin'},
-};
+const USERS = {};
+// Usuario admin eliminado S32 — acceso solo por Firebase Auth con cédula
 
 const MONTHS      = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MONTHS_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -4718,15 +4719,15 @@ function checkAutoEmail() {
       <div class="form-grid">
         <div class="form-group form-full">
           <label class="form-lbl">Contraseña actual</label>
-          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-current" placeholder="Contraseña actual"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-current',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-current" placeholder="Contraseña actual"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-current',this)" tabindex="-1" title="Ver/ocultar">○</button></div>
         </div>
         <div class="form-group form-full">
           <label class="form-lbl">Nueva contraseña</label>
-          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-new" placeholder="Mínimo 8 caracteres"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-new',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-new" placeholder="Mínimo 8 caracteres"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-new',this)" tabindex="-1" title="Ver/ocultar">○</button></div>
         </div>
         <div class="form-group form-full">
           <label class="form-lbl">Confirmar nueva contraseña</label>
-          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-confirm" placeholder="Repite la nueva contraseña"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-confirm',this)" tabindex="-1" title="Ver/ocultar">👁</button></div>
+          <div class="pwd-wrap"><input class="form-inp" type="password" id="cp-confirm" placeholder="Repite la nueva contraseña"><button type="button" class="pwd-toggle-dark" onclick="togglePwd('cp-confirm',this)" tabindex="-1" title="Ver/ocultar">○</button></div>
         </div>
       </div>
       <div class="alert-msg" id="cp-alert" style="margin-top:10px"></div>
@@ -6437,7 +6438,7 @@ function togglePwd(id, btn) {
   if (!inp) return;
   var show = inp.type === 'password';
   inp.type = show ? 'text' : 'password';
-  btn.textContent = show ? '🙈' : '👁';
+  btn.textContent = show ? '●' : '○';
 }
 
 // ── Arquitectura s30: fetchJSON con caché ───────────────────
@@ -7282,7 +7283,7 @@ var BIB_BASE = {
   ]
 };
 
-// ── Cargar categoría desde Firestore; si vacía → inicializar automáticamente en Firestore ──
+// ── Cargar categoría desde Firestore; si vacía → mostrar base solo en memoria (sin escribir) ──
 async function _bibCargarCat(cat) {
   if (_bibData[cat]) return _bibData[cat];
   try {
@@ -7291,26 +7292,33 @@ async function _bibCargarCat(cat) {
       fb.collection(db, 'formaciones', cat, 'capacitaciones'),
       fb.orderBy('orden','asc')
     ));
+    // Siempre partimos de la lista base completa
+    var base = (BIB_BASE[cat]||[]).map(function(f,i){
+      return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true, _fromBase:true});
+    });
     if (!snap.empty) {
-      _bibData[cat] = snap.docs.map(function(d){ return Object.assign({_fid:d.id}, d.data()); });
-    } else {
-      // Auto-inicializar en Firestore con datos base
-      var base = (BIB_BASE[cat]||[]).map(function(f,i){
-        return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true, fechaActualizacion:new Date().toISOString()});
+      // Mezclar: por cada doc de Firestore, reemplazar el item base con mismo nombre
+      var fromFb = snap.docs.map(function(d){ return Object.assign({_fid:d.id}, d.data()); });
+      // Índice por nombre (lowercase) para match
+      var fbByNom = {};
+      fromFb.forEach(function(f){ fbByNom[(f.nombre||'').toLowerCase().trim()] = f; });
+      // Items de Firestore que NO están en la base (creados manualmente)
+      var baseNoms = base.map(function(f){ return (f.nombre||'').toLowerCase().trim(); });
+      var extrasFb = fromFb.filter(function(f){ return baseNoms.indexOf((f.nombre||'').toLowerCase().trim()) < 0; });
+      // Combinar: base reemplazada donde hay coincidencia en Firestore + extras
+      var merged = base.map(function(f){
+        var key = (f.nombre||'').toLowerCase().trim();
+        return fbByNom[key] ? Object.assign({}, fbByNom[key]) : f;
       });
-      var batch = [];
-      for (var i=0; i<base.length; i++) {
-        try {
-          var ref = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), base[i]);
-          base[i]._fid = ref.id;
-        } catch(ex) { /* sin permisos de escritura — continuar */ }
-      }
+      extrasFb.forEach(function(f){ merged.push(f); });
+      _bibData[cat] = merged;
+    } else {
       _bibData[cat] = base;
     }
   } catch(e) {
     console.warn('_bibCargarCat('+cat+'):', e.message);
     _bibData[cat] = (BIB_BASE[cat]||[]).map(function(f,i){
-      return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true});
+      return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true, _fromBase:true});
     });
   }
   return _bibData[cat];
@@ -7346,12 +7354,14 @@ async function renderBiblioteca() {
     var cargosCell = cargosN
       ? '<span title="'+((f.cargosAplicables||[]).join(', '))+'" style="font-size:10px;font-weight:700;color:var(--esq-blue);background:var(--esq-blue-lt);padding:2px 8px;border-radius:99px;cursor:help">👥 '+cargosN+'</span>'
       : '<span style="font-size:10px;color:var(--text-3)">—</span>';
-    // Botones siempre en DOM — CSS admin-only-block / admin-only-inline los muestra/oculta
+    var baseTag = f._fromBase
+      ? '<span style="font-size:9px;color:var(--text-3);background:var(--surface);padding:1px 5px;border-radius:4px;border:1px solid var(--border);margin-left:4px">base</span>'
+      : '';
     var accCell = '<button class="btn btn-ghost btn-xs admin-only-block" onclick="abrirModalFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Editar">✏️</button> '+
                   '<button class="btn btn-danger btn-xs admin-only-block" onclick="eliminarFormacion(\''+cat+'\','+i+')" style="font-size:10px" title="Eliminar">🗑</button>';
     return '<tr style="border-bottom:1px solid var(--border)">' +
       '<td style="text-align:center;font-family:var(--mono);font-size:11px;color:var(--text-3);padding:8px 6px">'+(f.orden||i+1)+'</td>'+
-      '<td style="padding:8px 10px"><div style="font-weight:600;font-size:12px">'+(f.nombre||'')+'</div>'+
+      '<td style="padding:8px 10px"><div style="font-weight:600;font-size:12px">'+(f.nombre||'')+baseTag+'</div>'+
         (f.objetivo?'<div style="font-size:10.5px;color:var(--text-3);margin-top:1px">'+(f.objetivo).slice(0,80)+(f.objetivo.length>80?'…':'')+'</div>':'')+'</td>'+
       '<td style="text-align:center;font-size:12px;padding:8px 6px">'+(f.horas||'—')+'h</td>'+
       '<td style="font-size:11px;padding:8px 6px">'+(f.frecuencia||'—')+'</td>'+
@@ -7382,7 +7392,8 @@ function abrirModalFormacion(cat, idx) {
   var cargos = (_catalogos && _catalogos.cargos && _catalogos.cargos.length) ? _catalogos.cargos.slice().sort() : [];
   var f = (!isNew && idx !== undefined && _bibData[cat]) ? (_bibData[cat][idx] || {}) : {};
   if(!isNew) {
-    document.getElementById('form_edit_id').value = f._fid || ('__idx__'+idx);
+    // Si tiene _fid real úsalo; si es de base usa prefijo __base__
+    document.getElementById('form_edit_id').value = f._fid || ('__base__'+idx);
     document.getElementById('form_nombre').value = f.nombre || '';
     document.getElementById('form_objetivo').value = f.objetivo || '';
     document.getElementById('form_contenido').value = f.contenido || '';
@@ -7448,20 +7459,15 @@ async function guardarFormacion() {
 
   try {
     var fb = window._fb, db = window._db;
-    if (editId && !editId.startsWith('__idx__')) {
+    var editId = document.getElementById('form_edit_id').value;
+    var existing = _bibData[cat] || [];
+    var isFromBase = editId && editId.startsWith('__base__');
+
+    if (editId && !editId.startsWith('__idx__') && !editId.startsWith('__base__')) {
+      // Tiene _fid real — actualizar
       await fb.setDoc(fb.doc(db,'formaciones',cat,'capacitaciones',editId), reg, {merge:true});
-    } else if (editId && editId.startsWith('__idx__')) {
-      // Tenía _fid de init — actualizar el doc
-      var idxU = parseInt(editId.replace('__idx__',''));
-      var fExist = existing[idxU];
-      if (fExist && fExist._fid) {
-        await fb.setDoc(fb.doc(db,'formaciones',cat,'capacitaciones',fExist._fid), reg, {merge:true});
-      } else {
-        // Si no tiene _fid, crear nuevo
-        var newRef = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), reg);
-        reg._fid = newRef.id;
-      }
     } else {
+      // Es base o nuevo — crear documento nuevo
       var addRef = await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), reg);
       reg._fid = addRef.id;
     }
@@ -7577,21 +7583,55 @@ async function _renderPorCargoGrid(cargo, cedula) {
 
   function _estadoFormacion(f) {
     if (!cedula) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
-    var nomLow = (f.nombre||'').toLowerCase();
-    var regs = capsByCed[nomLow] || [];
-    if (!regs.length) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
-    var ultReg = regs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
-    if (!ultReg.vencimiento && !ultReg.fecha) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
-    if (ultReg.vencimiento) {
+    var nomLow = (f.nombre||'').toLowerCase().trim();
+    var meses = _frecToMeses(f.frecuencia||'');
+
+    // Buscar todos los registros que coincidan con esta formación O con su reentrenamiento
+    var allRegs = [];
+    Object.keys(capsByCed).forEach(function(){});
+    var trabRegs = capsByCed[nomLow] || [];
+
+    // También buscar reentrenamientos relacionados (ej: "reentrenamiento autorizado" para "trabajador autorizado")
+    var palabrasClave = nomLow.split(' ').filter(function(w){ return w.length > 4; });
+    Object.keys(capsByCed).forEach(function(key){
+      if (key === nomLow) return; // ya incluido
+      var esRelacionado = palabrasClave.some(function(w){ return key.indexOf(w) >= 0; });
+      if (esRelacionado) {
+        capsByCed[key].forEach(function(r){ allRegs.push(r); });
+      }
+    });
+    trabRegs.forEach(function(r){ allRegs.push(r); });
+
+    if (!allRegs.length) return {est:'pendiente',label:'Pendiente',color:'var(--text-3)',bg:'var(--surface)'};
+
+    // Tomar el registro más reciente
+    allRegs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); });
+    var ultReg = allRegs[0];
+
+    // Si tiene vencimiento explícito, usarlo
+    if (ultReg.vencimiento && ultReg.tieneVenc === 'SI') {
       var d = _diasHasta(ultReg.vencimiento);
       return _semaforo(d);
     }
-    // Calcular vencimiento desde frecuencia
-    var meses = _frecToMeses(f.frecuencia||'');
-    if (meses >= 9999) return {est:'vigente',label:'Vigente (única)',color:'var(--green)',bg:'var(--green-lt)'};
-    var fechaEjec = new Date(ultReg.fecha);
-    fechaEjec.setMonth(fechaEjec.getMonth() + meses);
-    return _semaforo(_diasHasta(fechaEjec.toISOString().split('T')[0]));
+
+    // Si la formación es de frecuencia Única/Ingreso (ej: certificado inicial alturas)
+    // → no vence, pero avisamos si han pasado más de 15 meses sin reentrenamiento
+    if (meses >= 9999) {
+      var fechaEjec = new Date(ultReg.fecha);
+      var mesesTranscurridos = (new Date() - fechaEjec) / (1000 * 60 * 60 * 24 * 30.44);
+      if (mesesTranscurridos > 18) {
+        return {est:'prox30', label:'Reentrenamiento requerido', color:'#b45309', bg:'var(--amber-lt)'};
+      }
+      if (mesesTranscurridos > 15) {
+        return {est:'prox90', label:'Reentrenamiento próximo', color:'var(--amber)', bg:'#fef9ec'};
+      }
+      return {est:'vigente', label:'Vigente', color:'var(--green)', bg:'var(--green-lt)'};
+    }
+
+    // Calcular vencimiento desde frecuencia + fecha del registro
+    var fechaVenc = new Date(ultReg.fecha);
+    fechaVenc.setMonth(fechaVenc.getMonth() + meses);
+    return _semaforo(_diasHasta(fechaVenc.toISOString().split('T')[0]));
   }
 
   if (!todas.length) {
@@ -7654,8 +7694,7 @@ async function renderDashFormaciones() {
   var activos = (_trabList||[]).filter(function(t){ return t.estado==='Activo'; });
   var totalActivos = activos.length;
 
-  // ── FUENTE 3: CAP_DATA (Registro e Historial) ──
-  // Índice: cedula → [registros]
+  // ── FUENTE 3: CAP_DATA — índice por cédula ──
   var capByCed = {};
   (CAP_DATA||[]).forEach(function(r){
     var k = String(r.cedula||'');
@@ -7665,21 +7704,49 @@ async function renderDashFormaciones() {
   });
 
   // ── CRUCE: cobertura por formación ──
-  // Para cada formación con cargosAplicables → calcular cuántos trabajadores de ese cargo tienen registro
   function _frecToMeses(frec) {
     var map={'Trimestral':3,'Semestral':6,'Anual':12,'Cada 18 meses':18,'Bianual':24,'Trianual':36,'Única':9999,'Ingreso':9999};
     return map[frec]||12;
   }
-  function _estadoRegistro(r, mesesFrec) {
-    if (r.tieneVenc==='SI' && r.vencimiento) return _semaforo(_diasHasta(r.vencimiento)).est;
-    if (r.fecha && mesesFrec < 9999) {
-      var d = new Date(r.fecha); d.setMonth(d.getMonth()+mesesFrec);
-      return _semaforo(_diasHasta(d.toISOString().split('T')[0])).est;
-    }
-    return 'vigente';
+
+  // Dado un trabajador y una formación, encontrar el mejor registro
+  // (el más reciente que coincide con la formación O con su reentrenamiento)
+  function _mejorRegistro(cedula, nomLow) {
+    var regs = capByCed[String(cedula)] || [];
+    if (!regs.length) return null;
+    var palabrasClave = nomLow.split(' ').filter(function(w){ return w.length > 4; });
+    var coincidentes = regs.filter(function(r){
+      var tLow = (r.tema||'').toLowerCase().trim();
+      return tLow === nomLow ||
+             tLow.includes(nomLow) ||
+             nomLow.includes(tLow) ||
+             palabrasClave.some(function(w){ return tLow.includes(w); });
+    });
+    if (!coincidentes.length) return null;
+    return coincidentes.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
   }
 
-  var coberturaForm = []; // para tabla por formación
+  function _estadoDesdeRegistro(ultReg, mesesFrec) {
+    if (!ultReg) return 'pendiente';
+    // Si tiene vencimiento explícito, usarlo
+    if (ultReg.tieneVenc === 'SI' && ultReg.vencimiento) {
+      return _semaforo(_diasHasta(ultReg.vencimiento)).est;
+    }
+    // Frecuencia única/ingreso → no vence, pero control de reentrenamiento a 18m
+    if (mesesFrec >= 9999) {
+      var mesesT = (new Date() - new Date(ultReg.fecha)) / (1000*60*60*24*30.44);
+      if (mesesT > 18) return 'vencido';
+      if (mesesT > 15) return 'prox30';
+      return 'vigente';
+    }
+    // Calcular desde fecha + frecuencia
+    if (!ultReg.fecha) return 'pendiente';
+    var fv = new Date(ultReg.fecha);
+    fv.setMonth(fv.getMonth() + mesesFrec);
+    return _semaforo(_diasHasta(fv.toISOString().split('T')[0])).est;
+  }
+
+  var coberturaForm = [];
   var totalRequeridos = 0, totalCubiertos = 0;
   todasFormaciones.forEach(function(item){
     var f = item.f;
@@ -7688,21 +7755,17 @@ async function renderDashFormaciones() {
     var cargosF = Array.isArray(f.cargosAplicables) && f.cargosAplicables.length ? f.cargosAplicables : null;
     var trabajsReq = cargosF
       ? activos.filter(function(t){ return cargosF.indexOf(t.cargo)>=0; })
-      : activos; // si no tiene cargos asignados, aplica a todos
+      : []; // si no tiene cargos asignados no cuenta en cobertura
     var req = trabajsReq.length;
-    if (!req) return; // sin trabajadores requeridos → no cuenta
+    if (!req) return;
     totalRequeridos += req;
     var cubiertos = 0, vencidosF = 0, pendientesF = 0;
     trabajsReq.forEach(function(t){
-      var regs = (capByCed[String(t.cedula)]||[]).filter(function(r){
-        var tLow = (r.tema||'').toLowerCase().trim();
-        return tLow && nomLow && (tLow===nomLow || tLow.includes(nomLow) || nomLow.includes(tLow));
-      });
-      if (!regs.length) { pendientesF++; return; }
-      var ultReg = regs.sort(function(a,b){ return (b.fecha||'').localeCompare(a.fecha||''); })[0];
-      var est = _estadoRegistro(ultReg, meses);
-      if (est==='vencido') vencidosF++;
-      else cubiertos++;
+      var ultReg = _mejorRegistro(t.cedula, nomLow);
+      var est = _estadoDesdeRegistro(ultReg, meses);
+      if (est === 'pendiente') pendientesF++;
+      else if (est === 'vencido') vencidosF++;
+      else cubiertos++; // vigente, prox30, prox90
     });
     totalCubiertos += cubiertos;
     var pct = req ? Math.round(cubiertos/req*100) : 0;
