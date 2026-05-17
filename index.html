@@ -1620,21 +1620,23 @@ body.is-admin .admin-only-block:not(.view){display:block}
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════
-     S33 — MÓDULO INSPECCIONES
-     ════════════════════════════════════════════════════════════ -->
+<!-- ════ S33 — MÓDULO INSPECCIONES ════ -->
 <div class="view" id="view-inspecciones">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-    <div style="font-size:13px;font-weight:700;color:var(--dark)">Tipo de inspección:</div>
-    <select class="form-sel" id="insp-tipo-sel" onchange="onInspTipoChange()" style="max-width:240px;font-size:12px">
+
+  <!-- Header -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+    <select class="form-sel" id="insp-tipo-sel" onchange="onInspTipoChange()" style="max-width:220px;font-size:12px">
       <option value="extintores">🔥 Extintores portátiles</option>
     </select>
-    <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-sm admin-only-block" style="font-size:11px;background:var(--esq-blue);color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer" onclick="cargarInventarioFirestore()">☁️ Sync Firestore</button>
-      <button class="btn btn-sm admin-only-block" style="font-size:11px;background:var(--esq-orange);color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer" onclick="inicializarInventarioFirestore()">📤 Inicializar inventario</button>
+    <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-sm admin-only-block" style="font-size:11px;background:var(--esq-blue);color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer" onclick="abrirModalEquipo(null)">+ Equipo</button>
+      <button class="btn btn-sm admin-only-block" style="font-size:11px;background:#6B7280;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer" onclick="cargarInventarioFirestore()">☁️ Sync</button>
+      <button class="btn btn-sm admin-only-block" style="font-size:11px;background:var(--esq-orange);color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer" onclick="inicializarInventarioFirestore()">📤 Inicializar</button>
     </div>
   </div>
-  <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:0">
+
+  <!-- Sub-tabs -->
+  <div style="display:flex;gap:4px;margin-bottom:14px">
     <button class="ctab active" id="itab-inventario"   onclick="showITab('inventario')"   style="font-size:12px">📋 Inventario</button>
     <button class="ctab"        id="itab-inspeccionar" onclick="showITab('inspeccionar')" style="font-size:12px">✅ Inspeccionar</button>
     <button class="ctab"        id="itab-historial"    onclick="showITab('historial')"    style="font-size:12px">📜 Historial</button>
@@ -1642,9 +1644,9 @@ body.is-admin .admin-only-block:not(.view){display:block}
 
   <!-- INVENTARIO -->
   <div id="iview-inventario" class="iview">
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-      <input class="form-inp" id="insp-inv-q" placeholder="🔍 Buscar serial, área, ubicación…" style="max-width:300px;font-size:12px" oninput="renderInspInventario()">
-      <select class="form-sel" id="insp-inv-area" onchange="renderInspInventario()" style="font-size:12px;max-width:220px">
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <input class="form-inp" id="insp-inv-q" placeholder="🔍 Serial, área, ubicación…" style="flex:1;min-width:160px;font-size:12px" oninput="renderInspInventario()">
+      <select class="form-sel" id="insp-inv-area" onchange="renderInspInventario()" style="font-size:12px;max-width:200px">
         <option value="">Todas las áreas</option>
       </select>
     </div>
@@ -1653,82 +1655,135 @@ body.is-admin .admin-only-block:not(.view){display:block}
         <thead>
           <tr style="background:var(--esq-blue);color:#fff">
             <th style="padding:8px 10px;text-align:left;white-space:nowrap">Serial</th>
-            <th style="padding:8px 10px;text-align:left;white-space:nowrap">Área</th>
             <th style="padding:8px 10px;text-align:left">Ubicación</th>
             <th style="padding:8px 10px;text-align:center;white-space:nowrap">Tipo</th>
-            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Cap. (Lb)</th>
-            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Próx. Recarga</th>
-            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Última insp.</th>
+            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Lb</th>
+            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Recarga</th>
+            <th style="padding:8px 10px;text-align:center;white-space:nowrap">Últ. insp.</th>
             <th style="padding:8px 10px;text-align:center;white-space:nowrap">Estado</th>
-            <th style="padding:8px 10px;text-align:center">Acción</th>
+            <th style="padding:8px 10px;text-align:center">Acc.</th>
           </tr>
         </thead>
         <tbody id="insp-inv-body"></tbody>
       </table>
     </div>
-    <div id="insp-inv-empty" style="display:none;text-align:center;padding:40px;color:var(--text-2);font-size:13px">No hay equipos que coincidan.</div>
+    <div id="insp-inv-empty" style="display:none;text-align:center;padding:36px;color:var(--text-2);font-size:13px">Sin equipos.</div>
   </div>
 
-  <!-- INSPECCIONAR -->
+  <!-- INSPECCIONAR (compacto, mobile-first) -->
   <div id="iview-inspeccionar" class="iview" style="display:none">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Serial del equipo *</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div>
+        <label class="form-lbl">Equipo *</label>
         <select class="form-sel" id="insp-form-serial" onchange="onInspSerialChange()" style="font-size:12px">
-          <option value="">Seleccionar equipo…</option>
+          <option value="">Seleccionar…</option>
         </select>
       </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Fecha de inspección *</label>
+      <div>
+        <label class="form-lbl">Fecha *</label>
         <input class="form-inp" type="date" id="insp-form-fecha" style="font-size:12px">
       </div>
     </div>
-    <div id="insp-ext-info" style="display:none;background:#EEF2FF;border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px" id="insp-ext-info-grid"></div>
+    <div id="insp-ext-info" style="display:none;background:#EEF2FF;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:11px;line-height:1.8"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:11px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Criterios de inspección</div>
+      <div id="insp-resultado-pill" style="padding:3px 12px;border-radius:20px;font-size:12px;font-weight:800;background:#F3F4F6;color:#6B7280">Sin evaluar</div>
     </div>
-    <div style="font-size:12px;font-weight:800;color:var(--dark);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Criterios de inspección</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:8px;margin-bottom:14px" id="insp-criterios-grid"></div>
-    <div style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;margin-bottom:14px">
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Observaciones generales</label>
-        <textarea class="form-inp" id="insp-form-obs" rows="3" style="font-size:12px;resize:vertical" placeholder="Novedades, condiciones del entorno, recomendaciones…"></textarea>
-      </div>
-      <div style="background:var(--surface);border-radius:8px;padding:14px;text-align:center;min-width:110px;border:2px solid var(--border)">
-        <div style="font-size:10px;color:var(--text-2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Resultado</div>
-        <div id="insp-resultado-badge" style="font-size:22px;font-weight:900;color:var(--text-3)">—</div>
-        <div id="insp-resultado-label" style="font-size:10px;color:var(--text-2);margin-top:2px">Sin evaluar</div>
-      </div>
+    <div style="border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-bottom:10px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead>
+          <tr style="background:var(--esq-blue);color:#fff;font-size:11px">
+            <th style="padding:7px 10px;text-align:left">Criterio</th>
+            <th style="padding:7px 8px;text-align:center;width:52px">✅ B</th>
+            <th style="padding:7px 8px;text-align:center;width:52px">❌ M</th>
+            <th style="padding:7px 8px;text-align:center;width:52px">— NA</th>
+          </tr>
+        </thead>
+        <tbody id="insp-criterios-body"></tbody>
+      </table>
     </div>
-    <div style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:12px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Hallazgos / Plan de acción</div>
-        <button class="btn btn-sm" style="font-size:11px;background:var(--esq-blue);color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer" onclick="agregarHallazgo()">+ Hallazgo</button>
+    <textarea class="form-inp" id="insp-form-obs" rows="2" style="font-size:12px;resize:vertical;margin-bottom:10px;width:100%;box-sizing:border-box" placeholder="Observaciones (opcional)…"></textarea>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <div style="font-size:11px;font-weight:800;color:var(--dark);text-transform:uppercase;letter-spacing:.5px">Hallazgos</div>
+        <button onclick="agregarHallazgo()" style="font-size:11px;background:var(--esq-blue);color:#fff;border:none;padding:4px 10px;border-radius:6px;cursor:pointer">+ Agregar</button>
       </div>
       <div id="insp-hallazgos-list"></div>
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px">
-      <button class="btn btn-ghost" onclick="resetInspForm()">Limpiar</button>
-      <button class="btn btn-yellow" onclick="guardarInspeccion()">💾 Guardar inspección</button>
+      <button class="btn btn-ghost" onclick="resetInspForm()" style="font-size:12px">Limpiar</button>
+      <button class="btn btn-yellow" onclick="guardarInspeccion()" style="font-size:12px">💾 Guardar</button>
     </div>
   </div>
 
   <!-- HISTORIAL -->
   <div id="iview-historial" class="iview" style="display:none">
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-      <select class="form-sel" id="insp-hist-serial" onchange="renderInspHistorial()" style="font-size:12px;max-width:200px">
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <select class="form-sel" id="insp-hist-serial" onchange="renderInspHistorial()" style="font-size:12px;max-width:180px">
         <option value="">Todos los equipos</option>
       </select>
-      <select class="form-sel" id="insp-hist-res" onchange="renderInspHistorial()" style="font-size:12px;max-width:150px">
-        <option value="">Todos los resultados</option>
+      <select class="form-sel" id="insp-hist-res" onchange="renderInspHistorial()" style="font-size:12px;max-width:130px">
+        <option value="">Todos</option>
         <option value="OK">✅ OK</option>
         <option value="NOK">❌ NOK</option>
       </select>
-      <input type="date" class="form-inp" id="insp-hist-desde" onchange="renderInspHistorial()" style="font-size:12px;max-width:150px">
-      <input type="date" class="form-inp" id="insp-hist-hasta" onchange="renderInspHistorial()" style="font-size:12px;max-width:150px">
+      <input type="date" class="form-inp" id="insp-hist-desde" onchange="renderInspHistorial()" style="font-size:12px;max-width:140px">
+      <input type="date" class="form-inp" id="insp-hist-hasta" onchange="renderInspHistorial()" style="font-size:12px;max-width:140px">
     </div>
     <div id="insp-hist-body"></div>
   </div>
 </div>
+
+<!-- MODAL equipo CRUD -->
+<div class="overlay" id="ov-equipo">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hdr">
+      <div><div class="modal-title" id="equipo-modal-title">Nuevo equipo</div></div>
+      <button class="modal-close" onclick="closeOv('ov-equipo')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Serial / ID *</label>
+          <input class="form-inp" id="eq-id" placeholder="Ej: EA-008">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Área *</label>
+          <input class="form-inp" id="eq-area" placeholder="Edificio Admon, Complejo…">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Ubicación *</label>
+          <input class="form-inp" id="eq-ubicacion" placeholder="Descripción exacta del punto">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Tipo</label>
+          <select class="form-sel" id="eq-tipo">
+            <option>PQS ABC</option><option>PQS BC</option><option>CO2</option>
+            <option>Solkaflam</option><option>Agua</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Capacidad (Lb)</label>
+          <input class="form-inp" type="number" id="eq-capacidad" placeholder="10, 20, 150…">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Fecha hidrostática</label>
+          <input class="form-inp" type="date" id="eq-hidrostatica">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Próxima recarga</label>
+          <input class="form-inp" type="date" id="eq-recarga">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeOv('ov-equipo')">Cancelar</button>
+      <button class="btn btn-danger btn-sm" id="btn-del-equipo" onclick="eliminarEquipo()" style="display:none">🗑 Eliminar</button>
+      <button class="btn btn-yellow" onclick="guardarEquipo()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- MODAL: CERT ALTURAS / CONFINADOS -->
 <div class="overlay" id="ov-cert">
@@ -12543,36 +12598,30 @@ window.renderCatalogos      = renderCatalogos;
 window.showTrabTab          = showTrabTab;
 
 // ════════════════════════════════════════════════════════════
-// S33 — MÓDULO INSPECCIONES (Bloque A: Extintores)
+// S33 — MÓDULO INSPECCIONES
 // ════════════════════════════════════════════════════════════
 
-// ── Catálogo extensible de tipos de inspección ──────────────
 const INSP_TIPOS = {
   extintores: {
     label: '🔥 Extintores portátiles',
-    coleccionInventario: 'extintores',
-    coleccionRegistros: 'inspecciones', // inspecciones/{id}/registros/{rid}
     criterios: [
-      { key:'instalacion', label:'Instalación peso/altura' },
-      { key:'acceso',      label:'Acceso' },
-      { key:'demarcacion', label:'Demarcación' },
-      { key:'senalizacion',label:'Señalización' },
-      { key:'tarjeta',     label:'Tarjeta Identificación' },
-      { key:'presion',     label:'Presión (manómetro)' },
-      { key:'cilindro',    label:'Estado del Cilindro' },
-      { key:'hidrostatica',label:'Prueba Hidrostática' },
-      { key:'manija',      label:'Manija' },
-      { key:'manguera',    label:'Manguera' },
-      { key:'boquilla',    label:'Boquilla o tobera' },
-      { key:'precinto',    label:'Precinto de Seguridad' },
+      {key:'instalacion', label:'Instalación peso/altura'},
+      {key:'acceso',      label:'Acceso'},
+      {key:'demarcacion', label:'Demarcación'},
+      {key:'senalizacion',label:'Señalización'},
+      {key:'tarjeta',     label:'Tarjeta Identificación'},
+      {key:'presion',     label:'Presión (manómetro)'},
+      {key:'cilindro',    label:'Estado del Cilindro'},
+      {key:'hidrostatica',label:'Prueba Hidrostática'},
+      {key:'manija',      label:'Manija'},
+      {key:'manguera',    label:'Manguera'},
+      {key:'boquilla',    label:'Boquilla o tobera'},
+      {key:'precinto',    label:'Precinto de Seguridad'},
     ],
-    camposInfo: ['area','ubicacion','tipo','capacidad','proximaRecarga'],
-    camposInfoLabels: { area:'Área', ubicacion:'Ubicación', tipo:'Tipo', capacidad:'Capacidad (Lb)', proximaRecarga:'Próx. Recarga' },
   }
-  // Futuros tipos: botiquines, EPP, duchas, camillas, etc.
+  // Añadir futuros tipos: botiquines, EPP, duchas, etc.
 };
 
-// ── Inventario base de 50 extintores (del FM-HYS-010 actualizado) ──
 const EXT_BASE = [
   {id:'EA-001',area:'Edificio Admon',ubicacion:'Comedor',tipo:'Solkaflam',capacidad:10,fechaHidro:'2016-08-01',proximaRecarga:'2022-11-01',activo:true},
   {id:'EA-002',area:'Edificio Admon',ubicacion:'Recepción',tipo:'Solkaflam',capacidad:10,fechaHidro:'2019-02-01',proximaRecarga:'2024-02-01',activo:true},
@@ -12626,130 +12675,125 @@ const EXT_BASE = [
   {id:'DW-002',area:'Metalistería',ubicacion:'Extintor Personal Metalistería',tipo:'PQS ABC',capacidad:20,fechaHidro:null,proximaRecarga:'2023-08-01',activo:true},
 ];
 
-// ── Estado del módulo ────────────────────────────────────────
 let _inspTipoActual = 'extintores';
-let _inspInventario = [];       // equipo activo (merged: base + Firestore)
-let _inspRegistros  = [];       // historial cargado
-let _inspHallazgoCount = 0;
+let _inspInventario  = [];
+let _inspRegistros   = [];
+let _inspHallazgoN   = 0;
+let _equipoEditId    = null; // serial del equipo que se está editando
 
-// ── Semáforo recarga ─────────────────────────────────────────
-function _inspColorRecarga(fechaStr){
-  if(!fechaStr) return {color:'#9CA3AF',label:'Sin fecha'};
-  const diff = Math.floor((new Date(fechaStr) - new Date()) / 86400000);
-  if(diff < 0)   return {color:'#EF4444',label:'Vencida'};
-  if(diff <= 30)  return {color:'#F97316',label:'Próxima'};
-  if(diff <= 90)  return {color:'#EAB308',label:'Atención'};
+// ── Semáforo recarga ──────────────────────────────────────────
+function _inspSemaforo(fechaStr){
+  if(!fechaStr || fechaStr==='---') return {color:'#9CA3AF',label:'Sin fecha'};
+  const d = Math.floor((new Date(fechaStr)-new Date())/86400000);
+  if(d<0)   return {color:'#EF4444',label:'Vencida'};
+  if(d<=30)  return {color:'#F97316',label:'≤30 días'};
+  if(d<=90)  return {color:'#EAB308',label:'≤90 días'};
   return {color:'#22C55E',label:'Vigente'};
 }
 
-// ── Inicializar módulo ───────────────────────────────────────
+// ── Inicializar tab ───────────────────────────────────────────
 function renderTabInspecciones(){
-  _inspTipoActual = document.getElementById('insp-tipo-sel')?.value || 'extintores';
-  // Merge base con Firestore (si ya se cargó previamente)
-  if(_inspInventario.length === 0) _inspInventario = EXT_BASE.map(e=>({...e}));
-  _poblarSelectoresInv();
-  _poblarSelectoresForm();
+  _inspTipoActual = document.getElementById('insp-tipo-sel')?.value||'extintores';
+  if(!_inspInventario.length) _inspInventario = EXT_BASE.map(e=>({...e}));
+  _inspPoblarFiltros();
+  _inspPoblarSeriales();
   renderInspInventario();
   showITab('inventario');
-  // Detectar ?insp= en URL
-  const urlParam = new URLSearchParams(window.location.search).get('insp');
-  if(urlParam){
-    const eq = _inspInventario.find(e=>e.id===urlParam);
-    if(eq){
-      showITab('inspeccionar');
-      document.getElementById('insp-form-serial').value = urlParam;
-      onInspSerialChange();
-    }
+  // ?insp=EA-001 → abrir directamente el formulario
+  const p = new URLSearchParams(window.location.search).get('insp');
+  if(p && _inspInventario.find(e=>e.id===p)){
+    showITab('inspeccionar');
+    document.getElementById('insp-form-serial').value=p;
+    onInspSerialChange();
   }
 }
 
 function showITab(name){
   ['inventario','inspeccionar','historial'].forEach(t=>{
     document.getElementById('iview-'+t).style.display = t===name?'':'none';
-    const btn = document.getElementById('itab-'+t);
-    if(btn) btn.classList.toggle('active', t===name);
+    const b=document.getElementById('itab-'+t);
+    if(b) b.classList.toggle('active',t===name);
   });
-  if(name==='historial') _cargarHistorialFirestore().then(()=>renderInspHistorial());
+  if(name==='historial') _cargarHistorialFS().then(()=>renderInspHistorial());
   if(name==='inspeccionar'){
-    const hoy = new Date().toISOString().slice(0,10);
-    const fe = document.getElementById('insp-form-fecha');
-    if(fe && !fe.value) fe.value = hoy;
+    const f=document.getElementById('insp-form-fecha');
+    if(f&&!f.value) f.value=new Date().toISOString().slice(0,10);
+    _renderCriteriosTabla();
   }
 }
 
 function onInspTipoChange(){
-  _inspTipoActual = document.getElementById('insp-tipo-sel').value;
-  _inspInventario = EXT_BASE.map(e=>({...e})); // reset; futuros tipos tendrán su propio BASE
-  _poblarSelectoresInv();
-  _poblarSelectoresForm();
+  _inspTipoActual=document.getElementById('insp-tipo-sel').value;
+  _inspInventario=EXT_BASE.map(e=>({...e}));
+  _inspPoblarFiltros();
+  _inspPoblarSeriales();
   renderInspInventario();
 }
 
-// ── Poblado de selectores ────────────────────────────────────
-function _poblarSelectoresInv(){
-  const areas = [...new Set(_inspInventario.map(e=>e.area).filter(Boolean))].sort();
-  const sel = document.getElementById('insp-inv-area');
+// ── Filtros y selectores ──────────────────────────────────────
+function _inspPoblarFiltros(){
+  const areas=[...new Set(_inspInventario.map(e=>e.area).filter(Boolean))].sort();
+  const sel=document.getElementById('insp-inv-area');
   if(!sel) return;
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">Todas las áreas</option>' +
+  const prev=sel.value;
+  sel.innerHTML='<option value="">Todas las áreas</option>'+
     areas.map(a=>`<option value="${a}"${a===prev?' selected':''}>${a}</option>`).join('');
 }
 
-function _poblarSelectoresForm(){
-  const sel = document.getElementById('insp-form-serial');
-  if(!sel) return;
-  const prev = sel.value;
-  sel.innerHTML = '<option value="">Seleccionar equipo…</option>' +
-    _inspInventario.map(e=>`<option value="${e.id}"${e.id===prev?' selected':''}>${e.id} — ${e.ubicacion}</option>`).join('');
-  // historial serial
-  const hs = document.getElementById('insp-hist-serial');
-  if(hs){
-    hs.innerHTML = '<option value="">Todos los equipos</option>' +
-      _inspInventario.map(e=>`<option value="${e.id}">${e.id}</option>`).join('');
-  }
+function _inspPoblarSeriales(){
+  ['insp-form-serial','insp-hist-serial'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const prev=el.value;
+    const placeholder=id.includes('hist')?'Todos los equipos':'Seleccionar…';
+    el.innerHTML=`<option value="">${placeholder}</option>`+
+      _inspInventario.map(e=>`<option value="${e.id}"${e.id===prev?' selected':''}>${e.id} — ${e.ubicacion}</option>`).join('');
+  });
 }
 
-// ── Render inventario ────────────────────────────────────────
+// ── Render inventario ─────────────────────────────────────────
 function renderInspInventario(){
-  const q    = (document.getElementById('insp-inv-q')?.value||'').toLowerCase();
-  const area = document.getElementById('insp-inv-area')?.value||'';
-  const tbody = document.getElementById('insp-inv-body');
-  const empty = document.getElementById('insp-inv-empty');
+  const q   =(document.getElementById('insp-inv-q')?.value||'').toLowerCase();
+  const area= document.getElementById('insp-inv-area')?.value||'';
+  const tbody=document.getElementById('insp-inv-body');
+  const empty=document.getElementById('insp-inv-empty');
   if(!tbody) return;
+  const isAdmin=(currentUser?.role==='admin');
 
-  let lista = _inspInventario.filter(e=>{
-    if(area && e.area !== area) return false;
+  let lista=_inspInventario.filter(e=>{
+    if(area && e.area!==area) return false;
     if(q && !(e.id+e.area+e.ubicacion+e.tipo).toLowerCase().includes(q)) return false;
     return true;
   });
 
-  if(!lista.length){ tbody.innerHTML=''; empty.style.display=''; return; }
+  if(!lista.length){tbody.innerHTML='';empty.style.display='';return;}
   empty.style.display='none';
 
-  // Buscar última inspección en caché
-  tbody.innerHTML = lista.map(e=>{
-    const rc = _inspColorRecarga(e.proximaRecarga);
-    const ults = _inspRegistros.filter(r=>r.extintorId===e.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
-    const ult = ults[0];
-    const estBadge = ult
-      ? (ult.resultado==='OK'
-        ? '<span style="color:#22C55E;font-weight:700">✅ OK</span>'
-        : '<span style="color:#EF4444;font-weight:700">❌ NOK</span>')
-      : '<span style="color:#9CA3AF;font-size:11px">Sin registros</span>';
-    return `<tr style="border-bottom:1px solid var(--border);${lista.indexOf(e)%2?'background:var(--surface)':''}">
+  tbody.innerHTML=lista.map((e,i)=>{
+    const rc=_inspSemaforo(e.proximaRecarga);
+    const ults=_inspRegistros.filter(r=>r.extintorId===e.id).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+    const ult=ults[0];
+    const estadoBadge=ult
+      ?(ult.resultado==='OK'
+        ?'<span style="color:#22C55E;font-weight:700">✅ OK</span>'
+        :'<span style="color:#EF4444;font-weight:700">❌ NOK</span>')
+      :'<span style="color:#9CA3AF;font-size:10px">—</span>';
+    const editBtn=isAdmin
+      ?`<button onclick="abrirModalEquipo('${e.id}')" style="font-size:10px;background:#6B7280;color:#fff;border:none;padding:3px 7px;border-radius:4px;cursor:pointer;margin-right:3px">✏️</button>`
+      :'';
+    return `<tr style="border-bottom:1px solid var(--border);${i%2?'background:var(--surface)':''}">
       <td style="padding:7px 10px;font-weight:700;white-space:nowrap;color:var(--esq-blue)">${e.id}</td>
-      <td style="padding:7px 10px;font-size:11px;color:var(--text-2);white-space:nowrap">${e.area}</td>
-      <td style="padding:7px 10px;font-size:11px">${e.ubicacion}</td>
-      <td style="padding:7px 10px;text-align:center;font-size:11px;white-space:nowrap">${e.tipo}</td>
-      <td style="padding:7px 10px;text-align:center;font-weight:700">${e.capacidad}</td>
-      <td style="padding:7px 10px;text-align:center;white-space:nowrap">
-        <span style="color:${rc.color};font-weight:700;font-size:11px">${e.proximaRecarga||'N/D'}</span>
-        <div style="font-size:10px;color:${rc.color}">${rc.label}</div>
+      <td style="padding:7px 10px;font-size:11px">${e.ubicacion}<div style="font-size:10px;color:var(--text-2)">${e.area}</div></td>
+      <td style="padding:7px 8px;text-align:center;font-size:11px;white-space:nowrap">${e.tipo}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:700">${e.capacidad}</td>
+      <td style="padding:7px 8px;text-align:center;white-space:nowrap">
+        <span style="color:${rc.color};font-size:11px;font-weight:700">${e.proximaRecarga||'—'}</span>
+        <div style="font-size:9px;color:${rc.color}">${rc.label}</div>
       </td>
-      <td style="padding:7px 10px;text-align:center;font-size:11px;white-space:nowrap">${ult?ult.fecha:'—'}</td>
-      <td style="padding:7px 10px;text-align:center">${estBadge}</td>
-      <td style="padding:7px 10px;text-align:center">
-        <button onclick="abrirInspeccionDesde('${e.id}')" style="font-size:11px;background:var(--esq-blue);color:#fff;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;white-space:nowrap">Inspeccionar</button>
+      <td style="padding:7px 8px;text-align:center;font-size:11px;white-space:nowrap">${ult?ult.fecha:'—'}</td>
+      <td style="padding:7px 8px;text-align:center">${estadoBadge}</td>
+      <td style="padding:7px 8px;text-align:center;white-space:nowrap">
+        ${editBtn}<button onclick="abrirInspeccionDesde('${e.id}')" style="font-size:10px;background:var(--esq-blue);color:#fff;border:none;padding:3px 8px;border-radius:4px;cursor:pointer">Inspeccionar</button>
       </td>
     </tr>`;
   }).join('');
@@ -12757,161 +12801,146 @@ function renderInspInventario(){
 
 function abrirInspeccionDesde(id){
   showITab('inspeccionar');
-  document.getElementById('insp-form-serial').value = id;
+  document.getElementById('insp-form-serial').value=id;
   onInspSerialChange();
 }
 
-// ── Info del extintor al seleccionar ────────────────────────
+// ── Info equipo al seleccionar ────────────────────────────────
 function onInspSerialChange(){
-  const id  = document.getElementById('insp-form-serial').value;
-  const box = document.getElementById('insp-ext-info');
-  const grid= document.getElementById('insp-ext-info-grid');
-  if(!id){ box.style.display='none'; _renderCriterios(); return; }
-  const eq = _inspInventario.find(e=>e.id===id);
-  if(!eq){ box.style.display='none'; _renderCriterios(); return; }
-  const tipo = INSP_TIPOS[_inspTipoActual];
-  grid.innerHTML = tipo.camposInfo.map(k=>{
-    const v = eq[k]||'—';
-    return `<div><div style="font-size:10px;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px">${tipo.camposInfoLabels[k]||k}</div><div style="font-weight:700;color:var(--dark)">${v}</div></div>`;
-  }).join('');
+  const id=document.getElementById('insp-form-serial').value;
+  const box=document.getElementById('insp-ext-info');
+  if(!id){box.style.display='none';return;}
+  const e=_inspInventario.find(x=>x.id===id);
+  if(!e){box.style.display='none';return;}
+  box.innerHTML=`<strong>${e.id}</strong> · ${e.ubicacion} · <strong>${e.tipo}</strong> ${e.capacidad}Lb · Recarga: <strong>${e.proximaRecarga||'N/D'}</strong>${e.fechaHidro?' · Hidro: '+e.fechaHidro:''}`;
   box.style.display='';
-  _renderCriterios();
 }
 
-// ── Render criterios ─────────────────────────────────────────
-function _renderCriterios(){
-  const tipo = INSP_TIPOS[_inspTipoActual];
-  const grid = document.getElementById('insp-criterios-grid');
-  if(!grid) return;
-  grid.innerHTML = tipo.criterios.map((c,i)=>`
-    <div style="background:var(--surface);border-radius:8px;padding:10px 12px;border:1px solid var(--border)">
-      <div style="font-size:11px;font-weight:700;color:var(--dark);margin-bottom:7px">${i+1}. ${c.label}</div>
-      <div style="display:flex;gap:6px">
-        ${['B','M','NA'].map(v=>`
-          <label style="flex:1;cursor:pointer">
-            <input type="radio" name="crit-${c.key}" value="${v}" onchange="_recalcResultado()" style="display:none">
-            <div class="crit-btn" data-key="${c.key}" data-val="${v}" style="text-align:center;padding:5px;border-radius:6px;font-size:11px;font-weight:700;border:2px solid var(--border);color:var(--text-2);transition:all .15s;cursor:pointer"
-              onclick="selCrit('${c.key}','${v}')">
-              ${v==='B'?'✅ Bien':v==='M'?'❌ Mal':'— NA'}
-            </div>
-          </label>`).join('')}
-      </div>
-    </div>`).join('');
+// ── Tabla de criterios compacta ───────────────────────────────
+function _renderCriteriosTabla(){
+  const tipo=INSP_TIPOS[_inspTipoActual];
+  const tbody=document.getElementById('insp-criterios-body');
+  if(!tbody) return;
+  tbody.innerHTML=tipo.criterios.map((c,i)=>`
+    <tr id="crow-${c.key}" style="${i%2?'background:var(--surface)':''}">
+      <td style="padding:8px 10px;font-size:12px">${i+1}. ${c.label}</td>
+      ${['B','M','NA'].map(v=>`
+        <td style="padding:8px;text-align:center;width:52px">
+          <div id="cb-${c.key}-${v}" onclick="selCrit('${c.key}','${v}')"
+            style="width:32px;height:32px;border-radius:50%;border:2px solid #D1D5DB;cursor:pointer;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s">
+            ${v==='B'?'✅':v==='M'?'❌':'—'}
+          </div>
+        </td>`).join('')}
+    </tr>`).join('');
 }
 
-function selCrit(key, val){
-  // Visual feedback
-  document.querySelectorAll(`.crit-btn[data-key="${key}"]`).forEach(btn=>{
-    const isThis = btn.dataset.val===val;
-    const col = val==='B'?'#22C55E':val==='M'?'#EF4444':'#9CA3AF';
-    btn.style.borderColor    = isThis ? col : 'var(--border)';
-    btn.style.background     = isThis ? col+'22' : '';
-    btn.style.color          = isThis ? col : 'var(--text-2)';
+function selCrit(key,val){
+  ['B','M','NA'].forEach(v=>{
+    const el=document.getElementById(`cb-${key}-${v}`);
+    if(!el) return;
+    const active=v===val;
+    const col=val==='B'?'#22C55E':val==='M'?'#EF4444':'#9CA3AF';
+    el.style.borderColor  =active?col:'#D1D5DB';
+    el.style.background   =active?col+'33':'';
+    el.style.transform    =active?'scale(1.15)':'scale(1)';
+    el.dataset.sel        =active?'1':'0';
   });
-  // Set radio
-  const radio = document.querySelector(`input[name="crit-${key}"][value="${val}"]`);
-  if(radio) radio.checked = true;
   _recalcResultado();
 }
 
-function _recalcResultado(){
-  const tipo = INSP_TIPOS[_inspTipoActual];
-  const badge = document.getElementById('insp-resultado-badge');
-  const label = document.getElementById('insp-resultado-label');
-  if(!badge) return;
-  let hayM = false, todosVal = true;
-  tipo.criterios.forEach(c=>{
-    const checked = document.querySelector(`input[name="crit-${c.key}"]:checked`);
-    if(!checked) todosVal = false;
-    if(checked?.value==='M') hayM = true;
-  });
-  if(!todosVal){ badge.textContent='—'; badge.style.color='var(--text-3)'; label.textContent='Sin evaluar'; return; }
-  if(hayM){ badge.textContent='NOK'; badge.style.color='#EF4444'; label.textContent='Requiere acción'; }
-  else    { badge.textContent='OK';  badge.style.color='#22C55E'; label.textContent='Aprobado'; }
+function _getCritVal(key){
+  const cands=['B','M','NA'];
+  for(const v of cands){
+    const el=document.getElementById(`cb-${key}-${v}`);
+    if(el && el.dataset.sel==='1') return v;
+  }
+  return null;
 }
 
-// ── Hallazgos ────────────────────────────────────────────────
+function _recalcResultado(){
+  const tipo=INSP_TIPOS[_inspTipoActual];
+  const pill=document.getElementById('insp-resultado-pill');
+  if(!pill) return;
+  let hayM=false,todos=true;
+  tipo.criterios.forEach(c=>{
+    const v=_getCritVal(c.key);
+    if(!v) todos=false;
+    if(v==='M') hayM=true;
+  });
+  if(!todos){pill.textContent='Sin evaluar';pill.style.background='#F3F4F6';pill.style.color='#6B7280';return;}
+  if(hayM){pill.textContent='❌ NOK';pill.style.background='#FEE2E2';pill.style.color='#DC2626';}
+  else    {pill.textContent='✅ OK'; pill.style.background='#DCFCE7';pill.style.color='#16A34A';}
+}
+
+// ── Hallazgos ─────────────────────────────────────────────────
 function agregarHallazgo(){
-  _inspHallazgoCount++;
-  const n = _inspHallazgoCount;
-  const cont = document.getElementById('insp-hallazgos-list');
-  const div = document.createElement('div');
-  div.id = `hallazgo-${n}`;
-  div.style.cssText = 'background:var(--surface);border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid var(--esq-orange)';
-  div.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div style="font-size:11px;font-weight:700;color:var(--esq-orange)">Hallazgo #${n}</div>
-      <button onclick="document.getElementById('hallazgo-${n}').remove()" style="background:none;border:none;color:var(--text-3);cursor:pointer;font-size:14px">✕</button>
-    </div>
-    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Descripción del hallazgo</label>
-        <input class="form-inp" id="h${n}-desc" placeholder="Describe el problema encontrado…" style="font-size:12px">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Responsable corrección</label>
-        <input class="form-inp" id="h${n}-resp" placeholder="Nombre" style="font-size:12px">
-      </div>
-      <div class="form-group" style="margin:0">
-        <label class="form-lbl">Fecha límite</label>
-        <input class="form-inp" type="date" id="h${n}-fecha" style="font-size:12px">
-      </div>
-    </div>`;
-  cont.appendChild(div);
+  _inspHallazgoN++;
+  const n=_inspHallazgoN;
+  const cont=document.getElementById('insp-hallazgos-list');
+  const d=document.createElement('div');
+  d.id=`hallazgo-${n}`;
+  d.style.cssText='background:var(--surface);border-radius:8px;padding:10px;margin-bottom:8px;border-left:3px solid var(--esq-orange)';
+  d.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:6px">
+    <span style="font-size:11px;font-weight:700;color:var(--esq-orange)">Hallazgo #${n}</span>
+    <button onclick="document.getElementById('hallazgo-${n}').remove()" style="background:none;border:none;color:var(--text-3);cursor:pointer">✕</button>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px">
+    <input class="form-inp" id="h${n}-desc" placeholder="Descripción…" style="font-size:11px">
+    <input class="form-inp" id="h${n}-resp" placeholder="Responsable" style="font-size:11px">
+    <input class="form-inp" type="date"  id="h${n}-fecha" style="font-size:11px">
+  </div>`;
+  cont.appendChild(d);
 }
 
 function _recolectarHallazgos(){
-  const items = [];
-  document.querySelectorAll('[id^="hallazgo-"]').forEach(div=>{
-    const n = div.id.split('-')[1];
-    const desc  = document.getElementById(`h${n}-desc`)?.value||'';
-    const resp  = document.getElementById(`h${n}-resp`)?.value||'';
-    const fecha = document.getElementById(`h${n}-fecha`)?.value||'';
-    if(desc) items.push({descripcion:desc, responsable:resp, fechaLimite:fecha, estado:'Abierto'});
-  });
-  return items;
+  return [...document.querySelectorAll('[id^="hallazgo-"]')].map(d=>{
+    const n=d.id.split('-')[1];
+    return {
+      descripcion:document.getElementById(`h${n}-desc`)?.value||'',
+      responsable:document.getElementById(`h${n}-resp`)?.value||'',
+      fechaLimite:document.getElementById(`h${n}-fecha`)?.value||'',
+      estado:'Abierto'
+    };
+  }).filter(h=>h.descripcion);
 }
 
-// ── Guardar inspección ───────────────────────────────────────
+// ── Guardar inspección ────────────────────────────────────────
 async function guardarInspeccion(){
-  const extId = document.getElementById('insp-form-serial').value;
-  const fecha = document.getElementById('insp-form-fecha').value;
-  if(!extId || !fecha){ showToast('⚠️ Selecciona equipo y fecha'); return; }
-  if(!db){ showToast('⚠️ Firebase no disponible'); return; }
+  const extId=document.getElementById('insp-form-serial').value;
+  const fecha=document.getElementById('insp-form-fecha').value;
+  if(!extId||!fecha){showToast('⚠️ Selecciona equipo y fecha');return;}
+  if(!db){showToast('⚠️ Firebase no disponible');return;}
 
-  const tipo = INSP_TIPOS[_inspTipoActual];
-  const criterios = {};
-  let hayM = false;
+  const tipo=INSP_TIPOS[_inspTipoActual];
+  const criterios={};
+  let hayM=false;
   for(const c of tipo.criterios){
-    const ch = document.querySelector(`input[name="crit-${c.key}"]:checked`);
-    criterios[c.key] = ch ? ch.value : '';
-    if(ch?.value==='M') hayM = true;
+    const v=_getCritVal(c.key)||'';
+    criterios[c.key]=v;
+    if(v==='M') hayM=true;
   }
 
-  const reg = {
-    extintorId   : extId,
-    tipoInspeccion: _inspTipoActual,
+  const reg={
+    extintorId   :extId,
+    tipoInspeccion:_inspTipoActual,
     fecha,
-    inspector    : currentUser?.name || currentUser?.cedula || '',
-    cedula       : currentUser?.cedula || '',
+    inspector    :currentUser?.name||currentUser?.cedula||'',
+    cedula       :currentUser?.cedula||'',
     criterios,
-    observaciones: document.getElementById('insp-form-obs').value,
-    hallazgos    : _recolectarHallazgos(),
-    resultado    : hayM ? 'NOK' : 'OK',
-    fechaRegistro: new Date().toISOString(),
+    observaciones:document.getElementById('insp-form-obs').value,
+    hallazgos    :_recolectarHallazgos(),
+    resultado    :hayM?'NOK':'OK',
+    fechaRegistro:new Date().toISOString(),
   };
 
-  try {
-    const {addDoc, collection} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    await addDoc(collection(db, 'inspecciones', extId, 'registros'), reg);
-    _inspRegistros.push({...reg, id: Date.now().toString()});
+  try{
+    const {addDoc,collection}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const ref=await addDoc(collection(db,'inspecciones',extId,'registros'),reg);
+    _inspRegistros.push({...reg,id:ref.id});
     showToast('✅ Inspección guardada');
     resetInspForm();
     renderInspInventario();
-  } catch(e){
-    console.error(e);
-    showToast('❌ Error al guardar: '+e.message);
-  }
+  }catch(e){console.error(e);showToast('❌ '+e.message);}
 }
 
 function resetInspForm(){
@@ -12919,106 +12948,179 @@ function resetInspForm(){
   document.getElementById('insp-form-obs').value='';
   document.getElementById('insp-ext-info').style.display='none';
   document.getElementById('insp-hallazgos-list').innerHTML='';
-  _inspHallazgoCount=0;
-  _renderCriterios();
-  const badge=document.getElementById('insp-resultado-badge');
-  const label=document.getElementById('insp-resultado-label');
-  if(badge){badge.textContent='—';badge.style.color='var(--text-3)';}
-  if(label) label.textContent='Sin evaluar';
+  _inspHallazgoN=0;
+  _renderCriteriosTabla();
+  const pill=document.getElementById('insp-resultado-pill');
+  if(pill){pill.textContent='Sin evaluar';pill.style.background='#F3F4F6';pill.style.color='#6B7280';}
 }
 
-// ── Cargar historial desde Firestore ─────────────────────────
-async function _cargarHistorialFirestore(){
+// ── Historial ─────────────────────────────────────────────────
+async function _cargarHistorialFS(){
   if(!db) return;
-  try {
-    const {getDocs, collection} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    _inspRegistros = [];
+  try{
+    const {getDocs,collection}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    _inspRegistros=[];
     for(const eq of _inspInventario){
-      const snap = await getDocs(collection(db, 'inspecciones', eq.id, 'registros'));
-      snap.forEach(d=>_inspRegistros.push({...d.data(), id:d.id}));
+      const snap=await getDocs(collection(db,'inspecciones',eq.id,'registros'));
+      snap.forEach(d=>_inspRegistros.push({...d.data(),id:d.id}));
     }
-  } catch(e){ console.error('historial:', e); }
+  }catch(e){console.error(e);}
 }
 
-// ── Render historial ─────────────────────────────────────────
 function renderInspHistorial(){
-  const serial = document.getElementById('insp-hist-serial')?.value||'';
-  const res    = document.getElementById('insp-hist-res')?.value||'';
-  const desde  = document.getElementById('insp-hist-desde')?.value||'';
-  const hasta  = document.getElementById('insp-hist-hasta')?.value||'';
-  const cont   = document.getElementById('insp-hist-body');
+  const serial=document.getElementById('insp-hist-serial')?.value||'';
+  const res   =document.getElementById('insp-hist-res')?.value||'';
+  const desde =document.getElementById('insp-hist-desde')?.value||'';
+  const hasta =document.getElementById('insp-hist-hasta')?.value||'';
+  const cont  =document.getElementById('insp-hist-body');
   if(!cont) return;
 
-  let lista = [..._inspRegistros].filter(r=>{
+  let lista=[..._inspRegistros].filter(r=>{
     if(serial && r.extintorId!==serial) return false;
     if(res    && r.resultado!==res)     return false;
-    if(desde  && r.fecha < desde)       return false;
-    if(hasta  && r.fecha > hasta)       return false;
+    if(desde  && r.fecha<desde)         return false;
+    if(hasta  && r.fecha>hasta)         return false;
     return true;
   }).sort((a,b)=>b.fecha.localeCompare(a.fecha));
 
   if(!lista.length){
-    cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-2);font-size:13px">No hay registros de inspección. Carga el historial desde la pestaña Inventario.</div>';
+    cont.innerHTML='<div style="text-align:center;padding:36px;color:var(--text-2);font-size:13px">Sin registros. Abre el tab Historial para cargar desde Firestore.</div>';
     return;
   }
-
-  const tipo = INSP_TIPOS[_inspTipoActual];
-  cont.innerHTML = lista.map(r=>{
-    const eq = _inspInventario.find(e=>e.id===r.extintorId);
-    const nok = tipo.criterios.filter(c=>r.criterios?.[c.key]==='M');
-    const hallBadge = r.hallazgos?.length ? `<span style="background:#FEF3C7;color:#92400E;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700">${r.hallazgos.length} hallazgo${r.hallazgos.length>1?'s':''}</span>` : '';
-    return `<div style="background:var(--surface);border-radius:10px;padding:14px 16px;margin-bottom:10px;border-left:4px solid ${r.resultado==='OK'?'#22C55E':'#EF4444'}">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+  const tipo=INSP_TIPOS[_inspTipoActual];
+  cont.innerHTML=lista.map(r=>{
+    const eq=_inspInventario.find(e=>e.id===r.extintorId);
+    const nok=tipo.criterios.filter(c=>r.criterios?.[c.key]==='M');
+    return `<div style="background:var(--surface);border-radius:10px;padding:12px 14px;margin-bottom:8px;border-left:4px solid ${r.resultado==='OK'?'#22C55E':'#EF4444'}">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
         <span style="font-weight:800;color:var(--esq-blue)">${r.extintorId}</span>
         <span style="font-size:11px;color:var(--text-2)">${eq?.ubicacion||''}</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--text-2)">${r.fecha}</span>
-        <span style="font-weight:700;color:${r.resultado==='OK'?'#22C55E':'#EF4444'}">${r.resultado==='OK'?'✅ OK':'❌ NOK'}</span>
-        ${hallBadge}
+        <span style="margin-left:auto;font-size:11px;color:var(--text-2)">${r.fecha}</span>
+        <span style="font-weight:700;font-size:12px;color:${r.resultado==='OK'?'#22C55E':'#EF4444'}">${r.resultado==='OK'?'✅ OK':'❌ NOK'}</span>
       </div>
       <div style="font-size:11px;color:var(--text-2)">Inspector: <strong>${r.inspector||'—'}</strong></div>
-      ${nok.length?`<div style="font-size:11px;color:#EF4444;margin-top:4px">Criterios fallidos: ${nok.map(c=>c.label).join(', ')}</div>`:''}
-      ${r.observaciones?`<div style="font-size:11px;color:var(--text-2);margin-top:4px;font-style:italic">${r.observaciones}</div>`:''}
-      ${(r.hallazgos||[]).map(h=>`<div style="font-size:11px;background:#FEF3C7;border-radius:6px;padding:5px 8px;margin-top:5px">⚠️ ${h.descripcion} — <strong>${h.responsable||'?'}</strong> antes de ${h.fechaLimite||'?'} [${h.estado}]</div>`).join('')}
+      ${nok.length?`<div style="font-size:11px;color:#EF4444;margin-top:3px">Falla: ${nok.map(c=>c.label).join(' · ')}</div>`:''}
+      ${r.observaciones?`<div style="font-size:11px;color:var(--text-2);margin-top:3px;font-style:italic">${r.observaciones}</div>`:''}
+      ${(r.hallazgos||[]).map(h=>`<div style="font-size:11px;background:#FEF3C7;border-radius:5px;padding:4px 8px;margin-top:4px">⚠️ ${h.descripcion}${h.responsable?' — '+h.responsable:''}${h.fechaLimite?' · '+h.fechaLimite:''}</div>`).join('')}
     </div>`;
   }).join('');
 }
 
-// ── Inicializar inventario en Firestore (admin) ──────────────
-async function inicializarInventarioFirestore(){
-  if(!db){ showToast('⚠️ Firebase no disponible'); return; }
-  if(currentUser?.role !== 'admin'){ showToast('⚠️ Solo el admin puede inicializar'); return; }
-  if(!confirm(`¿Cargar los ${EXT_BASE.length} extintores a Firestore? Esto sobreescribe registros existentes con el mismo ID.`)) return;
-  try {
-    const {setDoc, doc} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    let n=0;
-    for(const eq of EXT_BASE){
-      await setDoc(doc(db,'extintores',eq.id), eq);
-      n++;
-    }
-    showToast(`✅ ${n} extintores cargados a Firestore`);
-  } catch(e){ showToast('❌ Error: '+e.message); }
+// ── CRUD Inventario ───────────────────────────────────────────
+function abrirModalEquipo(id){
+  _equipoEditId=id;
+  const isNew=!id;
+  document.getElementById('equipo-modal-title').textContent=isNew?'Nuevo equipo':'Editar equipo';
+  document.getElementById('btn-del-equipo').style.display=isNew?'none':'';
+  const idField=document.getElementById('eq-id');
+  idField.disabled=!isNew;
+
+  if(isNew){
+    ['eq-id','eq-area','eq-ubicacion','eq-hidrostatica','eq-recarga'].forEach(f=>{ const el=document.getElementById(f); if(el) el.value=''; });
+    document.getElementById('eq-tipo').value='PQS ABC';
+    document.getElementById('eq-capacidad').value='';
+  } else {
+    const e=_inspInventario.find(x=>x.id===id);
+    if(!e) return;
+    document.getElementById('eq-id').value        =e.id;
+    document.getElementById('eq-area').value      =e.area||'';
+    document.getElementById('eq-ubicacion').value =e.ubicacion||'';
+    document.getElementById('eq-tipo').value      =e.tipo||'PQS ABC';
+    document.getElementById('eq-capacidad').value =e.capacidad||'';
+    document.getElementById('eq-hidrostatica').value=e.fechaHidro||'';
+    document.getElementById('eq-recarga').value   =e.proximaRecarga||'';
+  }
+  document.getElementById('ov-equipo').classList.add('active');
 }
 
-// ── Cargar inventario desde Firestore (merge con base) ───────
+async function guardarEquipo(){
+  const isNew=!_equipoEditId;
+  const id  =(document.getElementById('eq-id').value||'').trim().toUpperCase();
+  const area=(document.getElementById('eq-area').value||'').trim();
+  const ubic=(document.getElementById('eq-ubicacion').value||'').trim();
+  if(!id||!area||!ubic){showToast('⚠️ Serial, área y ubicación son obligatorios');return;}
+  if(isNew && _inspInventario.find(e=>e.id===id)){showToast('⚠️ Ya existe un equipo con ese serial');return;}
+
+  const eq={
+    id,
+    area,
+    ubicacion: ubic,
+    tipo     : document.getElementById('eq-tipo').value,
+    capacidad: parseFloat(document.getElementById('eq-capacidad').value)||0,
+    fechaHidro     : document.getElementById('eq-hidrostatica').value||null,
+    proximaRecarga : document.getElementById('eq-recarga').value||null,
+    activo   : true,
+  };
+
+  // Actualizar en memoria
+  if(isNew){
+    _inspInventario.push(eq);
+  } else {
+    const idx=_inspInventario.findIndex(e=>e.id===_equipoEditId);
+    if(idx>=0) _inspInventario[idx]={..._inspInventario[idx],...eq};
+  }
+
+  // Persistir en Firestore
+  if(db){
+    try{
+      const {setDoc,doc}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      await setDoc(doc(db,'extintores',eq.id),eq);
+    }catch(e){console.warn('FS equipo:',e);}
+  }
+
+  closeOv('ov-equipo');
+  _inspPoblarFiltros();
+  _inspPoblarSeriales();
+  renderInspInventario();
+  showToast(isNew?'✅ Equipo creado':'✅ Equipo actualizado');
+}
+
+async function eliminarEquipo(){
+  if(!_equipoEditId) return;
+  if(!confirm(`¿Eliminar ${_equipoEditId} del inventario? Los registros de inspección se conservan.`)) return;
+  _inspInventario=_inspInventario.filter(e=>e.id!==_equipoEditId);
+  if(db){
+    try{
+      const {deleteDoc,doc}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+      await deleteDoc(doc(db,'extintores',_equipoEditId));
+    }catch(e){console.warn('FS del equipo:',e);}
+  }
+  closeOv('ov-equipo');
+  _inspPoblarFiltros();
+  _inspPoblarSeriales();
+  renderInspInventario();
+  showToast('🗑 Equipo eliminado');
+}
+
+// ── Inicializar / sync Firestore ──────────────────────────────
+async function inicializarInventarioFirestore(){
+  if(!db){showToast('⚠️ Firebase no disponible');return;}
+  if(currentUser?.role!=='admin'){showToast('⚠️ Solo el admin puede inicializar');return;}
+  if(!confirm(`¿Cargar los ${EXT_BASE.length} extintores base a Firestore? Sobreescribe documentos con el mismo ID.`)) return;
+  try{
+    const {setDoc,doc}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    for(const eq of EXT_BASE) await setDoc(doc(db,'extintores',eq.id),eq);
+    showToast(`✅ ${EXT_BASE.length} extintores cargados`);
+  }catch(e){showToast('❌ '+e.message);}
+}
+
 async function cargarInventarioFirestore(){
-  if(!db){ showToast('⚠️ Firebase no disponible'); return; }
-  try {
-    const {getDocs, collection} = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
-    const snap = await getDocs(collection(db,'extintores'));
-    if(snap.empty){ showToast('ℹ️ No hay extintores en Firestore. Usa Inicializar.'); return; }
-    const fsMap = {};
-    snap.forEach(d=>{ fsMap[d.id]={...d.data(), _fromFS:true}; });
-    // Merge: Firestore tiene prioridad, base cubre los que faltan
-    const base = EXT_BASE.map(e=>({...e}));
-    base.forEach(e=>{ if(fsMap[e.id]) Object.assign(e, fsMap[e.id]); });
-    // Añadir equipos nuevos que solo estén en Firestore
+  if(!db){showToast('⚠️ Firebase no disponible');return;}
+  try{
+    const {getDocs,collection}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js');
+    const snap=await getDocs(collection(db,'extintores'));
+    if(snap.empty){showToast('ℹ️ Sin datos en Firestore. Usa Inicializar.');return;}
+    const fsMap={};
+    snap.forEach(d=>{fsMap[d.id]={...d.data()};});
+    const base=EXT_BASE.map(e=>({...e}));
+    base.forEach(e=>{ if(fsMap[e.id]) Object.assign(e,fsMap[e.id]); });
     Object.values(fsMap).forEach(eq=>{ if(!base.find(b=>b.id===eq.id)) base.push(eq); });
-    _inspInventario = base;
-    _poblarSelectoresInv();
-    _poblarSelectoresForm();
+    _inspInventario=base;
+    _inspPoblarFiltros();
+    _inspPoblarSeriales();
     renderInspInventario();
-    showToast(`✅ Inventario sincronizado (${_inspInventario.length} equipos)`);
-  } catch(e){ showToast('❌ Error: '+e.message); }
+    showToast(`✅ Sync OK — ${_inspInventario.length} equipos`);
+  }catch(e){showToast('❌ '+e.message);}
 }
 
 // ════════════════════════════════════════════════════════════
