@@ -7292,20 +7292,30 @@ async function _bibCargarCat(cat) {
       fb.collection(db, 'formaciones', cat, 'capacitaciones'),
       fb.orderBy('orden','asc')
     ));
-    // Siempre partimos de la lista base completa
+    // Separar docs activos y tombstones (eliminados)
+    var fromFb = [], eliminados = {};
+    snap.docs.forEach(function(d){
+      var data = Object.assign({_fid:d.id}, d.data());
+      if (data._eliminado) {
+        eliminados[(data.nombre||'').toLowerCase().trim()] = true;
+      } else {
+        fromFb.push(data);
+      }
+    });
+
+    // Lista base filtrada: quitar los eliminados
     var base = (BIB_BASE[cat]||[]).map(function(f,i){
       return Object.assign({}, f, {orden:i+1, categoria:cat, cargosAplicables:f.cargosAplicables||[], activo:true, _fromBase:true});
+    }).filter(function(f){
+      return !eliminados[(f.nombre||'').toLowerCase().trim()];
     });
-    if (!snap.empty) {
-      // Mezclar: por cada doc de Firestore, reemplazar el item base con mismo nombre
-      var fromFb = snap.docs.map(function(d){ return Object.assign({_fid:d.id}, d.data()); });
-      // Índice por nombre (lowercase) para match
+
+    if (fromFb.length) {
+      // Mezclar: base (filtrada) + docs de Firestore, reemplazando por nombre
       var fbByNom = {};
       fromFb.forEach(function(f){ fbByNom[(f.nombre||'').toLowerCase().trim()] = f; });
-      // Items de Firestore que NO están en la base (creados manualmente)
       var baseNoms = base.map(function(f){ return (f.nombre||'').toLowerCase().trim(); });
       var extrasFb = fromFb.filter(function(f){ return baseNoms.indexOf((f.nombre||'').toLowerCase().trim()) < 0; });
-      // Combinar: base reemplazada donde hay coincidencia en Firestore + extras
       var merged = base.map(function(f){
         var key = (f.nombre||'').toLowerCase().trim();
         return fbByNom[key] ? Object.assign({}, fbByNom[key]) : f;
@@ -7487,9 +7497,17 @@ async function eliminarFormacion(cat, idx) {
   var f = data[idx];
   if (!f) return;
   try {
+    var fb = window._fb, db = window._db;
     if (f._fid) {
-      var fb = window._fb, db = window._db;
+      // Tiene _fid real → borrar de Firestore
       await fb.deleteDoc(fb.doc(db,'formaciones',cat,'capacitaciones',f._fid));
+    } else {
+      // Es del base sin _fid → guardar tombstone en Firestore para que no vuelva
+      await fb.addDoc(fb.collection(db,'formaciones',cat,'capacitaciones'), {
+        nombre: f.nombre, categoria: cat, orden: f.orden||idx+1,
+        _eliminado: true, activo: false,
+        fechaActualizacion: new Date().toISOString()
+      });
     }
     delete _bibData[cat];
     await renderBiblioteca();
